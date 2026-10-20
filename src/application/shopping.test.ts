@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { keptLabels, proposedLabels } from '../domain/inbox';
 import { checkedItems, itemsToBuy, type ShoppingList } from '../domain/shopping-list';
+import type { ClipboardContent } from './ports';
 import { InMemoryInboxRepository, InMemoryShoppingListRepository } from './in-memory-repositories';
 import { shopping, type Shopping } from './shopping';
 
@@ -9,13 +10,21 @@ const labels = (list: ShoppingList) => list.items.map((item) => item.label);
 let shoppingLists: InMemoryShoppingListRepository;
 let inboxes: InMemoryInboxRepository;
 let app: Shopping;
+let clipboard: ClipboardContent;
 
 beforeEach(() => {
   shoppingLists = new InMemoryShoppingListRepository();
   inboxes = new InMemoryInboxRepository();
   let clock = 0;
   let id = 0;
-  app = shopping({ shoppingLists, inboxes, now: () => ++clock, newId: () => `id-${++id}` });
+  clipboard = { kind: 'empty' };
+  app = shopping({
+    shoppingLists,
+    inboxes,
+    now: () => ++clock,
+    newId: () => `id-${++id}`,
+    readClipboard: async () => clipboard,
+  });
 });
 
 async function idOf(label: string): Promise<string> {
@@ -100,6 +109,30 @@ describe('capture', () => {
 
     expect(proposedLabels(await inboxes.load())).toEqual([]);
     expect(labels(await shoppingLists.load())).toEqual(['sel']);
+  });
+});
+
+describe('pasting from the clipboard', () => {
+  it('captures the text held by the clipboard', async () => {
+    clipboard = { kind: 'text', text: 'pain, beurre' };
+
+    const pasted = await app.pasteFromClipboard();
+
+    expect(pasted.outcome).toBe('captured');
+    expect(proposedLabels(await inboxes.load())).toEqual(['pain', 'beurre']);
+  });
+
+  it('reports an empty clipboard without touching the inbox', async () => {
+    clipboard = { kind: 'empty' };
+
+    expect((await app.pasteFromClipboard()).outcome).toBe('empty');
+    expect(proposedLabels(await inboxes.load())).toEqual([]);
+  });
+
+  it('reports a clipboard that cannot be read', async () => {
+    clipboard = { kind: 'unavailable' };
+
+    expect((await app.pasteFromClipboard()).outcome).toBe('unavailable');
   });
 });
 

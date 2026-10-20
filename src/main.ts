@@ -1,5 +1,6 @@
 import { mount } from 'svelte';
 import { shopping } from './application/shopping';
+import { readClipboard } from './infrastructure/clipboard';
 import { openStorage } from './infrastructure/indexed-db';
 import { requestPersistentStorage } from './infrastructure/persistent-storage';
 import { takeSharedContent } from './infrastructure/share-target';
@@ -15,6 +16,7 @@ async function start(target: HTMLElement): Promise<void> {
     inboxes: storage.inboxes,
     now: () => Date.now(),
     newId: () => crypto.randomUUID(),
+    readClipboard: () => readClipboard(),
   });
 
   const shared = takeSharedContent(new URL(location.href), (cleanUrl) =>

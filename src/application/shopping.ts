@@ -13,7 +13,18 @@ import type { Dependencies } from './ports';
 
 export type Shopping = ReturnType<typeof shopping>;
 
-export function shopping({ shoppingLists, inboxes: inboxStore, now, newId }: Dependencies) {
+export type PasteOutcome =
+  | { readonly outcome: 'captured'; readonly inbox: Inbox }
+  | { readonly outcome: 'empty' }
+  | { readonly outcome: 'unavailable' };
+
+export function shopping({
+  shoppingLists,
+  inboxes: inboxStore,
+  now,
+  newId,
+  readClipboard,
+}: Dependencies) {
   async function changeList(change: (list: ShoppingList) => ShoppingList): Promise<ShoppingList> {
     const list = change(await shoppingLists.load());
     await shoppingLists.save(list);
@@ -51,6 +62,11 @@ export function shopping({ shoppingLists, inboxes: inboxStore, now, newId }: Dep
 
     captureText,
     captureShared: (content: SharedContent): Promise<Inbox> => captureText(sharedText(content)),
+    async pasteFromClipboard(): Promise<PasteOutcome> {
+      const content = await readClipboard();
+      if (content.kind !== 'text') return { outcome: content.kind };
+      return { outcome: 'captured', inbox: await captureText(content.text) };
+    },
     addProposal: (label: string): Promise<Result<Inbox, ProposalError>> =>
       tryChangeInbox((inbox) => inboxes.addProposal(inbox, label, newId)),
     editProposal: (id: string, label: string): Promise<Result<Inbox, EditProposalError>> =>

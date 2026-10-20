@@ -10,8 +10,8 @@
 ## 2. Persistance et presse-papiers
 
 - [x] 2.1 Passer le schéma IndexedDB en v2 avec la migration de la boîte de réception, et vérifier avec `fake-indexeddb` qu'une base v1 remplie à la main se rouvre en v2 avec ses propositions conservées et `capturedTexts` vide
-- [ ] 2.2 Implémenter en TDD l'adaptateur `readClipboard` (texte, vide, indisponible, refus, erreur), et vérifier qu'aucun cas ne lève d'exception
-- [ ] 2.3 Ajouter le cas d'usage de collage depuis le presse-papiers, qui capture le texte lu ou signale le cas vide ou indisponible, et vérifier ses trois issues sur des dépôts en mémoire
+- [x] 2.2 Implémenter en TDD l'adaptateur `readClipboard` (texte, vide, indisponible, refus, erreur), et vérifier qu'aucun cas ne lève d'exception
+- [x] 2.3 Ajouter le cas d'usage de collage depuis le presse-papiers, qui capture le texte lu ou signale le cas vide ou indisponible, et vérifier ses trois issues sur des dépôts en mémoire
 
 ## 3. Identité visuelle
 

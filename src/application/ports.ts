@@ -11,9 +11,15 @@ export interface InboxRepository {
   save(inbox: Inbox): Promise<void>;
 }
 
+export type ClipboardContent =
+  | { readonly kind: 'text'; readonly text: string }
+  | { readonly kind: 'empty' }
+  | { readonly kind: 'unavailable' };
+
 export interface Dependencies {
   readonly shoppingLists: ShoppingListRepository;
   readonly inboxes: InboxRepository;
   readonly now: () => number;
   readonly newId: () => string;
+  readonly readClipboard: () => Promise<ClipboardContent>;
 }
