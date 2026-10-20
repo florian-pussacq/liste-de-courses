@@ -43,7 +43,7 @@
 - [x] 6.2 Déclarer le `share_target` en GET sur `./` et lire les paramètres `title` et `text` au démarrage, puis nettoyer l'URL ; vérifier en e2e qu'ouvrir `./?title=…&text=…` alimente la boîte de réception et que l'URL est nettoyée
 - [x] 6.3 Vérifier en e2e le fonctionnement hors ligne (`context.setOffline(true)` après un premier chargement) : affichage de la liste, cochage, et partage par URL
 - [x] 6.4 Ajouter la Content Security Policy (`connect-src 'self'`, aucun script ni style tiers), et vérifier en e2e qu'aucune requête n'est émise vers une autre origine pendant une capture complète
-- [ ] 6.5 Vérifier en e2e qu'une nouvelle version du service worker conserve la liste existante
+- [x] 6.5 Vérifier en e2e qu'une nouvelle version du service worker conserve la liste existante
 
 ## 7. Vérification d'intégration
 
