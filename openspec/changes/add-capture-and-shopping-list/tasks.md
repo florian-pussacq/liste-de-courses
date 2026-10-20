@@ -13,9 +13,9 @@
 ## 2. Domaine : liste de courses
 
 - [x] 2.1 Implémenter en TDD la normalisation des libellés (casse, ligatures, accents, espaces), et vérifier que les tests couvrent « Œufs »/« oeufs » et les espaces superflus
-- [ ] 2.2 Implémenter en TDD `ShoppingList` : ajout avec refus du libellé vide, et dédoublonnage (un doublon non coché ne change rien, un doublon coché est décoché) ; vérifier un test par scénario de la spec `shopping-list`
-- [ ] 2.3 Implémenter en TDD la modification (refus d'un libellé vide ou déjà présent), la suppression, le cochage et le décochage, et vérifier un test par scénario
-- [ ] 2.4 Implémenter en TDD l'ordre d'affichage (non cochés par ordre d'ajout, puis cochés) et le retrait des articles cochés, et vérifier un test par scénario
+- [x] 2.2 Implémenter en TDD `ShoppingList` : ajout avec refus du libellé vide, et dédoublonnage (un doublon non coché ne change rien, un doublon coché est décoché) ; vérifier un test par scénario de la spec `shopping-list`
+- [x] 2.3 Implémenter en TDD la modification (refus d'un libellé vide ou déjà présent), la suppression, le cochage et le décochage, et vérifier un test par scénario
+- [x] 2.4 Implémenter en TDD l'ordre d'affichage (non cochés par ordre d'ajout, puis cochés) et le retrait des articles cochés, et vérifier un test par scénario
 
 ## 3. Domaine : capture
 
