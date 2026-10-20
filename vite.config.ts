@@ -1,13 +1,39 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 const themeColor = '#1a7f37';
+
+// Nothing the user captures may leave the device: the browser itself forbids any
+// request to another origin. Build only, since the dev server injects inline styles.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "connect-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
+const contentSecurityPolicyMeta = (): Plugin => ({
+  name: 'content-security-policy-meta',
+  apply: 'build',
+  transformIndexHtml: () => [
+    {
+      tag: 'meta',
+      attrs: { 'http-equiv': 'Content-Security-Policy', content: contentSecurityPolicy },
+      injectTo: 'head-prepend',
+    },
+  ],
+});
 
 export default defineConfig({
   base: '/liste-de-courses/',
   plugins: [
     svelte(),
+    contentSecurityPolicyMeta(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
