@@ -79,6 +79,10 @@ textarea {
   min-height: 6rem;
 }
 
+form:has(textarea) {
+  flex-direction: column;
+}
+
 button {
   font: inherit;
   min-height: 2.75rem;
@@ -125,6 +129,7 @@ li label {
 li input[type='checkbox'] {
   width: 1.5rem;
   height: 1.5rem;
+  accent-color: var(--accent);
 }
 
 li.checked span {
