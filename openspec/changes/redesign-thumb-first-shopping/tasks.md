@@ -34,7 +34,7 @@
 
 ## 6. Vérification d'intégration
 
-- [ ] 6.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 6.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 6.2 Sur un téléphone Android réel : appui long sur un article (pas de bulle de sélection parasite), collage depuis le presse-papiers après copie dans une messagerie, tri par pastilles, mode sombre ; vérifier que chaque scénario modifié se comporte comme spécifié
 
 ## Workflow follow-up
