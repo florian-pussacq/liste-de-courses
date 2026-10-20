@@ -48,7 +48,7 @@
 ## 7. Vérification d'intégration
 
 - [ ] 7.1 Sur un téléphone Android réel : installer l'application depuis GitHub Pages, partager un message depuis une messagerie, valider, cocher en mode avion, et vérifier que chaque scénario de `offline-app` et de « Réception de texte partagé » se comporte comme spécifié
-- [ ] 7.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert
+- [x] 7.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert
 
 ## Workflow follow-up
 
