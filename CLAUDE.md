@@ -53,15 +53,22 @@ Ce dépôt est public. Tout ce qui y entre (code, specs, commits, messages, noms
 - Les specs, l'interface et les commits sont en français.
 - Le passage d'une langue à l'autre suit ce glossaire, à compléter à chaque nouveau concept :
 
-| Spec (fr)          | Code (en)      |
-| ------------------ | -------------- |
-| liste de courses   | `ShoppingList` |
-| article            | `Item`         |
-| libellé            | `label`        |
-| coché / pris       | `checked`      |
-| boîte de réception | `Inbox`        |
-| article proposé    | `Proposal`     |
-| texte reçu         | `capturedText` |
+| Spec (fr)            | Code (en)      |
+| -------------------- | -------------- |
+| liste de courses     | `ShoppingList` |
+| article              | `Item`         |
+| libellé              | `label`        |
+| coché / pris         | `checked`      |
+| boîte de réception   | `Inbox`        |
+| article proposé      | `Proposal`     |
+| texte reçu           | `capturedText` |
+| écarté               | `discarded`    |
+| panier               | `basket`       |
+| progression          | `progress`     |
+| presse-papiers       | `clipboard`    |
+| actions d'un article | `ItemActions`  |
+
+Le panier n'est pas un concept du domaine : c'est la présentation des articles cochés, et il n'apparaît que dans l'interface.
 
 ## Conception
 
