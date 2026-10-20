@@ -8,6 +8,12 @@ Ce projet suit les principes du software craftsmanship : du code maintenable dan
 - Les specs dans `openspec/specs/` sont la source de vérité. Si le code et la spec divergent, l'un des deux est faux : on tranche explicitement, on ne laisse pas dériver.
 - Un scénario de spec = au moins un test qui le vérifie.
 - On valide avec `openspec validate --all` avant de commiter.
+- Tous les workflows OpenSpec sont activés. Ce réglage vit dans la config globale d'OpenSpec, pas dans le repo : avant tout `openspec update`, on le rétablit, sinon les workflows hors profil `core` sont supprimés de `.claude/`.
+
+  ```
+  openspec config set profile custom
+  openspec config set workflows '["propose","explore","new","continue","apply","update","ff","sync","archive","bulk-archive","verify","onboard"]'
+  ```
 
 ## Trunk-based development
 
