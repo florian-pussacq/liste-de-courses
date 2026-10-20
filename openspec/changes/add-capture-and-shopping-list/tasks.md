@@ -32,10 +32,10 @@
 
 ## 5. Interface
 
-- [ ] 5.1 Construire la vue liste (articles à prendre puis pris, cochage en un geste, message de liste vide, ajout direct), et vérifier en e2e les scénarios d'ajout, de cochage et de liste vide
-- [ ] 5.2 Ajouter la modification, la suppression et le retrait des articles cochés, et vérifier en e2e les scénarios correspondants, y compris le refus d'un libellé déjà présent
-- [ ] 5.3 Construire la vue boîte de réception (zone de collage, articles proposés modifiables, écarter, ajouter, valider, abandonner, état vide), et vérifier en e2e le collage d'une liste, la correction, la validation et l'abandon
-- [ ] 5.4 Vérifier en e2e la conservation de la capture : rechargement de la page avec des articles proposés non validés
+- [x] 5.1 Construire la vue liste (articles à prendre puis pris, cochage en un geste, message de liste vide, ajout direct), et vérifier en e2e les scénarios d'ajout, de cochage et de liste vide
+- [x] 5.2 Ajouter la modification, la suppression et le retrait des articles cochés, et vérifier en e2e les scénarios correspondants, y compris le refus d'un libellé déjà présent
+- [x] 5.3 Construire la vue boîte de réception (zone de collage, articles proposés modifiables, écarter, ajouter, valider, abandonner, état vide), et vérifier en e2e le collage d'une liste, la correction, la validation et l'abandon
+- [x] 5.4 Vérifier en e2e la conservation de la capture : rechargement de la page avec des articles proposés non validés
 
 ## 6. PWA, partage et confidentialité
 
