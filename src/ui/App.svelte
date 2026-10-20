@@ -2,8 +2,10 @@
   import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
   import type { Inbox } from '../domain/inbox';
-  import type { ShoppingList } from '../domain/shopping-list';
-  import InboxView from './InboxView.svelte';
+  import type { Item, ShoppingList } from '../domain/shopping-list';
+  import AddItemSheet from './AddItemSheet.svelte';
+  import InboxSheet from './InboxSheet.svelte';
+  import ItemActionsSheet from './ItemActionsSheet.svelte';
   import ShoppingListView from './ShoppingListView.svelte';
 
   interface Props {
@@ -16,28 +18,81 @@
 
   const { app, initialList, initialInbox, openInbox = false, emptyShare = false }: Props = $props();
 
+  type Sheet =
+    | { readonly kind: 'none' }
+    | { readonly kind: 'inbox'; readonly notice?: string; readonly reading?: boolean }
+    | { readonly kind: 'add' }
+    | { readonly kind: 'actions'; readonly item: Item };
+
   // Props only seed the state: from then on, the views own it.
   let list = $state(untrack(() => initialList));
   let inbox = $state(untrack(() => initialInbox));
-  let view: 'list' | 'inbox' = $state(untrack(() => (openInbox ? 'inbox' : 'list')));
+  let sheet: Sheet = $state(
+    untrack(() =>
+      openInbox
+        ? {
+            kind: 'inbox',
+            notice: emptyShare ? 'Le texte partagé ne contient aucun article.' : undefined,
+          }
+        : { kind: 'none' },
+    ),
+  );
+
+  const closeSheet = () => (sheet = { kind: 'none' });
+
+  // The inbox opens at once: the browser may wait on a permission prompt the user ignores,
+  // and typing by hand must stay possible meanwhile.
+  async function paste() {
+    sheet = { kind: 'inbox', notice: 'Lecture du presse-papiers…', reading: true };
+    const pasted = await app.pasteFromClipboard();
+    if (sheet.kind !== 'inbox') return;
+    if (pasted.outcome === 'captured') {
+      inbox = pasted.inbox;
+      sheet = { kind: 'inbox' };
+      return;
+    }
+    sheet = {
+      kind: 'inbox',
+      notice:
+        pasted.outcome === 'empty'
+          ? 'Le presse-papiers est vide. Colle ou écris ta liste ci-dessous.'
+          : "Le presse-papiers n'a pas pu être lu. Colle ou écris ta liste ci-dessous.",
+    };
+  }
 </script>
 
-{#if view === 'inbox'}
-  <InboxView
+<ShoppingListView
+  {app}
+  bind:list
+  pending={inbox.proposals.length}
+  onpaste={paste}
+  onadd={() => (sheet = { kind: 'add' })}
+  onopeninbox={() => (sheet = { kind: 'inbox' })}
+  onactions={(item) => (sheet = { kind: 'actions', item })}
+/>
+
+{#if sheet.kind === 'inbox'}
+  <InboxSheet
     {app}
     bind:inbox
-    {emptyShare}
+    notice={sheet.notice}
+    reading={sheet.reading}
     onvalidated={(validated) => {
       list = validated;
-      view = 'list';
+      closeSheet();
     }}
-    onclose={() => (view = 'list')}
+    onclose={closeSheet}
   />
-{:else}
-  <ShoppingListView
+{:else if sheet.kind === 'add'}
+  <AddItemSheet {app} onchange={(changed) => (list = changed)} onclose={closeSheet} />
+{:else if sheet.kind === 'actions'}
+  <ItemActionsSheet
     {app}
-    bind:list
-    pending={inbox.proposals.length}
-    onopeninbox={() => (view = 'inbox')}
+    item={sheet.item}
+    onchange={(changed) => {
+      list = changed;
+      closeSheet();
+    }}
+    onclose={closeSheet}
   />
 {/if}

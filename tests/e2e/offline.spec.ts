@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { addItems, proposals, toBuy } from './helpers';
 
 async function loadThenGoOffline(page: Page) {
   await page.goto('./');
@@ -10,12 +11,12 @@ test('works without network once loaded', async ({ page }) => {
   await loadThenGoOffline(page);
 
   await page.reload();
-  await page.getByLabel('Nouvel article').fill('pain');
-  await page.getByRole('button', { name: 'Ajouter' }).click();
-  await page.getByRole('checkbox', { name: 'pain' }).check();
-  await page.getByRole('button', { name: 'Supprimer pain' }).click();
+  await addItems(page, 'pain', 'sel');
+  await toBuy(page).filter({ hasText: 'pain' }).click();
+  await toBuy(page).filter({ hasText: 'sel' }).click({ button: 'right' });
+  await page.getByRole('button', { name: 'Supprimer sel' }).click();
 
-  await expect(page.getByText('La liste est vide.')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tout est pris');
 });
 
 test('receives a share without network', async ({ page }) => {
@@ -23,7 +24,5 @@ test('receives a share without network', async ({ page }) => {
 
   await page.goto('./?text=lait%2C%20%C5%93ufs');
 
-  await expect(
-    page.getByRole('list', { name: 'Articles proposés' }).getByRole('textbox'),
-  ).toHaveCount(2);
+  await expect(proposals(page)).toHaveText(['lait', 'œufs']);
 });

@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { Shopping } from '../application/shopping';
 import { success } from '../domain/result';
-import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
-import ShoppingListView from './ShoppingListView.svelte';
+import type { ShoppingList } from '../domain/shopping-list';
+import AddItemSheet from './AddItemSheet.svelte';
 
 function slowAddItem() {
   const pending: (() => void)[] = [];
@@ -21,16 +21,18 @@ function slowAddItem() {
   return { app, resolveNext: () => pending.shift()?.() };
 }
 
-describe('ShoppingListView', () => {
+// jsdom does not implement modal dialogs.
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+    this.open = true;
+  };
+});
+
+describe('AddItemSheet', () => {
   it('keeps what is typed while the previous item is still being added', async () => {
     const user = userEvent.setup();
     const { app, resolveNext } = slowAddItem();
-    render(ShoppingListView, {
-      app,
-      list: emptyShoppingList(),
-      pending: 0,
-      onopeninbox: () => {},
-    });
+    render(AddItemSheet, { app, onchange: () => {}, onclose: () => {} });
     const input = screen.getByLabelText('Nouvel article');
 
     await user.type(input, 'riz{Enter}');

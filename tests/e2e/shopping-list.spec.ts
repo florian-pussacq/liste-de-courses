@@ -1,72 +1,105 @@
-import { expect, test, type Page } from '@playwright/test';
-
-async function addItem(page: Page, label: string) {
-  await page.getByLabel('Nouvel article').fill(label);
-  await page.getByRole('button', { name: 'Ajouter' }).click();
-}
-
-const toBuy = (page: Page) => page.getByRole('list', { name: 'À prendre' });
-const taken = (page: Page) => page.getByRole('list', { name: 'Pris' });
-const labelsOf = (list: ReturnType<typeof toBuy>) => list.locator('label');
+import { expect, test } from '@playwright/test';
+import { addItems, inBasket, toBuy } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-test('shows an empty list with a hint on how to add items', async ({ page }) => {
+test('explains how to fill an empty list', async ({ page }) => {
   await expect(page.getByText('La liste est vide.')).toBeVisible();
+  await expect(page.getByText('Un appui long sur un article')).toBeVisible();
 });
 
-test('adds items in order and ignores duplicates', async ({ page }) => {
-  await addItem(page, 'pain');
-  await addItem(page, 'lait');
-  await addItem(page, 'Pain');
+test('adds items in order, ignores duplicates and refuses a blank label', async ({ page }) => {
+  await addItems(page, 'pain', 'lait', 'Pain');
 
-  await expect(labelsOf(toBuy(page))).toHaveText(['pain', 'lait']);
-  await expect(page.getByText('La liste est vide.')).toBeHidden();
-});
+  await expect(toBuy(page)).toHaveText(['pain', 'lait']);
 
-test('does not add a blank item', async ({ page }) => {
-  await addItem(page, '   ');
-
+  await page.getByRole('button', { name: 'Ajouter un article' }).click();
+  await page.getByLabel('Nouvel article').fill('   ');
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText('Le libellé ne peut pas être vide.');
-  await expect(page.getByText('La liste est vide.')).toBeVisible();
 });
 
-test('checks an item, unchecks it, then clears checked items', async ({ page }) => {
-  await addItem(page, 'beurre');
-  await addItem(page, 'sel');
+test('shows the progress of the shopping', async ({ page }) => {
+  await addItems(page, 'pain', 'lait', 'sel', 'riz', 'café');
+  await toBuy(page).filter({ hasText: 'pain' }).click();
+  await toBuy(page).filter({ hasText: 'lait' }).click();
 
-  await page.getByRole('checkbox', { name: 'beurre' }).check();
-  await expect(labelsOf(taken(page))).toHaveText(['beurre']);
-  await expect(labelsOf(toBuy(page))).toHaveText(['sel']);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('3 à prendre');
+  await expect(page.getByText('2 / 5 pris')).toBeVisible();
+  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
 
-  await page.getByRole('checkbox', { name: 'beurre' }).uncheck();
-  await expect(labelsOf(toBuy(page))).toHaveText(['beurre', 'sel']);
+  for (const label of ['sel', 'riz', 'café']) await toBuy(page).filter({ hasText: label }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tout est pris');
+});
 
-  await page.getByRole('checkbox', { name: 'beurre' }).check();
+test('checks an item by touching its whole row and keeps it in a folded basket', async ({
+  page,
+}) => {
+  await addItems(page, 'beurre', 'sel');
+
+  await toBuy(page)
+    .filter({ hasText: 'beurre' })
+    .click({ position: { x: 300, y: 20 } });
+
+  await expect(toBuy(page)).toHaveText(['sel']);
+  const basketToggle = page.getByRole('button', { name: '1 article dans le panier' });
+  await expect(basketToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('list', { name: 'Panier' })).toBeHidden();
+
+  await basketToggle.click();
+  await expect(inBasket(page)).toHaveText(['beurre']);
+  await expect(inBasket(page).first()).toBeChecked();
+});
+
+test('unchecks an item from the basket', async ({ page }) => {
+  await addItems(page, 'beurre', 'sel');
+  await toBuy(page).filter({ hasText: 'beurre' }).click();
+
+  await page.getByRole('button', { name: '1 article dans le panier' }).click();
+  await inBasket(page).filter({ hasText: 'beurre' }).click();
+
+  await expect(toBuy(page)).toHaveText(['beurre', 'sel']);
+});
+
+test('clears checked items from the opened basket', async ({ page }) => {
+  await addItems(page, 'pain', 'sel');
+  await toBuy(page).filter({ hasText: 'pain' }).click();
+
+  await page.getByRole('button', { name: '1 article dans le panier' }).click();
   await page.getByRole('button', { name: 'Retirer les articles pris' }).click();
-  await expect(labelsOf(toBuy(page))).toHaveText(['sel']);
-  await expect(taken(page)).toBeHidden();
+
+  await expect(toBuy(page)).toHaveText(['sel']);
+  await expect(page.getByRole('button', { name: /dans le panier/ })).toBeHidden();
+});
+
+test('opens the actions of an item with a long press, without checking it', async ({ page }) => {
+  await addItems(page, 'tomate');
+
+  await toBuy(page).filter({ hasText: 'tomate' }).click({ button: 'right' });
+
+  await expect(page.getByRole('dialog', { name: 'tomate' })).toBeVisible();
+  await expect(toBuy(page).filter({ hasText: 'tomate' })).not.toBeChecked();
 });
 
 test('renames an item and refuses a label already in the list', async ({ page }) => {
-  await addItem(page, 'riz');
-  await addItem(page, 'tomate');
+  await addItems(page, 'riz', 'tomate');
+  await toBuy(page).filter({ hasText: 'tomate' }).click({ button: 'right' });
 
-  await page.getByRole('button', { name: 'Modifier tomate' }).click();
   await page.getByLabel('Libellé de tomate').fill('Riz');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(page.getByRole('alert')).toHaveText('Cet article est déjà dans la liste.');
 
   await page.getByLabel('Libellé de tomate').fill('tomates cerises');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(labelsOf(toBuy(page))).toHaveText(['riz', 'tomates cerises']);
+  await expect(toBuy(page)).toHaveText(['riz', 'tomates cerises']);
 });
 
-test('removes an item', async ({ page }) => {
-  await addItem(page, 'sucre');
+test('removes an item from its actions', async ({ page }) => {
+  await addItems(page, 'sucre');
 
+  await toBuy(page).filter({ hasText: 'sucre' }).click({ button: 'right' });
   await page.getByRole('button', { name: 'Supprimer sucre' }).click();
 
   await expect(page.getByText('La liste est vide.')).toBeVisible();

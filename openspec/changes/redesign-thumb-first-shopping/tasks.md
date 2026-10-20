@@ -16,21 +16,21 @@
 ## 3. Identité visuelle
 
 - [x] 3.1 Installer `@fontsource-variable/bricolage-grotesque`, l'importer dans la feuille de style et ajouter `woff2` au précache, et vérifier en e2e que la police est servie depuis l'origine de l'application et qu'aucune violation de CSP n'apparaît
-- [ ] 3.2 Réécrire `app.css` autour des jetons de design.md (clair et sombre, cibles de 48 px, `prefers-reduced-motion`), et vérifier les contrastes du texte à 4,5:1 au moins dans les deux modes
+- [x] 3.2 Réécrire `app.css` autour des jetons de design.md (clair et sombre, cibles de 48 px, `prefers-reduced-motion`), et vérifier les contrastes du texte à 4,5:1 au moins dans les deux modes
 
 ## 4. Écran de courses
 
-- [ ] 4.1 Afficher la progression en tête de liste, et vérifier en e2e les scénarios de « Progression des courses »
-- [ ] 4.2 Rendre toute la ligne d'un article cochable et regrouper les articles cochés dans le panier repliable (replié par défaut, compteur, retrait des articles pris depuis le panier déplié), et vérifier en e2e les scénarios de « Cochage en magasin », « Panier repliable » et « Retrait des articles cochés »
-- [ ] 4.3 Ouvrir la feuille d'actions d'un article sur `contextmenu` (modifier, supprimer) sans le cocher, et vérifier en e2e par clic droit les scénarios de « Modification d'un article » et « Suppression d'un article »
-- [ ] 4.4 Ajouter la barre du bas : « Coller une liste » et le bouton d'ajout qui ouvre la feuille de saisie, et vérifier en e2e l'ajout direct, le refus d'un libellé vide et la conservation de la saisie pendant l'enregistrement (test de composant existant adapté)
-- [ ] 4.5 Mettre à jour le message de liste vide pour expliquer coller, ajouter et l'appui long, et vérifier en e2e le scénario « Affichage d'une liste vide »
+- [x] 4.1 Afficher la progression en tête de liste, et vérifier en e2e les scénarios de « Progression des courses »
+- [x] 4.2 Rendre toute la ligne d'un article cochable et regrouper les articles cochés dans le panier repliable (replié par défaut, compteur, retrait des articles pris depuis le panier déplié), et vérifier en e2e les scénarios de « Cochage en magasin », « Panier repliable » et « Retrait des articles cochés »
+- [x] 4.3 Ouvrir la feuille d'actions d'un article sur `contextmenu` (modifier, supprimer) sans le cocher, et vérifier en e2e par clic droit les scénarios de « Modification d'un article » et « Suppression d'un article »
+- [x] 4.4 Ajouter la barre du bas : « Coller une liste » et le bouton d'ajout qui ouvre la feuille de saisie, et vérifier en e2e l'ajout direct, le refus d'un libellé vide et la conservation de la saisie pendant l'enregistrement (test de composant existant adapté)
+- [x] 4.5 Mettre à jour le message de liste vide pour expliquer coller, ajouter et l'appui long, et vérifier en e2e le scénario « Affichage d'une liste vide »
 
 ## 5. Tri d'un partage
 
-- [ ] 5.1 Construire la boîte de réception en feuille : rappel des textes reçus, pastilles (appui pour écarter ou remettre, appui long pour corriger), ajout à la main, « Ajouter N à la liste » et « Annuler » ; vérifier en e2e les scénarios de « Correction des articles proposés », « Validation vers la liste » et « Rappel du texte reçu »
-- [ ] 5.2 Brancher « Coller une liste » sur le presse-papiers, et vérifier en e2e un presse-papiers rempli (autorisation accordée), un refus et un presse-papiers vide
-- [ ] 5.3 Vérifier que le partage Android, le hors ligne, la persistance après rechargement, la confidentialité et la mise à jour passent toujours : adapter leurs tests e2e aux nouveaux libellés sans en retirer de scénario
+- [x] 5.1 Construire la boîte de réception en feuille : rappel des textes reçus, pastilles (appui pour écarter ou remettre, appui long pour corriger), ajout à la main, « Ajouter N à la liste » et « Annuler » ; vérifier en e2e les scénarios de « Correction des articles proposés », « Validation vers la liste » et « Rappel du texte reçu »
+- [x] 5.2 Brancher « Coller une liste » sur le presse-papiers, et vérifier en e2e un presse-papiers rempli (autorisation accordée), un refus et un presse-papiers vide
+- [x] 5.3 Vérifier que le partage Android, le hors ligne, la persistance après rechargement, la confidentialité et la mise à jour passent toujours : adapter leurs tests e2e aux nouveaux libellés sans en retirer de scénario
 
 ## 6. Vérification d'intégration
 

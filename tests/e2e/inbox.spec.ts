@@ -1,69 +1,79 @@
-import { expect, test, type Page } from '@playwright/test';
-
-const proposals = (page: Page) =>
-  page.getByRole('list', { name: 'Articles proposés' }).getByRole('textbox');
-const proposedValues = (page: Page) =>
-  proposals(page).evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
-const listLabels = (page: Page) => page.getByRole('list', { name: 'À prendre' }).locator('label');
-
-async function paste(page: Page, text: string) {
-  await page.getByLabel('Texte à découper').fill(text);
-  await page.getByRole('button', { name: 'Proposer les articles' }).click();
-}
+import { expect, test } from '@playwright/test';
+import { openInboxByHand, pasteByHand, proposals, stubClipboard, toBuy } from './helpers';
 
 test.beforeEach(async ({ page }) => {
+  await stubClipboard(page, { text: '' });
   await page.goto('./');
-  await page.getByRole('button', { name: 'Coller du texte' }).click();
+  await openInboxByHand(page);
 });
 
-test('proposes one item per line of a pasted list', async ({ page }) => {
-  await paste(page, '- pain\n* beurre\n\n1. confiture');
+test('proposes one item per line of a pasted list and recalls the text', async ({ page }) => {
+  await pasteByHand(page, '- pain\n* beurre\n\n1. confiture');
 
-  await expect.poll(() => proposedValues(page)).toEqual(['pain', 'beurre', 'confiture']);
+  await expect(proposals(page)).toHaveText(['pain', 'beurre', 'confiture']);
+  await expect(page.getByRole('region', { name: 'Textes reçus' })).toContainText('1. confiture');
 });
 
-test('corrects, discards and adds proposals before validating them', async ({ page }) => {
-  await paste(page, 'pense à prendre du lait stp, stp');
+test('recalls several received texts in their order', async ({ page }) => {
+  await pasteByHand(page, 'pain');
+  await pasteByHand(page, 'beurre');
 
-  await proposals(page).first().fill('lait');
-  await proposals(page).first().blur();
+  await expect(page.getByRole('region', { name: 'Textes reçus' }).locator('blockquote')).toHaveText(
+    ['pain', 'beurre'],
+  );
+});
+
+test('discards a proposal, puts it back, and adds only kept proposals', async ({ page }) => {
+  await pasteByHand(page, 'pain, stp, confiture');
+
   await page.getByRole('button', { name: 'Écarter stp' }).click();
+  await page.getByRole('button', { name: 'Écarter confiture' }).click();
+  await page.getByRole('button', { name: 'Remettre confiture' }).click();
+  await expect(page.getByRole('button', { name: 'Ajouter 2 à la liste' })).toBeEnabled();
+
+  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+
+  await expect(toBuy(page)).toHaveText(['pain', 'confiture']);
+});
+
+test('corrects a proposal with a long press and adds one by hand', async ({ page }) => {
+  await pasteByHand(page, 'pense à prendre du lait stp');
+
+  await proposals(page).first().click({ button: 'right' });
+  await page.getByLabel('Corriger pense à prendre du lait stp').fill('lait');
+  await page.getByRole('button', { name: 'Corriger', exact: true }).click();
   await page.getByLabel('Article à proposer').fill('farine');
-  await page.getByRole('button', { name: 'Ajouter' }).click();
-  await expect.poll(() => proposedValues(page)).toEqual(['lait', 'farine']);
+  await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
 
-  await page.getByRole('button', { name: 'Valider 2 articles' }).click();
-
-  await expect(listLabels(page)).toHaveText(['lait', 'farine']);
-  await expect(page.getByRole('button', { name: 'Coller du texte' })).toBeVisible();
+  await expect(proposals(page)).toHaveText(['lait', 'farine']);
 });
 
 test('refuses to blank a proposal', async ({ page }) => {
-  await paste(page, 'lait');
+  await pasteByHand(page, 'lait');
 
-  await proposals(page).first().fill(' ');
-  await proposals(page).first().blur();
+  await proposals(page).first().click({ button: 'right' });
+  await page.getByLabel('Corriger lait').fill(' ');
+  await page.getByRole('button', { name: 'Corriger', exact: true }).click();
 
   await expect(page.getByRole('alert')).toHaveText('Le libellé ne peut pas être vide.');
-  await expect.poll(() => proposedValues(page)).toEqual(['lait']);
+  await expect(proposals(page)).toHaveText(['lait']);
 });
 
 test('abandons a capture without touching the list', async ({ page }) => {
-  await paste(page, 'pain, beurre');
+  await pasteByHand(page, 'pain, beurre');
 
-  await page.getByRole('button', { name: 'Abandonner' }).click();
+  await page.getByRole('button', { name: 'Annuler' }).click();
 
   await expect(page.getByText('La liste est vide.')).toBeVisible();
-  await page.getByRole('button', { name: 'Coller du texte' }).click();
-  await expect(page.getByText('Aucun article proposé pour le moment.')).toBeVisible();
+  await expect(page.getByRole('button', { name: /à trier/ })).toBeHidden();
 });
 
 test('keeps pending proposals when the application is reopened', async ({ page }) => {
-  await paste(page, 'pain, beurre');
-  await expect.poll(() => proposedValues(page)).toEqual(['pain', 'beurre']);
+  await pasteByHand(page, 'pain, beurre');
+  await expect(proposals(page)).toHaveText(['pain', 'beurre']);
 
   await page.reload();
 
-  await page.getByRole('button', { name: '2 articles à valider' }).click();
-  await expect.poll(() => proposedValues(page)).toEqual(['pain', 'beurre']);
+  await page.getByRole('button', { name: '2 articles à trier' }).click();
+  await expect(proposals(page)).toHaveText(['pain', 'beurre']);
 });

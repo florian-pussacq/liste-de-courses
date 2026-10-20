@@ -1,0 +1,41 @@
+import { expect, type Page } from '@playwright/test';
+
+export async function addItems(page: Page, ...labels: string[]) {
+  await page.getByRole('button', { name: 'Ajouter un article' }).click();
+  for (const label of labels) {
+    await page.getByLabel('Nouvel article').fill(label);
+    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+    await expect(page.getByLabel('Nouvel article')).toHaveValue('');
+  }
+  await page.getByRole('button', { name: 'Terminé' }).click();
+}
+
+export const toBuy = (page: Page) =>
+  page.getByRole('list', { name: 'À prendre' }).getByRole('checkbox');
+
+export const inBasket = (page: Page) =>
+  page.getByRole('list', { name: 'Panier' }).getByRole('checkbox');
+
+export const proposals = (page: Page) =>
+  page.getByRole('list', { name: 'Articles proposés' }).getByRole('button');
+
+export async function pasteByHand(page: Page, text: string) {
+  await page.getByLabel('Texte à découper').fill(text);
+  await page.getByRole('button', { name: 'Proposer les articles' }).click();
+}
+
+// Stands in for the browser's answer to a clipboard read: a permission prompt nobody
+// answers would leave the read pending forever.
+export async function stubClipboard(page: Page, answer: { text: string } | { refused: true }) {
+  await page.addInitScript((stubbed) => {
+    navigator.clipboard.readText = () =>
+      'text' in stubbed
+        ? Promise.resolve(stubbed.text)
+        : Promise.reject(new DOMException('Read permission denied.', 'NotAllowedError'));
+  }, answer);
+}
+
+export async function openInboxByHand(page: Page) {
+  await page.getByRole('button', { name: 'Coller une liste' }).click();
+  await expect(page.getByLabel('Texte à découper')).toBeVisible();
+}
