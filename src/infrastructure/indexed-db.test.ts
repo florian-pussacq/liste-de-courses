@@ -16,7 +16,7 @@ const list: ShoppingList = {
 };
 
 const inbox: Inbox = {
-  proposals: [{ id: 'p', label: 'beurre', discarded: false }],
+  proposals: [{ id: 'p', label: 'beurre', discarded: false, toCheck: true }],
   capturedTexts: ['beurre'],
 };
 

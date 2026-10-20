@@ -1,4 +1,4 @@
-import { splitIntoEntries } from './captured-text';
+import { splitIntoEntries, type Entry } from './captured-text';
 import { cleanLabel } from './label';
 import { failure, success, type Result } from './result';
 
@@ -8,6 +8,7 @@ export interface Proposal {
   readonly id: ProposalId;
   readonly label: string;
   readonly discarded: boolean;
+  readonly toCheck: boolean;
 }
 
 export interface Inbox {
@@ -27,12 +28,22 @@ export const proposedLabels = (inbox: Inbox): string[] =>
 export const keptLabels = (inbox: Inbox): string[] =>
   inbox.proposals.filter((proposal) => !proposal.discarded).map((proposal) => proposal.label);
 
-const newProposal = (id: ProposalId, label: string): Proposal => ({ id, label, discarded: false });
+export const keptEntries = (inbox: Inbox): Entry[] =>
+  inbox.proposals
+    .filter((proposal) => !proposal.discarded)
+    .map(({ label, toCheck }) => ({ label, toCheck }));
+
+const newProposal = (id: ProposalId, { label, toCheck }: Entry): Proposal => ({
+  id,
+  label,
+  toCheck,
+  discarded: false,
+});
 
 export function captureText(inbox: Inbox, capturedText: string, newId: () => ProposalId): Inbox {
   const text = capturedText.trim();
   if (text === '') return inbox;
-  const captured = splitIntoEntries(text).map(({ label }) => newProposal(newId(), label));
+  const captured = splitIntoEntries(text).map((entry) => newProposal(newId(), entry));
   return {
     proposals: [...inbox.proposals, ...captured],
     capturedTexts: [...inbox.capturedTexts, text],
@@ -46,7 +57,10 @@ export function addProposal(
 ): Result<Inbox, ProposalError> {
   const label = cleanLabel(rawLabel);
   if (label === '') return failure('empty-label');
-  return success({ ...inbox, proposals: [...inbox.proposals, newProposal(newId(), label)] });
+  return success({
+    ...inbox,
+    proposals: [...inbox.proposals, newProposal(newId(), { label, toCheck: false })],
+  });
 }
 
 export function editProposal(
@@ -71,6 +85,15 @@ export function toggleProposal(inbox: Inbox, id: ProposalId): Inbox {
     ...inbox,
     proposals: inbox.proposals.map((proposal) =>
       proposal.id === id ? { ...proposal, discarded: !proposal.discarded } : proposal,
+    ),
+  };
+}
+
+export function toggleProposalToCheck(inbox: Inbox, id: ProposalId): Inbox {
+  return {
+    ...inbox,
+    proposals: inbox.proposals.map((proposal) =>
+      proposal.id === id ? { ...proposal, toCheck: !proposal.toCheck } : proposal,
     ),
   };
 }

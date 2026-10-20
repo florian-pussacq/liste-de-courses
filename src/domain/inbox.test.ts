@@ -4,8 +4,10 @@ import {
   captureText,
   editProposal,
   emptyInbox,
+  keptEntries,
   keptLabels,
   proposedLabels,
+  toggleProposalToCheck,
   toggleProposal,
   type Inbox,
 } from './inbox';
@@ -108,8 +110,8 @@ describe('correcting proposals', () => {
 
     expect(result.ok && result.value.capturedTexts).toEqual(['lait']);
     expect(result.ok && result.value.proposals).toEqual([
-      { id: 'proposal-1', label: 'lait', discarded: false },
-      { id: 'manual', label: 'farine', discarded: false },
+      { id: 'proposal-1', label: 'lait', discarded: false, toCheck: false },
+      { id: 'manual', label: 'farine', discarded: false, toCheck: false },
     ]);
   });
 
@@ -118,5 +120,40 @@ describe('correcting proposals', () => {
       ok: false,
       error: 'empty-label',
     });
+  });
+});
+
+describe('proposals to check', () => {
+  it('marks proposals ending with a question mark as to check', () => {
+    expect(
+      captured('riz\ncompote ?').proposals.map(({ label, toCheck }) => [label, toCheck]),
+    ).toEqual([
+      ['riz', false],
+      ['compote', true],
+    ]);
+  });
+
+  it('makes a proposal to check certain, and back', () => {
+    const inbox = captured('compote ?');
+    const id = idOf(inbox, 'compote');
+
+    const certain = toggleProposalToCheck(inbox, id);
+    expect(certain.proposals[0]?.toCheck).toBe(false);
+    expect(toggleProposalToCheck(certain, id).proposals[0]?.toCheck).toBe(true);
+  });
+
+  it('keeps the to-check state of the proposals that were not discarded', () => {
+    const inbox = captured('riz, compote ?, stp');
+
+    expect(keptEntries(toggleProposal(inbox, idOf(inbox, 'stp')))).toEqual([
+      { label: 'riz', toCheck: false },
+      { label: 'compote', toCheck: true },
+    ]);
+  });
+
+  it('adds proposals by hand as certain', () => {
+    const result = addProposal(emptyInbox(), 'farine', () => 'manual');
+
+    expect(result.ok && result.value.proposals[0]?.toCheck).toBe(false);
   });
 });
