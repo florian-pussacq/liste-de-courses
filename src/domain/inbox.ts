@@ -1,4 +1,4 @@
-import { splitIntoLabels } from './captured-text';
+import { splitIntoEntries } from './captured-text';
 import { cleanLabel } from './label';
 import { failure, success, type Result } from './result';
 
@@ -32,7 +32,7 @@ const newProposal = (id: ProposalId, label: string): Proposal => ({ id, label, d
 export function captureText(inbox: Inbox, capturedText: string, newId: () => ProposalId): Inbox {
   const text = capturedText.trim();
   if (text === '') return inbox;
-  const captured = splitIntoLabels(text).map((label) => newProposal(newId(), label));
+  const captured = splitIntoEntries(text).map(({ label }) => newProposal(newId(), label));
   return {
     proposals: [...inbox.proposals, ...captured],
     capturedTexts: [...inbox.capturedTexts, text],

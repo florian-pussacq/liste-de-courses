@@ -2,7 +2,7 @@
 
 ## 1. Domaine
 
-- [ ] 1.1 Remplacer en TDD `splitIntoLabels` par `splitIntoEntries` (« ? » final retiré et marqué, « ? » au milieu conservé, élément réduit à « ? » ignoré), et vérifier un test par scénario de « Articles proposés à vérifier »
+- [x] 1.1 Remplacer en TDD `splitIntoLabels` par `splitIntoEntries` (« ? » final retiré et marqué, « ? » au milieu conservé, élément réduit à « ? » ignoré), et vérifier un test par scénario de « Articles proposés à vérifier »
 - [ ] 1.2 Ajouter en TDD `toCheck` aux articles proposés (capture, `toggleProposalToCheck`, `keptEntries`), et vérifier les scénarios de « Marquage à vérifier dans le tri »
 - [ ] 1.3 Ajouter en TDD `toCheck` aux articles : matrice de doublons de design.md, `itemsToBuy` sans les articles à vérifier, `itemsToCheck`, `setToCheck` ; vérifier un test par scénario de « Absence de doublons », « Levée du doute » et « Marquage manuel à vérifier »
 - [ ] 1.4 Faire transmettre l'état à vérifier par la validation de la boîte de réception, et vérifier le scénario « Validation d'un article à vérifier » sur des dépôts en mémoire
