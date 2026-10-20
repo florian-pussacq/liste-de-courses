@@ -192,3 +192,28 @@ describe('shopping list', () => {
     expect(labels(await shoppingLists.load())).toEqual(['sel']);
   });
 });
+
+describe('items to check', () => {
+  it('turns an item to check into an item to buy, and back', async () => {
+    await app.captureText('compote ?');
+    await app.validateInbox();
+    const id = await idOf('compote');
+
+    expect(itemsToBuy(await app.setToCheck(id, false)).map((item) => item.label)).toEqual([
+      'compote',
+    ]);
+    expect(itemsToCheck(await app.setToCheck(id, true)).map((item) => item.label)).toEqual([
+      'compote',
+    ]);
+    expect(itemsToCheck(await shoppingLists.load()).map((item) => item.label)).toEqual(['compote']);
+  });
+
+  it('switches a proposal between certain and to check', async () => {
+    await app.captureText('farine');
+
+    const inbox = await app.toggleProposalToCheck(await proposalIdOf('farine'));
+
+    expect(inbox.proposals[0]?.toCheck).toBe(true);
+    expect((await inboxes.load()).proposals[0]?.toCheck).toBe(true);
+  });
+});

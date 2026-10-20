@@ -73,6 +73,8 @@ export function shopping({
       tryChangeInbox((inbox) => inboxes.editProposal(inbox, id, label)),
     toggleProposal: (id: string): Promise<Inbox> =>
       changeInbox((inbox) => inboxes.toggleProposal(inbox, id)),
+    toggleProposalToCheck: (id: string): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.toggleProposalToCheck(inbox, id)),
     abandonInbox: (): Promise<Inbox> => changeInbox(emptyInbox),
 
     // The list is saved before the inbox is emptied: if the second write fails,
@@ -94,6 +96,8 @@ export function shopping({
       changeList((list) => lists.removeItem(list, id)),
     toggleItem: (id: ItemId): Promise<ShoppingList> =>
       changeList((list) => lists.toggleItem(list, id, now())),
+    setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>
+      changeList((list) => lists.setToCheck(list, id, toCheck, now())),
     clearChecked: (): Promise<ShoppingList> => changeList(lists.clearChecked),
   };
 }
