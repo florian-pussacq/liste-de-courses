@@ -15,7 +15,7 @@
 
 ## 3. Identité visuelle
 
-- [ ] 3.1 Installer `@fontsource-variable/bricolage-grotesque`, l'importer dans la feuille de style et ajouter `woff2` au précache, et vérifier en e2e que la police est servie depuis l'origine de l'application et qu'aucune violation de CSP n'apparaît
+- [x] 3.1 Installer `@fontsource-variable/bricolage-grotesque`, l'importer dans la feuille de style et ajouter `woff2` au précache, et vérifier en e2e que la police est servie depuis l'origine de l'application et qu'aucune violation de CSP n'apparaît
 - [ ] 3.2 Réécrire `app.css` autour des jetons de design.md (clair et sombre, cibles de 48 px, `prefers-reduced-motion`), et vérifier les contrastes du texte à 4,5:1 au moins dans les deux modes
 
 ## 4. Écran de courses

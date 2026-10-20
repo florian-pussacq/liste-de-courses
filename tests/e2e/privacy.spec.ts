@@ -36,3 +36,22 @@ test('blocks requests to another origin', async ({ page }) => {
   expect(reached).toBe(false);
   expect(violations).not.toEqual([]);
 });
+
+test('serves its typeface from its own origin', async ({ page, baseURL }) => {
+  const fontRequests: string[] = [];
+  page.on('request', (request) => {
+    if (request.resourceType() === 'font') fontRequests.push(request.url());
+  });
+
+  await page.goto('./');
+
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        [...document.fonts].filter((font) => font.status === 'loaded').map((font) => font.family),
+      ),
+    )
+    .toContain('Bricolage Grotesque Variable');
+  expect(fontRequests.length).toBeGreaterThan(0);
+  expect(fontRequests.every((url) => url.startsWith(new URL(baseURL ?? '').origin))).toBe(true);
+});

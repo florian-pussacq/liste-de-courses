@@ -5,6 +5,7 @@ import { openStorage } from './infrastructure/indexed-db';
 import { requestPersistentStorage } from './infrastructure/persistent-storage';
 import { takeSharedContent } from './infrastructure/share-target';
 import App from './ui/App.svelte';
+import '@fontsource-variable/bricolage-grotesque';
 import './ui/app.css';
 
 async function start(target: HTMLElement): Promise<void> {
