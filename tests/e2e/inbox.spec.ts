@@ -60,6 +60,7 @@ test('abandons a capture without touching the list', async ({ page }) => {
 
 test('keeps pending proposals when the application is reopened', async ({ page }) => {
   await paste(page, 'pain, beurre');
+  await expect.poll(() => proposedValues(page)).toEqual(['pain', 'beurre']);
 
   await page.reload();
 

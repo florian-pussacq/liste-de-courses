@@ -8,6 +8,7 @@ test('keeps the list when the application files are replaced', async ({ page }) 
   await page.getByLabel('Nouvel article').fill('pain');
   await page.getByRole('button', { name: 'Ajouter' }).click();
   await page.getByRole('checkbox', { name: 'pain' }).check();
+  await expect(page.getByRole('list', { name: 'Pris' })).toContainText('pain');
 
   const removedCaches = await page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
