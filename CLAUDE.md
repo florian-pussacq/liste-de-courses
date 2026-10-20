@@ -2,6 +2,15 @@
 
 Ce projet suit les principes du software craftsmanship : du code maintenable dans le temps, compréhensible, résilient et performant là où c'est mesuré.
 
+## Confidentialité et sécurité
+
+Ce dépôt est public. Tout ce qui y entre (code, specs, commits, messages, noms de fichiers) est considéré comme publié définitivement.
+
+- Les specs décrivent ce que fait l'application, jamais pourquoi ni pour qui elle a été imaginée. Le contexte personnel partagé en conversation reste hors du dépôt.
+- Aucune donnée personnelle : noms, adresses, emails, habitudes, exemples tirés de la vie réelle. Les exemples sont fictifs et génériques.
+- Aucun secret : clés, tokens, mots de passe, URLs internes. Ils passent par des variables d'environnement non versionnées.
+- En cas de doute sur une information, elle n'entre pas dans le dépôt.
+
 ## Specs d'abord (OpenSpec)
 
 - Tout changement de comportement passe par une proposition OpenSpec (`/opsx:propose`) avant toute implémentation.
