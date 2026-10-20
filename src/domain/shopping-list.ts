@@ -1,3 +1,4 @@
+import type { Entry } from './captured-text';
 import { cleanLabel, labelKey } from './label';
 import { failure, success, type Result } from './result';
 
@@ -7,6 +8,7 @@ export interface Item {
   readonly id: ItemId;
   readonly label: string;
   readonly checked: boolean;
+  readonly toCheck: boolean;
   readonly addedAt: number;
   readonly updatedAt: number;
 }
@@ -30,27 +32,40 @@ export function addItem(
   list: ShoppingList,
   rawLabel: string,
   { now, newId }: AddContext,
+  toCheck = false,
 ): Result<ShoppingList, AddItemError> {
   const label = cleanLabel(rawLabel);
   if (label === '') return failure('empty-label');
 
   const existing = findByLabel(list, label);
   if (!existing) {
-    const item: Item = { id: newId(), label, checked: false, addedAt: now, updatedAt: now };
+    const item: Item = {
+      id: newId(),
+      label,
+      checked: false,
+      toCheck,
+      addedAt: now,
+      updatedAt: now,
+    };
     return success({ items: [...list.items, item] });
   }
-  if (!existing.checked) return success(list);
-  return success(updateItem(list, existing.id, { checked: false, updatedAt: now }));
+  // A doubt never overrides what is already known; a certain item settles a doubt or a taken item.
+  if (toCheck) return success(list);
+  if (existing.checked)
+    return success(updateItem(list, existing.id, { checked: false, updatedAt: now }));
+  if (existing.toCheck)
+    return success(updateItem(list, existing.id, { toCheck: false, updatedAt: now }));
+  return success(list);
 }
 
 // Blank labels carry no item, so a batch simply skips them.
 export function addItems(
   list: ShoppingList,
-  rawLabels: readonly string[],
+  entries: readonly Entry[],
   context: AddContext,
 ): ShoppingList {
-  return rawLabels.reduce((current, rawLabel) => {
-    const result = addItem(current, rawLabel, context);
+  return entries.reduce((current, { label, toCheck }) => {
+    const result = addItem(current, label, context, toCheck);
     return result.ok ? result.value : current;
   }, list);
 }
@@ -83,12 +98,24 @@ export function toggleItem(list: ShoppingList, id: ItemId, now: number): Shoppin
   };
 }
 
+export function setToCheck(
+  list: ShoppingList,
+  id: ItemId,
+  toCheck: boolean,
+  now: number,
+): ShoppingList {
+  return updateItem(list, id, { toCheck, updatedAt: now });
+}
+
 export function clearChecked(list: ShoppingList): ShoppingList {
   return { items: list.items.filter((item) => !item.checked) };
 }
 
 export const itemsToBuy = (list: ShoppingList): readonly Item[] =>
-  list.items.filter((item) => !item.checked);
+  list.items.filter((item) => !item.checked && !item.toCheck);
+
+export const itemsToCheck = (list: ShoppingList): readonly Item[] =>
+  list.items.filter((item) => !item.checked && item.toCheck);
 
 export const checkedItems = (list: ShoppingList): readonly Item[] =>
   list.items.filter((item) => item.checked);
@@ -101,7 +128,7 @@ function findByLabel(list: ShoppingList, label: string): Item | undefined {
 function updateItem(
   list: ShoppingList,
   id: ItemId,
-  changes: Partial<Pick<Item, 'label' | 'checked' | 'updatedAt'>>,
+  changes: Partial<Pick<Item, 'label' | 'checked' | 'toCheck' | 'updatedAt'>>,
 ): ShoppingList {
   return { items: list.items.map((item) => (item.id === id ? { ...item, ...changes } : item)) };
 }

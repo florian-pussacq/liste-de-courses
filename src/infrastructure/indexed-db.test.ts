@@ -10,8 +10,8 @@ const uniqueName = () => `test-${++databaseCount}`;
 
 const list: ShoppingList = {
   items: [
-    { id: 'a', label: 'pain', checked: true, addedAt: 1, updatedAt: 2 },
-    { id: 'b', label: 'lait', checked: false, addedAt: 3, updatedAt: 3 },
+    { id: 'a', label: 'pain', checked: true, toCheck: false, addedAt: 1, updatedAt: 2 },
+    { id: 'b', label: 'lait', checked: false, toCheck: false, addedAt: 3, updatedAt: 3 },
   ],
 };
 

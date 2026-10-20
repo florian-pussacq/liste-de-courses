@@ -5,7 +5,6 @@ import {
   editProposal,
   emptyInbox,
   keptEntries,
-  keptLabels,
   proposedLabels,
   toggleProposalToCheck,
   toggleProposal,
@@ -95,14 +94,16 @@ describe('correcting proposals', () => {
     const sorted = toggleProposal(inbox, idOf(inbox, 'stp'));
 
     expect(sorted.proposals.find((proposal) => proposal.label === 'stp')?.discarded).toBe(true);
-    expect(keptLabels(sorted)).toEqual(['lait']);
+    expect(keptEntries(sorted).map((entry) => entry.label)).toEqual(['lait']);
   });
 
   it('puts a discarded proposal back', () => {
     const inbox = captured('confiture');
     const id = idOf(inbox, 'confiture');
 
-    expect(keptLabels(toggleProposal(toggleProposal(inbox, id), id))).toEqual(['confiture']);
+    expect(keptEntries(toggleProposal(toggleProposal(inbox, id), id))).toEqual([
+      { label: 'confiture', toCheck: false },
+    ]);
   });
 
   it('adds a proposal by hand', () => {

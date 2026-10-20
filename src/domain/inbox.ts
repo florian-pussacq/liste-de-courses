@@ -25,9 +25,6 @@ export const emptyInbox = (): Inbox => ({ proposals: [], capturedTexts: [] });
 export const proposedLabels = (inbox: Inbox): string[] =>
   inbox.proposals.map((proposal) => proposal.label);
 
-export const keptLabels = (inbox: Inbox): string[] =>
-  inbox.proposals.filter((proposal) => !proposal.discarded).map((proposal) => proposal.label);
-
 export const keptEntries = (inbox: Inbox): Entry[] =>
   inbox.proposals
     .filter((proposal) => !proposal.discarded)

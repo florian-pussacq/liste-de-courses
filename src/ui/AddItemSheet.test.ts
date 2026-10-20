@@ -13,7 +13,7 @@ function slowAddItem() {
     addItem: (label: string) =>
       new Promise((resolve) => {
         const list: ShoppingList = {
-          items: [{ id: label, label, checked: false, addedAt: 0, updatedAt: 0 }],
+          items: [{ id: label, label, checked: false, toCheck: false, addedAt: 0, updatedAt: 0 }],
         };
         pending.push(() => resolve(success(list)));
       }),

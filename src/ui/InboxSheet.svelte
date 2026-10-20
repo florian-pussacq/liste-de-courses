@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Shopping } from '../application/shopping';
-  import { keptLabels, type Inbox, type Proposal } from '../domain/inbox';
+  import { keptEntries, type Inbox, type Proposal } from '../domain/inbox';
   import type { ShoppingList } from '../domain/shopping-list';
   import { messageFor } from './messages';
   import Sheet from './Sheet.svelte';
@@ -23,7 +23,7 @@
   let error = $state('');
   const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
 
-  const kept = $derived(keptLabels(inbox).length);
+  const kept = $derived(keptEntries(inbox).length);
   const title = $derived(
     inbox.proposals.length === 0
       ? 'Aucun article à trier'

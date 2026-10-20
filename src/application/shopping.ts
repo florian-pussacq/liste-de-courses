@@ -78,9 +78,9 @@ export function shopping({
     // The list is saved before the inbox is emptied: if the second write fails,
     // validating again is harmless because duplicates are not added twice.
     async validateInbox(): Promise<ShoppingList> {
-      const labels = inboxes.keptLabels(await inboxStore.load());
+      const entries = inboxes.keptEntries(await inboxStore.load());
       const list = await changeList((current) =>
-        lists.addItems(current, labels, { now: now(), newId }),
+        lists.addItems(current, entries, { now: now(), newId }),
       );
       await inboxStore.save(emptyInbox());
       return list;

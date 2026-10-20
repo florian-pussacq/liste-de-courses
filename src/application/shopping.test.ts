@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { keptLabels, proposedLabels } from '../domain/inbox';
-import { checkedItems, itemsToBuy, type ShoppingList } from '../domain/shopping-list';
+import { keptEntries, proposedLabels } from '../domain/inbox';
+import { checkedItems, itemsToBuy, itemsToCheck, type ShoppingList } from '../domain/shopping-list';
 import type { ClipboardContent } from './ports';
 import { InMemoryInboxRepository, InMemoryShoppingListRepository } from './in-memory-repositories';
 import { shopping, type Shopping } from './shopping';
@@ -65,7 +65,10 @@ describe('capture', () => {
     await app.toggleProposal(await proposalIdOf('stp'));
     await app.addProposal('farine');
 
-    expect(keptLabels(await inboxes.load())).toEqual(['lait', 'farine']);
+    expect(keptEntries(await inboxes.load()).map((entry) => entry.label)).toEqual([
+      'lait',
+      'farine',
+    ]);
   });
 
   it('reports a blank correction without changing the proposals', async () => {
@@ -93,6 +96,15 @@ describe('capture', () => {
     await app.toggleProposal(await proposalIdOf('stp'));
 
     expect(labels(await app.validateInbox())).toEqual(['pain']);
+  });
+
+  it('adds proposals to check as items to check', async () => {
+    await app.captureText('riz, compote ?');
+
+    const list = await app.validateInbox();
+
+    expect(itemsToCheck(list).map((item) => item.label)).toEqual(['compote']);
+    expect(itemsToBuy(list).map((item) => item.label)).toEqual(['riz']);
   });
 
   it('adds duplicates validated together only once', async () => {

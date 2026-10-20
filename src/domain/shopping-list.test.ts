@@ -6,8 +6,10 @@ import {
   clearChecked,
   emptyShoppingList,
   itemsToBuy,
+  itemsToCheck,
   removeItem,
   renameItem,
+  setToCheck,
   toggleItem,
   type ShoppingList,
 } from './shopping-list';
@@ -28,16 +30,18 @@ function listOf(...labels: string[]): ShoppingList {
   }, emptyShoppingList());
 }
 
-function added(list: ShoppingList, label: string, now = 1): ShoppingList {
+function added(list: ShoppingList, label: string, now = 1, toCheck = false): ShoppingList {
   const result = addItem(
     list,
     label,
     at(now, () => `new-${label}`),
+    toCheck,
   );
   if (!result.ok) throw new Error(`Unexpected error ${result.error}`);
   return result.value;
 }
 
+const addedToCheck = (list: ShoppingList, label: string, now = 1) => added(list, label, now, true);
 const labels = (list: ShoppingList) => list.items.map((item) => item.label);
 const find = (list: ShoppingList, label: string) => {
   const item = list.items.find((candidate) => candidate.label === label);
@@ -50,7 +54,14 @@ describe('adding an item', () => {
     const list = added(emptyShoppingList(), 'café', 42);
 
     expect(list.items).toEqual([
-      { id: 'new-café', label: 'café', checked: false, addedAt: 42, updatedAt: 42 },
+      {
+        id: 'new-café',
+        label: 'café',
+        checked: false,
+        toCheck: false,
+        addedAt: 42,
+        updatedAt: 42,
+      },
     ]);
   });
 
@@ -88,13 +99,28 @@ describe('preventing duplicates', () => {
 
 describe('adding several items at once', () => {
   it('adds each label without duplicates', () => {
-    const list = addItems(listOf('lait'), ['pain', 'Pain', 'LAIT'], at(1));
+    const list = addItems(
+      listOf('lait'),
+      ['pain', 'Pain', 'LAIT'].map((label) => ({ label, toCheck: false })),
+      at(1),
+    );
 
     expect(labels(list)).toEqual(['lait', 'pain']);
   });
 
   it('skips blank labels', () => {
-    expect(labels(addItems(emptyShoppingList(), ['pain', ' '], at(1)))).toEqual(['pain']);
+    expect(
+      labels(
+        addItems(
+          emptyShoppingList(),
+          [
+            { label: 'pain', toCheck: false },
+            { label: ' ', toCheck: false },
+          ],
+          at(1),
+        ),
+      ),
+    ).toEqual(['pain']);
   });
 });
 
@@ -192,5 +218,74 @@ describe('display order', () => {
     const back = toggleItem(toggleItem(list, id, 2), id, 3);
 
     expect(itemsToBuy(back).map((i) => i.label)).toEqual(['pain', 'beurre', 'lait']);
+  });
+});
+
+describe('items to check', () => {
+  const stateOf = (list: ShoppingList, label: string) => {
+    const item = find(list, label);
+    return item.checked ? 'taken' : item.toCheck ? 'to-check' : 'to-buy';
+  };
+
+  it('adds an item to check apart from the items to buy', () => {
+    const list = addedToCheck(listOf('riz'), 'compote');
+
+    expect(itemsToCheck(list).map((item) => item.label)).toEqual(['compote']);
+    expect(itemsToBuy(list).map((item) => item.label)).toEqual(['riz']);
+  });
+
+  it('makes an item to check certain when it is added as certain', () => {
+    const list = added(addedToCheck(emptyShoppingList(), 'compote'), 'Compote', 5);
+
+    expect(list.items).toHaveLength(1);
+    expect(stateOf(list, 'compote')).toBe('to-buy');
+    expect(find(list, 'compote').updatedAt).toBe(5);
+  });
+
+  it('keeps an item to check when the same doubt arrives again', () => {
+    const list = addedToCheck(addedToCheck(emptyShoppingList(), 'compote'), 'compote');
+
+    expect(list.items).toHaveLength(1);
+    expect(stateOf(list, 'compote')).toBe('to-check');
+  });
+
+  it('does not turn an item to buy into a doubt', () => {
+    expect(stateOf(addedToCheck(listOf('riz'), 'riz'), 'riz')).toBe('to-buy');
+  });
+
+  it('does not touch a taken item when a doubt arrives', () => {
+    const initial = listOf('lait');
+    const taken = toggleItem(initial, find(initial, 'lait').id, 2);
+
+    expect(stateOf(addedToCheck(taken, 'lait'), 'lait')).toBe('taken');
+  });
+
+  it('resolves a doubt into an item to buy, at its place in the order of addition', () => {
+    const list = addedToCheck(listOf('pain'), 'compote');
+    const withLait = added(list, 'lait');
+
+    const needed = setToCheck(withLait, find(withLait, 'compote').id, false, 7);
+
+    expect(itemsToBuy(needed).map((item) => item.label)).toEqual(['pain', 'compote', 'lait']);
+    expect(find(needed, 'compote').updatedAt).toBe(7);
+  });
+
+  it('marks an item to buy as to check', () => {
+    const list = listOf('farine');
+
+    expect(stateOf(setToCheck(list, find(list, 'farine').id, true, 3), 'farine')).toBe('to-check');
+  });
+
+  it('adds several entries keeping their state', () => {
+    const list = addItems(
+      emptyShoppingList(),
+      [
+        { label: 'riz', toCheck: false },
+        { label: 'compote', toCheck: true },
+      ],
+      at(1),
+    );
+
+    expect([stateOf(list, 'riz'), stateOf(list, 'compote')]).toEqual(['to-buy', 'to-check']);
   });
 });
