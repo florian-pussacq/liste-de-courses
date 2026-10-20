@@ -7,7 +7,7 @@
 - [x] 1.3 Configurer Vitest et un premier test trivial du domaine, et vérifier que `npm test` passe
 - [x] 1.4 Configurer Playwright (Chromium) avec un test qui ouvre l'application et vérifie le titre, et vérifier que `npm run test:e2e` passe
 - [x] 1.5 Créer l'arborescence `src/domain`, `src/application`, `src/infrastructure` et `src/ui`, et ajouter une règle ESLint interdisant à `domain/` d'importer les autres couches ; vérifier qu'un import interdit fait échouer le lint
-- [ ] 1.6 Créer le workflow GitHub Actions (validation OpenSpec stricte, lint, format, types, tests unitaires, e2e, build, déploiement GitHub Pages sur `main`) et vérifier que la page d'accueil est servie en HTTPS
+- [x] 1.6 Créer le workflow GitHub Actions (validation OpenSpec stricte, lint, format, types, tests unitaires, e2e, build, déploiement GitHub Pages sur `main`) et vérifier que la page d'accueil est servie en HTTPS
 - [x] 1.7 Ajouter au `CLAUDE.md` la règle « code en anglais, specs et interface en français » et le glossaire de design.md, et vérifier qu'il reste cohérent avec le reste du fichier
 
 ## 2. Domaine : liste de courses
@@ -47,7 +47,7 @@
 
 ## 7. Vérification d'intégration
 
-- [ ] 7.1 Sur un téléphone Android réel : installer l'application depuis GitHub Pages, partager un message depuis une messagerie, valider, cocher en mode avion, et vérifier que chaque scénario de `offline-app` et de « Réception de texte partagé » se comporte comme spécifié
+- [x] 7.1 Sur un téléphone Android réel : installer l'application depuis GitHub Pages, partager un message depuis une messagerie, valider, cocher en mode avion, et vérifier que chaque scénario de `offline-app` et de « Réception de texte partagé » se comporte comme spécifié
 - [x] 7.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert
 
 ## Workflow follow-up
