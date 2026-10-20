@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   addItem,
+  addItems,
   checkedItems,
   clearChecked,
   emptyShoppingList,
@@ -82,6 +83,18 @@ describe('preventing duplicates', () => {
 
   it('collapses duplicates added one after another', () => {
     expect(labels(added(added(emptyShoppingList(), 'pain'), 'Pain'))).toEqual(['pain']);
+  });
+});
+
+describe('adding several items at once', () => {
+  it('adds each label without duplicates', () => {
+    const list = addItems(listOf('lait'), ['pain', 'Pain', 'LAIT'], at(1));
+
+    expect(labels(list)).toEqual(['lait', 'pain']);
+  });
+
+  it('skips blank labels', () => {
+    expect(labels(addItems(emptyShoppingList(), ['pain', ' '], at(1)))).toEqual(['pain']);
   });
 });
 

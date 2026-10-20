@@ -43,6 +43,18 @@ export function addItem(
   return success(updateItem(list, existing.id, { checked: false, updatedAt: now }));
 }
 
+// Blank labels carry no item, so a batch simply skips them.
+export function addItems(
+  list: ShoppingList,
+  rawLabels: readonly string[],
+  context: AddContext,
+): ShoppingList {
+  return rawLabels.reduce((current, rawLabel) => {
+    const result = addItem(current, rawLabel, context);
+    return result.ok ? result.value : current;
+  }, list);
+}
+
 export function renameItem(
   list: ShoppingList,
   id: ItemId,
