@@ -4,7 +4,7 @@
 
 - [x] 1.1 Initialiser le projet Vite + Svelte 5 + TypeScript strict, avec npm et Node 22 (`.nvmrc`), et vérifier que `npm run build` produit `dist/`
 - [x] 1.2 Configurer ESLint, Prettier, `svelte-check`, et les scripts `lint`, `format:check` et `typecheck`, et vérifier qu'ils passent sur le squelette
-- [ ] 1.3 Configurer Vitest et un premier test trivial du domaine, et vérifier que `npm test` passe
+- [x] 1.3 Configurer Vitest et un premier test trivial du domaine, et vérifier que `npm test` passe
 - [x] 1.4 Configurer Playwright (Chromium) avec un test qui ouvre l'application et vérifie le titre, et vérifier que `npm run test:e2e` passe
 - [x] 1.5 Créer l'arborescence `src/domain`, `src/application`, `src/infrastructure` et `src/ui`, et ajouter une règle ESLint interdisant à `domain/` d'importer les autres couches ; vérifier qu'un import interdit fait échouer le lint
 - [ ] 1.6 Créer le workflow GitHub Actions (validation OpenSpec stricte, lint, format, types, tests unitaires, e2e, build, déploiement GitHub Pages sur `main`) et vérifier que la page d'accueil est servie en HTTPS
@@ -12,7 +12,7 @@
 
 ## 2. Domaine : liste de courses
 
-- [ ] 2.1 Implémenter en TDD la normalisation des libellés (casse, ligatures, accents, espaces), et vérifier que les tests couvrent « Œufs »/« oeufs » et les espaces superflus
+- [x] 2.1 Implémenter en TDD la normalisation des libellés (casse, ligatures, accents, espaces), et vérifier que les tests couvrent « Œufs »/« oeufs » et les espaces superflus
 - [ ] 2.2 Implémenter en TDD `ShoppingList` : ajout avec refus du libellé vide, et dédoublonnage (un doublon non coché ne change rien, un doublon coché est décoché) ; vérifier un test par scénario de la spec `shopping-list`
 - [ ] 2.3 Implémenter en TDD la modification (refus d'un libellé vide ou déjà présent), la suppression, le cochage et le décochage, et vérifier un test par scénario
 - [ ] 2.4 Implémenter en TDD l'ordre d'affichage (non cochés par ordre d'ajout, puis cochés) et le retrait des articles cochés, et vérifier un test par scénario
