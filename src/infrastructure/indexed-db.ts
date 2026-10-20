@@ -1,10 +1,10 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction } from 'idb';
 import type { InboxRepository, ShoppingListRepository } from '../application/ports';
 import { emptyInbox, type Inbox } from '../domain/inbox';
 import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
 
 // Bump the version and migrate in `upgrade` whenever the stored shape changes.
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 const DOCUMENTS = 'documents';
 
 interface Documents {
@@ -24,8 +24,9 @@ export interface Storage {
 
 export async function openStorage(name = 'liste-de-courses'): Promise<Storage> {
   const db = await openDB<Schema>(name, SCHEMA_VERSION, {
-    upgrade(database) {
-      database.createObjectStore(DOCUMENTS);
+    async upgrade(database, oldVersion, _newVersion, transaction) {
+      if (oldVersion < 1) database.createObjectStore(DOCUMENTS);
+      if (oldVersion < 2) await migrateInboxToVersion2(transaction);
     },
   });
 
@@ -34,6 +35,24 @@ export async function openStorage(name = 'liste-de-courses'): Promise<Storage> {
     inboxes: documentRepository(db, 'inbox', emptyInbox),
     close: () => db.close(),
   };
+}
+
+interface InboxVersion1 {
+  readonly proposals: readonly { readonly id: string; readonly label: string }[];
+}
+
+// Version 2 lets proposals be discarded reversibly and remembers the captured texts.
+async function migrateInboxToVersion2(
+  transaction: IDBPTransaction<Schema, (typeof DOCUMENTS)[], 'versionchange'>,
+): Promise<void> {
+  const store = transaction.objectStore(DOCUMENTS);
+  const stored = (await store.get('inbox')) as InboxVersion1 | undefined;
+  if (!stored) return;
+  const migrated: Inbox = {
+    proposals: stored.proposals.map((proposal) => ({ ...proposal, discarded: false })),
+    capturedTexts: [],
+  };
+  await store.put(migrated, 'inbox');
 }
 
 function documentRepository<K extends keyof Documents>(
