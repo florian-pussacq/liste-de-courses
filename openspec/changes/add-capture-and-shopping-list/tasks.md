@@ -2,11 +2,11 @@
 
 ## 1. Squelette déployable
 
-- [ ] 1.1 Initialiser le projet Vite + Svelte 5 + TypeScript strict, avec npm et Node 22 (`.nvmrc`), et vérifier que `npm run build` produit `dist/`
-- [ ] 1.2 Configurer ESLint, Prettier, `svelte-check`, et les scripts `lint`, `format:check` et `typecheck`, et vérifier qu'ils passent sur le squelette
+- [x] 1.1 Initialiser le projet Vite + Svelte 5 + TypeScript strict, avec npm et Node 22 (`.nvmrc`), et vérifier que `npm run build` produit `dist/`
+- [x] 1.2 Configurer ESLint, Prettier, `svelte-check`, et les scripts `lint`, `format:check` et `typecheck`, et vérifier qu'ils passent sur le squelette
 - [ ] 1.3 Configurer Vitest et un premier test trivial du domaine, et vérifier que `npm test` passe
-- [ ] 1.4 Configurer Playwright (Chromium) avec un test qui ouvre l'application et vérifie le titre, et vérifier que `npm run test:e2e` passe
-- [ ] 1.5 Créer l'arborescence `src/domain`, `src/application`, `src/infrastructure` et `src/ui`, et ajouter une règle ESLint interdisant à `domain/` d'importer les autres couches ; vérifier qu'un import interdit fait échouer le lint
+- [x] 1.4 Configurer Playwright (Chromium) avec un test qui ouvre l'application et vérifie le titre, et vérifier que `npm run test:e2e` passe
+- [x] 1.5 Créer l'arborescence `src/domain`, `src/application`, `src/infrastructure` et `src/ui`, et ajouter une règle ESLint interdisant à `domain/` d'importer les autres couches ; vérifier qu'un import interdit fait échouer le lint
 - [ ] 1.6 Créer le workflow GitHub Actions (validation OpenSpec stricte, lint, format, types, tests unitaires, e2e, build, déploiement GitHub Pages sur `main`) et vérifier que la page d'accueil est servie en HTTPS
 - [ ] 1.7 Ajouter au `CLAUDE.md` la règle « code en anglais, specs et interface en français » et le glossaire de design.md, et vérifier qu'il reste cohérent avec le reste du fichier
 
