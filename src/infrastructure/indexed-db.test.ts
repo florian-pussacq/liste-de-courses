@@ -20,6 +20,17 @@ const inbox: Inbox = {
   capturedTexts: ['beurre'],
 };
 
+// Items were stored without any to-check state before version 3.
+const listVersion1 = {
+  items: [
+    { id: 'a', label: 'pain', checked: true, addedAt: 1, updatedAt: 2 },
+    { id: 'b', label: 'lait', checked: false, addedAt: 3, updatedAt: 3 },
+  ],
+};
+const certainList: ShoppingList = {
+  items: listVersion1.items.map((item) => ({ ...item, toCheck: false })),
+};
+
 describe('IndexedDB storage', () => {
   it('starts with an empty list and an empty inbox', async () => {
     const storage = await openStorage(uniqueName());
@@ -46,16 +57,38 @@ describe('IndexedDB storage', () => {
     const v1 = await openDB(name, 1, {
       upgrade: (database) => database.createObjectStore('documents'),
     });
-    await v1.put('documents', list, 'shopping-list');
+    await v1.put('documents', listVersion1, 'shopping-list');
     await v1.put('documents', { proposals: [{ id: 'p', label: 'beurre' }] }, 'inbox');
     v1.close();
 
     const storage = await openStorage(name);
 
-    expect(await storage.shoppingLists.load()).toEqual(list);
+    expect(await storage.shoppingLists.load()).toEqual(certainList);
     expect(await storage.inboxes.load()).toEqual({
-      proposals: [{ id: 'p', label: 'beurre', discarded: false }],
+      proposals: [{ id: 'p', label: 'beurre', discarded: false, toCheck: false }],
       capturedTexts: [],
+    });
+  });
+
+  it('migrates a version 2 database, every item and proposal being certain', async () => {
+    const name = uniqueName();
+    const v2 = await openDB(name, 2, {
+      upgrade: (database) => database.createObjectStore('documents'),
+    });
+    await v2.put('documents', listVersion1, 'shopping-list');
+    await v2.put(
+      'documents',
+      { proposals: [{ id: 'p', label: 'beurre', discarded: true }], capturedTexts: ['beurre'] },
+      'inbox',
+    );
+    v2.close();
+
+    const storage = await openStorage(name);
+
+    expect(await storage.shoppingLists.load()).toEqual(certainList);
+    expect(await storage.inboxes.load()).toEqual({
+      proposals: [{ id: 'p', label: 'beurre', discarded: true, toCheck: false }],
+      capturedTexts: ['beurre'],
     });
   });
 

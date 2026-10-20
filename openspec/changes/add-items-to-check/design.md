@@ -30,7 +30,7 @@ Le découpage (`domain/captured-text.ts`) renvoie des libellés seuls ; `Proposa
 
 ### État dans le domaine
 - `Proposal` et `Item` gagnent `toCheck: boolean`.
-- `addItem(list, entry, context)` applique la matrice suivante quand le libellé existe déjà :
+- `addItem(list, label, context, toCheck = false)` applique la matrice suivante quand le libellé existe déjà ; l'état est un paramètre optionnel pour ne pas toucher les appelants d'un ajout certain. `addItems` reçoit des `Entry` :
 
 | Existant \ Ajouté | certain | à vérifier |
 |---|---|---|

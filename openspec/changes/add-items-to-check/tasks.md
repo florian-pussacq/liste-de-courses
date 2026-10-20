@@ -10,7 +10,7 @@
 
 ## 2. Persistance
 
-- [ ] 2.1 Passer le schéma IndexedDB en v3 avec la migration chaînée, et vérifier avec `fake-indexeddb` qu'une base v1 et une base v2 se rouvrent en v3 avec tous leurs articles et propositions certains
+- [x] 2.1 Passer le schéma IndexedDB en v3 avec la migration chaînée, et vérifier avec `fake-indexeddb` qu'une base v1 et une base v2 se rouvrent en v3 avec tous leurs articles et propositions certains
 
 ## 3. Interface
 

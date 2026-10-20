@@ -4,7 +4,7 @@ import { emptyInbox, type Inbox } from '../domain/inbox';
 import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
 
 // Bump the version and migrate in `upgrade` whenever the stored shape changes.
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 const DOCUMENTS = 'documents';
 
 interface Documents {
@@ -29,6 +29,7 @@ export async function openStorage(name = 'liste-de-courses'): Promise<Storage> {
     async upgrade(database, oldVersion, _newVersion, transaction) {
       if (oldVersion < 1) database.createObjectStore(DOCUMENTS);
       if (oldVersion < 2) await migrateInboxToVersion2(transaction);
+      if (oldVersion < 3) await migrateToVersion3(transaction);
     },
   });
 
@@ -64,6 +65,29 @@ async function migrateInboxToVersion2(
     capturedTexts: [],
   };
   await store.put(migrated, 'inbox');
+}
+
+interface ShoppingListVersion2 {
+  readonly items: readonly object[];
+}
+
+// Version 3 adds the to-check state: everything stored before was certain.
+async function migrateToVersion3(
+  transaction: IDBPTransaction<Schema, (typeof DOCUMENTS)[], 'versionchange'>,
+): Promise<void> {
+  const store = transaction.objectStore(DOCUMENTS);
+  const list = (await store.get('shopping-list')) as ShoppingListVersion2 | undefined;
+  if (list) {
+    await store.put(
+      { items: list.items.map((item) => ({ ...item, toCheck: false })) },
+      'shopping-list',
+    );
+  }
+  const inbox = (await store.get('inbox')) as InboxVersion2 | undefined;
+  if (inbox) {
+    const proposals = inbox.proposals.map((proposal) => ({ ...proposal, toCheck: false }));
+    await store.put({ ...inbox, proposals }, 'inbox');
+  }
 }
 
 function documentRepository<K extends keyof Documents>(
