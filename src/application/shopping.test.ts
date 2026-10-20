@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { proposedLabels } from '../domain/inbox';
+import { keptLabels, proposedLabels } from '../domain/inbox';
 import { checkedItems, itemsToBuy, type ShoppingList } from '../domain/shopping-list';
 import { InMemoryInboxRepository, InMemoryShoppingListRepository } from './in-memory-repositories';
 import { shopping, type Shopping } from './shopping';
@@ -53,10 +53,10 @@ describe('capture', () => {
   it('corrects, discards and adds proposals', async () => {
     await app.captureText('pense à prendre du lait stp, stp');
     await app.editProposal(await proposalIdOf('pense à prendre du lait stp'), 'lait');
-    await app.discardProposal(await proposalIdOf('stp'));
+    await app.toggleProposal(await proposalIdOf('stp'));
     await app.addProposal('farine');
 
-    expect(proposedLabels(await inboxes.load())).toEqual(['lait', 'farine']);
+    expect(keptLabels(await inboxes.load())).toEqual(['lait', 'farine']);
   });
 
   it('reports a blank correction without changing the proposals', async () => {
@@ -77,6 +77,13 @@ describe('capture', () => {
     expect(labels(list)).toEqual(['pain', 'beurre']);
     expect(labels(await shoppingLists.load())).toEqual(['pain', 'beurre']);
     expect(proposedLabels(await inboxes.load())).toEqual([]);
+  });
+
+  it('adds only the proposals that were not discarded', async () => {
+    await app.captureText('pain, stp');
+    await app.toggleProposal(await proposalIdOf('stp'));
+
+    expect(labels(await app.validateInbox())).toEqual(['pain']);
   });
 
   it('adds duplicates validated together only once', async () => {

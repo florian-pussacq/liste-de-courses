@@ -26,12 +26,14 @@ describe('IndexedDB storage', () => {
     const name = uniqueName();
     const first = await openStorage(name);
     await first.shoppingLists.save(list);
-    await first.inboxes.save({ proposals: [{ id: 'p', label: 'beurre' }] });
+    await first.inboxes.save({ proposals: [{ id: 'p', label: 'beurre', discarded: false }] });
     first.close();
 
     const reopened = await openStorage(name);
 
     expect(await reopened.shoppingLists.load()).toEqual(list);
-    expect(await reopened.inboxes.load()).toEqual({ proposals: [{ id: 'p', label: 'beurre' }] });
+    expect(await reopened.inboxes.load()).toEqual({
+      proposals: [{ id: 'p', label: 'beurre', discarded: false }],
+    });
   });
 });

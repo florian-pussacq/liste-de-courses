@@ -2,9 +2,9 @@
 
 ## 1. Domaine : boîte de réception réversible
 
-- [ ] 1.1 Remplacer en TDD `discardProposal` par `toggleProposal` (écarter puis remettre) et ajouter `keptLabels`, et vérifier un test par scénario de « Correction des articles proposés »
+- [x] 1.1 Remplacer en TDD `discardProposal` par `toggleProposal` (écarter puis remettre) et ajouter `keptLabels`, et vérifier un test par scénario de « Correction des articles proposés »
 - [ ] 1.2 Ajouter en TDD `capturedTexts` à `Inbox` (textes non vides, dans l'ordre de réception, vidés avec la boîte), et vérifier les scénarios de « Rappel du texte reçu »
-- [ ] 1.3 Faire valider uniquement les articles conservés dans le cas d'usage `validateInbox`, et vérifier les scénarios « Validation avec un article écarté » et « Validation des articles proposés »
+- [x] 1.3 Faire valider uniquement les articles conservés dans le cas d'usage `validateInbox`, et vérifier les scénarios « Validation avec un article écarté » et « Validation des articles proposés »
 - [ ] 1.4 Compléter le glossaire du `CLAUDE.md` avec les concepts de design.md, et vérifier qu'il reste cohérent avec le code
 
 ## 2. Persistance et presse-papiers

@@ -14,6 +14,8 @@
 
   let { app, inbox = $bindable(), emptyShare = false, onvalidated, onclose }: Props = $props();
 
+  const kept = $derived(inbox.proposals.filter((proposal) => !proposal.discarded));
+
   let capturedText = $state('');
   let newLabel = $state('');
   let error = $state('');
@@ -77,7 +79,7 @@
     <button type="submit">Proposer les articles</button>
   </form>
 
-  {#if inbox.proposals.length === 0}
+  {#if kept.length === 0}
     <p class="empty">
       {emptyShare
         ? 'Le texte partagé ne contient aucun article.'
@@ -85,7 +87,7 @@
     </p>
   {:else}
     <ul aria-label="Articles proposés">
-      {#each inbox.proposals as proposal (proposal.id)}
+      {#each kept as proposal (proposal.id)}
         <li>
           <input
             aria-label="Article proposé {proposal.label}"
@@ -95,7 +97,7 @@
           <button
             type="button"
             aria-label="Écarter {proposal.label}"
-            onclick={async () => (inbox = await app.discardProposal(proposal.id))}>✕</button
+            onclick={async () => (inbox = await app.toggleProposal(proposal.id))}>✕</button
           >
         </li>
       {/each}
@@ -109,13 +111,8 @@
   {#if error}<p role="alert">{error}</p>{/if}
 
   <footer>
-    <button
-      type="button"
-      class="primary"
-      disabled={inbox.proposals.length === 0}
-      onclick={validate}
-    >
-      Valider {inbox.proposals.length} article{inbox.proposals.length > 1 ? 's' : ''}
+    <button type="button" class="primary" disabled={kept.length === 0} onclick={validate}>
+      Valider {kept.length} article{kept.length > 1 ? 's' : ''}
     </button>
     <button type="button" onclick={abandon}>Abandonner</button>
   </footer>

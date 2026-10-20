@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   addProposal,
   captureText,
-  discardProposal,
   editProposal,
   emptyInbox,
+  keptLabels,
   proposedLabels,
+  toggleProposal,
   type Inbox,
 } from './inbox';
 
@@ -71,18 +72,28 @@ describe('correcting proposals', () => {
     });
   });
 
-  it('discards a proposal', () => {
+  it('discards a proposal, which is then no longer kept', () => {
     const inbox = captured('lait, stp');
 
-    expect(proposedLabels(discardProposal(inbox, idOf(inbox, 'stp')))).toEqual(['lait']);
+    const sorted = toggleProposal(inbox, idOf(inbox, 'stp'));
+
+    expect(sorted.proposals.find((proposal) => proposal.label === 'stp')?.discarded).toBe(true);
+    expect(keptLabels(sorted)).toEqual(['lait']);
+  });
+
+  it('puts a discarded proposal back', () => {
+    const inbox = captured('confiture');
+    const id = idOf(inbox, 'confiture');
+
+    expect(keptLabels(toggleProposal(toggleProposal(inbox, id), id))).toEqual(['confiture']);
   });
 
   it('adds a proposal by hand', () => {
     const result = addProposal(captured('lait'), 'farine', () => 'manual');
 
     expect(result.ok && result.value.proposals).toEqual([
-      { id: 'proposal-1', label: 'lait' },
-      { id: 'manual', label: 'farine' },
+      { id: 'proposal-1', label: 'lait', discarded: false },
+      { id: 'manual', label: 'farine', discarded: false },
     ]);
   });
 

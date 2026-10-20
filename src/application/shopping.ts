@@ -55,14 +55,14 @@ export function shopping({ shoppingLists, inboxes: inboxStore, now, newId }: Dep
       tryChangeInbox((inbox) => inboxes.addProposal(inbox, label, newId)),
     editProposal: (id: string, label: string): Promise<Result<Inbox, EditProposalError>> =>
       tryChangeInbox((inbox) => inboxes.editProposal(inbox, id, label)),
-    discardProposal: (id: string): Promise<Inbox> =>
-      changeInbox((inbox) => inboxes.discardProposal(inbox, id)),
+    toggleProposal: (id: string): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.toggleProposal(inbox, id)),
     abandonInbox: (): Promise<Inbox> => changeInbox(emptyInbox),
 
     // The list is saved before the inbox is emptied: if the second write fails,
     // validating again is harmless because duplicates are not added twice.
     async validateInbox(): Promise<ShoppingList> {
-      const labels = inboxes.proposedLabels(await inboxStore.load());
+      const labels = inboxes.keptLabels(await inboxStore.load());
       const list = await changeList((current) =>
         lists.addItems(current, labels, { now: now(), newId }),
       );
