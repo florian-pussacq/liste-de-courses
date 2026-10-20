@@ -27,8 +27,8 @@
 
 - [x] 4.1 Définir les ports de dépôt de la liste et de la boîte de réception, ainsi que des implémentations en mémoire pour les tests, et vérifier que le typecheck passe
 - [x] 4.2 Implémenter en TDD les cas d'usage (capturer du texte, valider la boîte de réception vers la liste en dédoublonnant, abandonner, ajouter, modifier, supprimer, cocher, retirer les cochés) sur les dépôts en mémoire, et vérifier un test par cas d'usage
-- [ ] 4.3 Implémenter les adaptateurs IndexedDB avec `idb` (schéma versionné, UUID, `addedAt` et `updatedAt`), et vérifier avec `fake-indexeddb` que les données survivent à une réouverture de la base
-- [ ] 4.4 Demander le stockage persistant (`navigator.storage.persist()`) au démarrage, et vérifier qu'un refus ou une absence de l'API ne bloque pas l'application
+- [x] 4.3 Implémenter les adaptateurs IndexedDB avec `idb` (schéma versionné, UUID, `addedAt` et `updatedAt`), et vérifier avec `fake-indexeddb` que les données survivent à une réouverture de la base
+- [x] 4.4 Demander le stockage persistant (`navigator.storage.persist()`) au démarrage, et vérifier qu'un refus ou une absence de l'API ne bloque pas l'application
 
 ## 5. Interface
 
