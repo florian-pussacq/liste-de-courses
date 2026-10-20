@@ -19,9 +19,9 @@
 
 ## 3. Domaine : capture
 
-- [ ] 3.1 Implémenter en TDD le découpage du texte reçu (lignes, virgules, points-virgules, puces, numérotation, éléments vides), et vérifier un test par scénario de « Découpage du texte en articles proposés »
-- [ ] 3.2 Implémenter en TDD la combinaison du titre et du texte d'un partage (titre en premier, texte vide ignoré), et vérifier les scénarios de « Réception de texte partagé »
-- [ ] 3.3 Implémenter en TDD `Inbox` : ajout de texte cumulatif, correction d'un libellé, écart et ajout d'un article proposé, vidage ; vérifier un test par scénario
+- [x] 3.1 Implémenter en TDD le découpage du texte reçu (lignes, virgules, points-virgules, puces, numérotation, éléments vides), et vérifier un test par scénario de « Découpage du texte en articles proposés »
+- [x] 3.2 Implémenter en TDD la combinaison du titre et du texte d'un partage (titre en premier, texte vide ignoré), et vérifier les scénarios de « Réception de texte partagé »
+- [x] 3.3 Implémenter en TDD `Inbox` : ajout de texte cumulatif, correction d'un libellé, écart et ajout d'un article proposé, vidage ; vérifier un test par scénario
 
 ## 4. Cas d'usage et persistance
 
