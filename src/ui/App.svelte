@@ -11,9 +11,10 @@
     initialList: ShoppingList;
     initialInbox: Inbox;
     openInbox?: boolean;
+    emptyShare?: boolean;
   }
 
-  const { app, initialList, initialInbox, openInbox = false }: Props = $props();
+  const { app, initialList, initialInbox, openInbox = false, emptyShare = false }: Props = $props();
 
   // Props only seed the state: from then on, the views own it.
   let list = $state(untrack(() => initialList));
@@ -25,6 +26,7 @@
   <InboxView
     {app}
     bind:inbox
+    {emptyShare}
     onvalidated={(validated) => {
       list = validated;
       view = 'list';

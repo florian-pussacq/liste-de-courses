@@ -2,6 +2,7 @@ import { mount } from 'svelte';
 import { shopping } from './application/shopping';
 import { openStorage } from './infrastructure/indexed-db';
 import { requestPersistentStorage } from './infrastructure/persistent-storage';
+import { takeSharedContent } from './infrastructure/share-target';
 import App from './ui/App.svelte';
 import './ui/app.css';
 
@@ -16,12 +17,20 @@ async function start(target: HTMLElement): Promise<void> {
     newId: () => crypto.randomUUID(),
   });
 
+  const shared = takeSharedContent(new URL(location.href), (cleanUrl) =>
+    history.replaceState(history.state, '', cleanUrl),
+  );
+  const pendingBefore = (await app.inbox()).proposals.length;
+  const initialInbox = shared ? await app.captureShared(shared) : await app.inbox();
+
   mount(App, {
     target,
     props: {
       app,
       initialList: await app.shoppingList(),
-      initialInbox: await app.inbox(),
+      initialInbox,
+      openInbox: shared !== undefined,
+      emptyShare: shared !== undefined && initialInbox.proposals.length === pendingBefore,
     },
   });
 }
