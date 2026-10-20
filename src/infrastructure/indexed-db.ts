@@ -12,8 +12,10 @@ interface Documents {
   inbox: Inbox;
 }
 
+// Stored values are typed by the repositories, the only way in for the application;
+// migrations handle the shapes of earlier versions, which the current types no longer describe.
 interface Schema extends DBSchema {
-  [DOCUMENTS]: { key: keyof Documents; value: Documents[keyof Documents] };
+  [DOCUMENTS]: { key: keyof Documents; value: unknown };
 }
 
 export interface Storage {
@@ -41,6 +43,15 @@ interface InboxVersion1 {
   readonly proposals: readonly { readonly id: string; readonly label: string }[];
 }
 
+interface InboxVersion2 {
+  readonly proposals: readonly {
+    readonly id: string;
+    readonly label: string;
+    readonly discarded: boolean;
+  }[];
+  readonly capturedTexts: readonly string[];
+}
+
 // Version 2 lets proposals be discarded reversibly and remembers the captured texts.
 async function migrateInboxToVersion2(
   transaction: IDBPTransaction<Schema, (typeof DOCUMENTS)[], 'versionchange'>,
@@ -48,7 +59,7 @@ async function migrateInboxToVersion2(
   const store = transaction.objectStore(DOCUMENTS);
   const stored = (await store.get('inbox')) as InboxVersion1 | undefined;
   if (!stored) return;
-  const migrated: Inbox = {
+  const migrated: InboxVersion2 = {
     proposals: stored.proposals.map((proposal) => ({ ...proposal, discarded: false })),
     capturedTexts: [],
   };
