@@ -18,7 +18,8 @@
 
   let capturedText = $state('');
   let newLabel = $state('');
-  let editing: Proposal | undefined = $state();
+  let editingId: string | undefined = $state();
+  const editing = $derived(inbox.proposals.find((proposal) => proposal.id === editingId));
   let draft = $state('');
   let error = $state('');
   const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
@@ -55,7 +56,7 @@
   // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
   function startEditing(event: MouseEvent, proposal: Proposal) {
     event.preventDefault();
-    editing = proposal;
+    editingId = proposal.id;
     draft = proposal.label;
     error = '';
   }
@@ -69,7 +70,7 @@
       return;
     }
     inbox = result.value;
-    editing = undefined;
+    editingId = undefined;
     error = '';
   }
 
@@ -110,11 +111,14 @@
             type="button"
             class="chip"
             class:discarded={proposal.discarded}
-            aria-label="{proposal.discarded ? 'Remettre' : 'Écarter'} {proposal.label}"
+            aria-label="{proposal.discarded
+              ? 'Remettre'
+              : 'Écarter'} {proposal.label}{proposal.toCheck ? ', à vérifier' : ''}"
             onclick={async () => (inbox = await app.toggleProposal(proposal.id))}
             oncontextmenu={(event) => startEditing(event, proposal)}
           >
             {proposal.label}
+            {#if proposal.toCheck}<span class="doubt" aria-hidden="true">?</span>{/if}
           </button>
         </li>
       {/each}
@@ -127,6 +131,13 @@
       <input aria-label="Corriger {editing.label}" bind:value={draft} autofocus />
       <button type="submit" class="button primary">Corriger</button>
     </form>
+    <button
+      type="button"
+      class="button"
+      onclick={async () => editing && (inbox = await app.toggleProposalToCheck(editing.id))}
+    >
+      {editing.toCheck ? 'Rendre certain' : 'Marquer à vérifier'}
+    </button>
   {/if}
 
   <form class="field" onsubmit={addProposal}>
@@ -204,6 +215,25 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+  }
+
+  .doubt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4em;
+    height: 1.4em;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: var(--on-accent);
+    color: var(--accent);
+    font-size: 0.85em;
+    font-weight: 800;
+  }
+
+  .chip.discarded .doubt {
+    background: var(--surface-muted);
+    color: var(--ink);
   }
 
   .chip.discarded {

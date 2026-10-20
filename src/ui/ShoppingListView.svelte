@@ -1,7 +1,14 @@
 <script lang="ts">
   import type { Shopping } from '../application/shopping';
-  import { checkedItems, itemsToBuy, type Item, type ShoppingList } from '../domain/shopping-list';
+  import {
+    checkedItems,
+    itemsToBuy,
+    itemsToCheck,
+    type Item,
+    type ShoppingList,
+  } from '../domain/shopping-list';
   import ItemRow from './ItemRow.svelte';
+  import ItemToCheckRow from './ItemToCheckRow.svelte';
 
   interface Props {
     app: Shopping;
@@ -26,17 +33,23 @@
   let basketOpen = $state(false);
 
   const toBuy = $derived(itemsToBuy(list));
+  const toCheck = $derived(itemsToCheck(list));
   const basket = $derived(checkedItems(list));
-  const total = $derived(list.items.length);
+  // Items to check are not counted until the doubt is settled.
+  const total = $derived(toBuy.length + basket.length);
   const progress = $derived(total === 0 ? 0 : Math.round((basket.length / total) * 100));
 
   const toggle = async (item: Item) => (list = await app.toggleItem(item.id));
+  const alreadyHave = async (item: Item) => (list = await app.removeItem(item.id));
+  const needed = async (item: Item) => (list = await app.setToCheck(item.id, false));
   const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 </script>
 
 <header>
-  {#if total === 0}
+  {#if list.items.length === 0}
     <h1>Liste de courses</h1>
+  {:else if total === 0}
+    <h1>À vérifier d'abord</h1>
   {:else if toBuy.length === 0}
     <h1>Tout est pris</h1>
   {:else}
@@ -58,12 +71,23 @@
 </header>
 
 <main>
-  {#if total === 0}
+  {#if list.items.length === 0}
     <p class="empty">
       La liste est vide. Colle une liste copiée dans une autre application, ou ajoute un article
       avec le bouton +. Un appui long sur un article permet ensuite de le modifier ou de le
       supprimer.
     </p>
+  {/if}
+
+  {#if toCheck.length > 0}
+    <section class="to-check" aria-labelledby="to-check-title">
+      <h2 id="to-check-title">À vérifier avant de partir ({toCheck.length})</h2>
+      <ul aria-label="À vérifier">
+        {#each toCheck as item (item.id)}
+          <ItemToCheckRow {item} onhave={alreadyHave} onneed={needed} {onactions} />
+        {/each}
+      </ul>
+    </section>
   {/if}
 
   {#if toBuy.length > 0}
@@ -175,6 +199,16 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+  }
+
+  .to-check {
+    margin-bottom: 20px;
+  }
+
+  .to-check h2 {
+    margin: 4px 12px 10px;
+    font-size: 1rem;
+    font-weight: 700;
   }
 
   .empty {

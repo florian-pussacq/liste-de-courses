@@ -14,11 +14,11 @@
 
 ## 3. Interface
 
-- [ ] 3.1 Ajouter la section « À vérifier avant de partir » en tête de liste avec « On en a » et « Il en faut », et vérifier en e2e les scénarios de « Section des articles à vérifier » et « Levée du doute »
-- [ ] 3.2 Calculer la progression sur les seuls articles certains et adapter l'en-tête quand il n'y a que des articles à vérifier, et vérifier en e2e le scénario « Articles à vérifier non comptés »
-- [ ] 3.3 Ajouter « Marquer à vérifier » / « Il en faut » à la feuille d'actions d'un article, et vérifier en e2e le scénario « Marquer un article à vérifier »
-- [ ] 3.4 Marquer visuellement les pastilles à vérifier dans le tri et ajouter la bascule dans le formulaire de correction, et vérifier en e2e un partage contenant un « ? » final, la bascule dans les deux sens et la validation
-- [ ] 3.5 Vérifier en clair et en sombre, par captures, que la nouvelle section et la marque des pastilles respectent les contrastes de 4,5:1
+- [x] 3.1 Ajouter la section « À vérifier avant de partir » en tête de liste avec « On en a » et « Il en faut », et vérifier en e2e les scénarios de « Section des articles à vérifier » et « Levée du doute »
+- [x] 3.2 Calculer la progression sur les seuls articles certains et adapter l'en-tête quand il n'y a que des articles à vérifier, et vérifier en e2e le scénario « Articles à vérifier non comptés »
+- [x] 3.3 Ajouter « Marquer à vérifier » / « Il en faut » à la feuille d'actions d'un article, et vérifier en e2e le scénario « Marquer un article à vérifier »
+- [x] 3.4 Marquer visuellement les pastilles à vérifier dans le tri et ajouter la bascule dans le formulaire de correction, et vérifier en e2e un partage contenant un « ? » final, la bascule dans les deux sens et la validation
+- [x] 3.5 Vérifier en clair et en sombre, par captures, que la nouvelle section et la marque des pastilles respectent les contrastes de 4,5:1
 
 ## 4. Vérification d'intégration
 

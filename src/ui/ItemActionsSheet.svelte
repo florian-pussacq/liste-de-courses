@@ -35,6 +35,15 @@
   </form>
   {#if error}<p class="alert" role="alert">{error}</p>{/if}
   <div class="actions">
+    {#if !item.checked}
+      <button
+        type="button"
+        class="button"
+        onclick={async () => onchange(await app.setToCheck(item.id, !item.toCheck))}
+      >
+        {item.toCheck ? 'Il en faut' : 'Marquer à vérifier'}
+      </button>
+    {/if}
     <button
       type="button"
       class="button"
