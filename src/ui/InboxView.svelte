@@ -18,21 +18,25 @@
   let newLabel = $state('');
   let error = $state('');
 
+  // Fields are emptied before storing, so that typing the next entry is never lost.
   async function propose(event: SubmitEvent) {
     event.preventDefault();
-    inbox = await app.captureText(capturedText);
+    const text = capturedText;
     capturedText = '';
+    inbox = await app.captureText(text);
   }
 
   async function addProposal(event: SubmitEvent) {
     event.preventDefault();
-    const result = await app.addProposal(newLabel);
+    const label = newLabel;
+    newLabel = '';
+    const result = await app.addProposal(label);
     if (!result.ok) {
+      newLabel = label;
       error = messageFor(result.error);
       return;
     }
     inbox = result.value;
-    newLabel = '';
     error = '';
   }
 

@@ -19,15 +19,18 @@
   const toBuy = $derived(itemsToBuy(list));
   const taken = $derived(checkedItems(list));
 
+  // The field is emptied before the item is stored, so that typing the next one is never lost.
   async function add(event: SubmitEvent) {
     event.preventDefault();
-    const result = await app.addItem(newLabel);
+    const label = newLabel;
+    newLabel = '';
+    const result = await app.addItem(label);
     if (!result.ok) {
+      newLabel = label;
       error = messageFor(result.error);
       return;
     }
     list = result.value;
-    newLabel = '';
     error = '';
   }
 </script>
