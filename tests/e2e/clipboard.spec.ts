@@ -32,6 +32,7 @@ test('falls back to typing when reading the clipboard is refused', async ({ page
 });
 
 test('lets the user type while the clipboard read waits for permission', async ({ page }) => {
+  await stubClipboard(page, { pending: true });
   await page.goto('./');
 
   await page.getByRole('button', { name: 'Coller une liste' }).click();

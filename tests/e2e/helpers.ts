@@ -26,12 +26,17 @@ export async function pasteByHand(page: Page, text: string) {
 
 // Stands in for the browser's answer to a clipboard read: a permission prompt nobody
 // answers would leave the read pending forever.
-export async function stubClipboard(page: Page, answer: { text: string } | { refused: true }) {
+export async function stubClipboard(
+  page: Page,
+  answer: { text: string } | { refused: true } | { pending: true },
+) {
   await page.addInitScript((stubbed) => {
-    navigator.clipboard.readText = () =>
-      'text' in stubbed
-        ? Promise.resolve(stubbed.text)
-        : Promise.reject(new DOMException('Read permission denied.', 'NotAllowedError'));
+    navigator.clipboard.readText = () => {
+      if ('text' in stubbed) return Promise.resolve(stubbed.text);
+      if ('refused' in stubbed)
+        return Promise.reject(new DOMException('Read permission denied.', 'NotAllowedError'));
+      return new Promise<string>(() => {});
+    };
   }, answer);
 }
 
