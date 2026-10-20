@@ -46,6 +46,21 @@ describe('capturing text', () => {
   it('proposes nothing for blank text', () => {
     expect(proposedLabels(captured('   '))).toEqual([]);
   });
+
+  it('remembers the captured texts in the order they arrived', () => {
+    const newId = sequentialIds();
+    const inbox = captured(
+      'beurre',
+      captured('pense à prendre du pain stp', emptyInbox(), newId),
+      newId,
+    );
+
+    expect(inbox.capturedTexts).toEqual(['pense à prendre du pain stp', 'beurre']);
+  });
+
+  it('does not remember blank texts', () => {
+    expect(captured('  \n ').capturedTexts).toEqual([]);
+  });
 });
 
 describe('correcting proposals', () => {
@@ -91,6 +106,7 @@ describe('correcting proposals', () => {
   it('adds a proposal by hand', () => {
     const result = addProposal(captured('lait'), 'farine', () => 'manual');
 
+    expect(result.ok && result.value.capturedTexts).toEqual(['lait']);
     expect(result.ok && result.value.proposals).toEqual([
       { id: 'proposal-1', label: 'lait', discarded: false },
       { id: 'manual', label: 'farine', discarded: false },

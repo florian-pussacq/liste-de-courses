@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
-import { emptyInbox } from '../domain/inbox';
+import { emptyInbox, type Inbox } from '../domain/inbox';
 import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
 import { openStorage } from './indexed-db';
 
@@ -12,6 +12,11 @@ const list: ShoppingList = {
     { id: 'a', label: 'pain', checked: true, addedAt: 1, updatedAt: 2 },
     { id: 'b', label: 'lait', checked: false, addedAt: 3, updatedAt: 3 },
   ],
+};
+
+const inbox: Inbox = {
+  proposals: [{ id: 'p', label: 'beurre', discarded: false }],
+  capturedTexts: ['beurre'],
 };
 
 describe('IndexedDB storage', () => {
@@ -26,14 +31,12 @@ describe('IndexedDB storage', () => {
     const name = uniqueName();
     const first = await openStorage(name);
     await first.shoppingLists.save(list);
-    await first.inboxes.save({ proposals: [{ id: 'p', label: 'beurre', discarded: false }] });
+    await first.inboxes.save(inbox);
     first.close();
 
     const reopened = await openStorage(name);
 
     expect(await reopened.shoppingLists.load()).toEqual(list);
-    expect(await reopened.inboxes.load()).toEqual({
-      proposals: [{ id: 'p', label: 'beurre', discarded: false }],
-    });
+    expect(await reopened.inboxes.load()).toEqual(inbox);
   });
 });

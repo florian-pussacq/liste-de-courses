@@ -12,12 +12,14 @@ export interface Proposal {
 
 export interface Inbox {
   readonly proposals: readonly Proposal[];
+  // Shown back to the user so they can check that nothing was missed.
+  readonly capturedTexts: readonly string[];
 }
 
 export type ProposalError = 'empty-label';
 export type EditProposalError = ProposalError | 'proposal-not-found';
 
-export const emptyInbox = (): Inbox => ({ proposals: [] });
+export const emptyInbox = (): Inbox => ({ proposals: [], capturedTexts: [] });
 
 export const proposedLabels = (inbox: Inbox): string[] =>
   inbox.proposals.map((proposal) => proposal.label);
@@ -28,8 +30,13 @@ export const keptLabels = (inbox: Inbox): string[] =>
 const newProposal = (id: ProposalId, label: string): Proposal => ({ id, label, discarded: false });
 
 export function captureText(inbox: Inbox, capturedText: string, newId: () => ProposalId): Inbox {
-  const captured = splitIntoLabels(capturedText).map((label) => newProposal(newId(), label));
-  return { proposals: [...inbox.proposals, ...captured] };
+  const text = capturedText.trim();
+  if (text === '') return inbox;
+  const captured = splitIntoLabels(text).map((label) => newProposal(newId(), label));
+  return {
+    proposals: [...inbox.proposals, ...captured],
+    capturedTexts: [...inbox.capturedTexts, text],
+  };
 }
 
 export function addProposal(
@@ -39,7 +46,7 @@ export function addProposal(
 ): Result<Inbox, ProposalError> {
   const label = cleanLabel(rawLabel);
   if (label === '') return failure('empty-label');
-  return success({ proposals: [...inbox.proposals, newProposal(newId(), label)] });
+  return success({ ...inbox, proposals: [...inbox.proposals, newProposal(newId(), label)] });
 }
 
 export function editProposal(
@@ -51,6 +58,7 @@ export function editProposal(
   if (label === '') return failure('empty-label');
   if (!inbox.proposals.some((proposal) => proposal.id === id)) return failure('proposal-not-found');
   return success({
+    ...inbox,
     proposals: inbox.proposals.map((proposal) =>
       proposal.id === id ? { ...proposal, label } : proposal,
     ),
@@ -60,6 +68,7 @@ export function editProposal(
 // Discarding is reversible until validation: the proposal stays visible, marked as discarded.
 export function toggleProposal(inbox: Inbox, id: ProposalId): Inbox {
   return {
+    ...inbox,
     proposals: inbox.proposals.map((proposal) =>
       proposal.id === id ? { ...proposal, discarded: !proposal.discarded } : proposal,
     ),
