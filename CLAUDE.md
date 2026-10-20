@@ -1,0 +1,50 @@
+# Règles de développement
+
+Ce projet suit les principes du software craftsmanship : du code maintenable dans le temps, compréhensible, résilient et performant là où c'est mesuré.
+
+## Specs d'abord (OpenSpec)
+
+- Tout changement de comportement passe par une proposition OpenSpec (`/opsx:propose`) avant toute implémentation.
+- Les specs dans `openspec/specs/` sont la source de vérité. Si le code et la spec divergent, l'un des deux est faux : on tranche explicitement, on ne laisse pas dériver.
+- Un scénario de spec = au moins un test qui le vérifie.
+- On valide avec `openspec validate --all` avant de commiter.
+
+## Trunk-based development
+
+- On travaille directement sur `main`. Pas de branche longue.
+- Chaque commit laisse `main` dans un état sain : specs valides, build et tests verts.
+- Commits petits et fréquents, une seule intention par commit.
+- Une fonctionnalité inachevée est cachée (feature flag, code non branché), jamais laissée cassée.
+
+## Commits
+
+- Rédigés en français, au format Conventional Commits : `type(portée): description`.
+- Types : `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `build`, `ci`.
+- La description dit ce que fait le commit, à la troisième personne, en minuscule, sans point final.
+  - Exemple : `feat(liste): utilise le catalogue pour suggérer les articles fréquents`
+- Le corps (optionnel) explique le pourquoi, pas le comment.
+- Pas de ligne `Co-Authored-By` ni d'autre mention d'attribution.
+
+## Tests
+
+- TDD : test rouge, code minimal pour le passer, puis refactoring.
+- On teste des comportements, pas des détails d'implémentation.
+- Les tests sont rapides, déterministes et isolés. Un test instable est un bug, pas une fatalité.
+- Un bug corrigé commence par un test qui le reproduit.
+
+## Conception
+
+- Le vocabulaire du code est celui des specs (langage ubiquitaire) : un concept, un nom.
+- Le domaine ne dépend ni du framework, ni de la base, ni de l'UI. Les dépendances pointent vers le domaine.
+- YAGNI : on ne construit que ce qu'une spec demande. Pas d'abstraction spéculative.
+- Trois duplications avant d'extraire une abstraction. Une mauvaise abstraction coûte plus cher qu'une duplication.
+- Les erreurs sont explicites et traitées au bon niveau. Jamais avalées en silence.
+- La performance s'optimise sur mesure, pas sur intuition.
+
+## Code
+
+- Fonctions courtes, une responsabilité, des noms qui rendent les commentaires inutiles.
+- Un commentaire explique un pourquoi non évident, jamais un quoi.
+- Pas de code mort, pas de code commenté, pas de TODO sans ticket ou change OpenSpec associé.
+- Règle du boy scout : on laisse le code un peu plus propre qu'on l'a trouvé, dans le périmètre du changement en cours.
+- Le refactoring et le changement de comportement vont dans des commits séparés.
