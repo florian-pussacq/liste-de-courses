@@ -8,7 +8,7 @@
 - [x] 1.4 Configurer Playwright (Chromium) avec un test qui ouvre l'application et vérifie le titre, et vérifier que `npm run test:e2e` passe
 - [x] 1.5 Créer l'arborescence `src/domain`, `src/application`, `src/infrastructure` et `src/ui`, et ajouter une règle ESLint interdisant à `domain/` d'importer les autres couches ; vérifier qu'un import interdit fait échouer le lint
 - [ ] 1.6 Créer le workflow GitHub Actions (validation OpenSpec stricte, lint, format, types, tests unitaires, e2e, build, déploiement GitHub Pages sur `main`) et vérifier que la page d'accueil est servie en HTTPS
-- [ ] 1.7 Ajouter au `CLAUDE.md` la règle « code en anglais, specs et interface en français » et le glossaire de design.md, et vérifier qu'il reste cohérent avec le reste du fichier
+- [x] 1.7 Ajouter au `CLAUDE.md` la règle « code en anglais, specs et interface en français » et le glossaire de design.md, et vérifier qu'il reste cohérent avec le reste du fichier
 
 ## 2. Domaine : liste de courses
 

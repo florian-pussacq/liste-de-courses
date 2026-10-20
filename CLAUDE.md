@@ -47,6 +47,22 @@ Ce dépôt est public. Tout ce qui y entre (code, specs, commits, messages, noms
 - Les tests sont rapides, déterministes et isolés. Un test instable est un bug, pas une fatalité.
 - Un bug corrigé commence par un test qui le reproduit.
 
+## Langues
+
+- Le code, les noms de fichiers et les tests sont en anglais.
+- Les specs, l'interface et les commits sont en français.
+- Le passage d'une langue à l'autre suit ce glossaire, à compléter à chaque nouveau concept :
+
+| Spec (fr)          | Code (en)      |
+| ------------------ | -------------- |
+| liste de courses   | `ShoppingList` |
+| article            | `Item`         |
+| libellé            | `label`        |
+| coché / pris       | `checked`      |
+| boîte de réception | `Inbox`        |
+| article proposé    | `Proposal`     |
+| texte reçu         | `capturedText` |
+
 ## Conception
 
 - Le vocabulaire du code est celui des specs (langage ubiquitaire) : un concept, un nom.
