@@ -205,6 +205,21 @@ describe('shopping list', () => {
     expect(itemsToBuy(cleared).map((item) => item.label)).toEqual(['sel']);
     expect(labels(await shoppingLists.load())).toEqual(['sel']);
   });
+
+  it('restores the list exactly as it was before a removal', async () => {
+    await app.addItem('pain');
+    await app.addItem('sucre');
+    await app.addItem('sel');
+    await app.toggleItem(await idOf('pain'));
+    const before = await app.shoppingList();
+    await app.removeItem(await idOf('sucre'));
+    await app.clearChecked();
+
+    const restored = await app.restoreList(before);
+
+    expect(restored).toEqual(before);
+    expect(await shoppingLists.load()).toEqual(before);
+  });
 });
 
 describe('items to check', () => {
