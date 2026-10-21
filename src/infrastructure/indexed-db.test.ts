@@ -101,4 +101,19 @@ describe('IndexedDB storage', () => {
 
     expect(await (await openStorage(name)).inboxes.load()).toEqual(emptyInbox());
   });
+
+  it('keeps the dishes after the database is reopened', async () => {
+    const name = uniqueName();
+    const first = await openStorage(name);
+    expect(await first.dishes.load()).toEqual([]);
+    const omelette = {
+      id: 'd',
+      name: 'omelette',
+      ingredients: [{ label: 'œufs', toCheck: false }],
+    };
+    await first.dishes.save([omelette]);
+    first.close();
+
+    expect(await (await openStorage(name)).dishes.load()).toEqual([omelette]);
+  });
 });

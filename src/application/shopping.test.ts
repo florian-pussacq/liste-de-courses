@@ -2,13 +2,18 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { keptEntries, proposedLabels } from '../domain/inbox';
 import { checkedItems, itemsToBuy, itemsToCheck, type ShoppingList } from '../domain/shopping-list';
 import type { ClipboardContent } from './ports';
-import { InMemoryInboxRepository, InMemoryShoppingListRepository } from './in-memory-repositories';
+import {
+  InMemoryDishRepository,
+  InMemoryInboxRepository,
+  InMemoryShoppingListRepository,
+} from './in-memory-repositories';
 import { shopping, type Shopping } from './shopping';
 
 const labels = (list: ShoppingList) => list.items.map((item) => item.label);
 
 let shoppingLists: InMemoryShoppingListRepository;
 let inboxes: InMemoryInboxRepository;
+let dishes: InMemoryDishRepository;
 let app: Shopping;
 let clipboard: ClipboardContent;
 let sent: string[];
@@ -16,6 +21,7 @@ let sent: string[];
 beforeEach(() => {
   shoppingLists = new InMemoryShoppingListRepository();
   inboxes = new InMemoryInboxRepository();
+  dishes = new InMemoryDishRepository();
   let clock = 0;
   let id = 0;
   clipboard = { kind: 'empty' };
@@ -23,6 +29,7 @@ beforeEach(() => {
   app = shopping({
     shoppingLists,
     inboxes,
+    dishes,
     now: () => ++clock,
     newId: () => `id-${++id}`,
     readClipboard: async () => clipboard,
@@ -241,5 +248,70 @@ describe('sending the list', () => {
 
     expect(await app.sendList()).toBe('nothing-to-send');
     expect(sent).toEqual([]);
+  });
+});
+
+describe('dishes', () => {
+  const groups = async () =>
+    (await inboxes.load()).proposals.map((proposal) => `${proposal.label}|${proposal.dish ?? '-'}`);
+
+  it('defines a dish from a proposal and expands it at once', async () => {
+    await app.captureText('omelette, pain');
+
+    const result = await app.defineDishFromProposal(
+      await proposalIdOf('omelette'),
+      'œufs\nfromage ?',
+    );
+
+    expect(result.ok).toBe(true);
+    expect(await groups()).toEqual(['œufs|omelette', 'fromage|omelette', 'pain|-']);
+    expect((await dishes.load()).map((dish) => dish.name)).toEqual(['omelette']);
+  });
+
+  it('refuses a dish without ingredient and remembers nothing', async () => {
+    await app.captureText('omelette');
+
+    expect(await app.defineDishFromProposal(await proposalIdOf('omelette'), ' ')).toEqual({
+      ok: false,
+      error: 'no-ingredient',
+    });
+    expect(await dishes.load()).toEqual([]);
+    expect(await groups()).toEqual(['omelette|-']);
+  });
+
+  it('recognises remembered dishes in every capture', async () => {
+    await app.captureText('omelette');
+    await app.defineDishFromProposal(await proposalIdOf('omelette'), 'œufs');
+    await app.abandonInbox();
+
+    await app.captureShared({ text: 'Omelette' });
+    expect(await groups()).toEqual(['œufs|omelette']);
+
+    await app.abandonInbox();
+    clipboard = { kind: 'text', text: 'omelette, sel' };
+    await app.pasteFromClipboard();
+    expect(await groups()).toEqual(['œufs|omelette', 'sel|-']);
+  });
+
+  it('updates a dish, refreshing its group and the next recognitions', async () => {
+    await app.captureText('omelette');
+    await app.defineDishFromProposal(await proposalIdOf('omelette'), 'œufs');
+
+    await app.updateDish('omelette', 'œufs\nciboulette');
+    expect(await groups()).toEqual(['œufs|omelette', 'ciboulette|omelette']);
+    expect(await dishes.load()).toHaveLength(1);
+
+    await app.abandonInbox();
+    await app.captureText('omelette');
+    expect(await groups()).toEqual(['œufs|omelette', 'ciboulette|omelette']);
+  });
+
+  it('discards a whole dish', async () => {
+    await app.captureText('omelette, pain');
+    await app.defineDishFromProposal(await proposalIdOf('omelette'), 'œufs\nlait');
+
+    await app.toggleDish('omelette');
+
+    expect(keptEntries(await inboxes.load()).map((entry) => entry.label)).toEqual(['pain']);
   });
 });

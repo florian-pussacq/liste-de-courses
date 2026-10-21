@@ -6,7 +6,14 @@ import {
   type Inbox,
   type ProposalError,
 } from '../domain/inbox';
-import type { Result } from '../domain/result';
+import {
+  defineDish,
+  findDish,
+  rememberDish,
+  type DefineDishError,
+  type Dish,
+} from '../domain/dish';
+import { failure, success, type Result } from '../domain/result';
 import * as lists from '../domain/shopping-list';
 import type { AddItemError, ItemId, RenameItemError, ShoppingList } from '../domain/shopping-list';
 import { listAsText } from '../domain/list-text';
@@ -22,6 +29,7 @@ export type PasteOutcome =
 export function shopping({
   shoppingLists,
   inboxes: inboxStore,
+  dishes: dishStore,
   now,
   newId,
   readClipboard,
@@ -55,8 +63,23 @@ export function shopping({
     return result;
   }
 
-  const captureText = (capturedText: string): Promise<Inbox> =>
-    changeInbox((inbox) => inboxes.captureText(inbox, capturedText, newId));
+  async function captureText(capturedText: string): Promise<Inbox> {
+    const dishes = await dishStore.load();
+    return changeInbox((inbox) => inboxes.captureText(inbox, capturedText, newId, dishes));
+  }
+
+  // Defining a dish under a known name replaces it: the returned dish is the one remembered.
+  async function remember(
+    name: string,
+    ingredientsText: string,
+  ): Promise<Result<Dish, DefineDishError>> {
+    const defined = defineDish(name, ingredientsText, newId);
+    if (!defined.ok) return defined;
+    const dishes = rememberDish(await dishStore.load(), defined.value);
+    await dishStore.save(dishes);
+    const remembered = findDish(dishes, defined.value.name) ?? defined.value;
+    return success(remembered);
+  }
 
   return {
     shoppingList: (): Promise<ShoppingList> => shoppingLists.load(),
@@ -78,6 +101,34 @@ export function shopping({
     toggleProposalToCheck: (id: string): Promise<Inbox> =>
       changeInbox((inbox) => inboxes.toggleProposalToCheck(inbox, id)),
     abandonInbox: (): Promise<Inbox> => changeInbox(emptyInbox),
+
+    async defineDishFromProposal(
+      proposalId: string,
+      ingredientsText: string,
+    ): Promise<Result<Inbox, DefineDishError | 'proposal-not-found'>> {
+      const proposal = (await inboxStore.load()).proposals.find(({ id }) => id === proposalId);
+      if (!proposal) return failure('proposal-not-found');
+      const remembered = await remember(proposal.label, ingredientsText);
+      if (!remembered.ok) return remembered;
+      const inbox = await changeInbox((current) =>
+        inboxes.expandIntoDish(current, proposalId, remembered.value, newId),
+      );
+      return success(inbox);
+    },
+    async updateDish(
+      name: string,
+      ingredientsText: string,
+    ): Promise<Result<Inbox, DefineDishError>> {
+      const remembered = await remember(name, ingredientsText);
+      if (!remembered.ok) return remembered;
+      const inbox = await changeInbox((current) =>
+        inboxes.refreshDish(current, remembered.value, newId),
+      );
+      return success(inbox);
+    },
+    toggleDish: (name: string): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.toggleDish(inbox, name)),
+    dish: async (name: string): Promise<Dish | undefined> => findDish(await dishStore.load(), name),
 
     // The list is saved before the inbox is emptied: if the second write fails,
     // validating again is harmless because duplicates are not added twice.

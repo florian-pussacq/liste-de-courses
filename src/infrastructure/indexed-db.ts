@@ -1,5 +1,6 @@
 import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction } from 'idb';
-import type { InboxRepository, ShoppingListRepository } from '../application/ports';
+import type { DishRepository, InboxRepository, ShoppingListRepository } from '../application/ports';
+import type { Dish } from '../domain/dish';
 import { emptyInbox, type Inbox } from '../domain/inbox';
 import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
 
@@ -10,6 +11,8 @@ const DOCUMENTS = 'documents';
 interface Documents {
   'shopping-list': ShoppingList;
   inbox: Inbox;
+  // Added without a schema version: an absent document simply means no dish yet.
+  dishes: readonly Dish[];
 }
 
 // Stored values are typed by the repositories, the only way in for the application;
@@ -21,6 +24,7 @@ interface Schema extends DBSchema {
 export interface Storage {
   readonly shoppingLists: ShoppingListRepository;
   readonly inboxes: InboxRepository;
+  readonly dishes: DishRepository;
   close(): void;
 }
 
@@ -36,6 +40,7 @@ export async function openStorage(name = 'liste-de-courses'): Promise<Storage> {
   return {
     shoppingLists: documentRepository(db, 'shopping-list', emptyShoppingList),
     inboxes: documentRepository(db, 'inbox', emptyInbox),
+    dishes: documentRepository(db, 'dishes', () => []),
     close: () => db.close(),
   };
 }

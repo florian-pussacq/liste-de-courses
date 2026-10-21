@@ -16,6 +16,7 @@ async function start(target: HTMLElement): Promise<void> {
   const app = shopping({
     shoppingLists: storage.shoppingLists,
     inboxes: storage.inboxes,
+    dishes: storage.dishes,
     now: () => Date.now(),
     newId: () => crypto.randomUUID(),
     readClipboard: () => readClipboard(),

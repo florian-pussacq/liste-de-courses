@@ -10,8 +10,8 @@
 
 ## 2. Application et persistance
 
-- [ ] 2.1 Ajouter le port `DishRepository` et son implémentation en mémoire, faire consulter les plats par les cas d'usage de capture, et ajouter `defineDishFromProposal`, `updateDish` et `toggleDish` ; vérifier un test par cas d'usage sur des dépôts en mémoire
-- [ ] 2.2 Implémenter l'adaptateur IndexedDB des plats (document `dishes`, liste vide s'il est absent, schéma inchangé), et vérifier avec `fake-indexeddb` le scénario « Plat retrouvé après réouverture »
+- [x] 2.1 Ajouter le port `DishRepository` et son implémentation en mémoire, faire consulter les plats par les cas d'usage de capture, et ajouter `defineDishFromProposal`, `updateDish` et `toggleDish` ; vérifier un test par cas d'usage sur des dépôts en mémoire
+- [x] 2.2 Implémenter l'adaptateur IndexedDB des plats (document `dishes`, liste vide s'il est absent, schéma inchangé), et vérifier avec `fake-indexeddb` le scénario « Plat retrouvé après réouverture »
 
 ## 3. Interface
 
