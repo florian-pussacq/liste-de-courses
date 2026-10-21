@@ -7,10 +7,10 @@
 
 ## 2. Interface du tri
 
-- [ ] 2.1 Présenter le tri dans l'ordre `reviewOrder`, et vérifier en e2e le scénario « Plats en premier »
-- [ ] 2.2 Fixer le pied de la feuille du tri, et vérifier en e2e, avec un tri d'une vingtaine de propositions, que « Ajouter N à la liste » est visible sans défiler
-- [ ] 2.3 Replier le rappel des textes reçus avec leur nombre, et vérifier en e2e les scénarios de « Rappel du texte reçu »
-- [ ] 2.4 Ne donner qu'une fois l'explication des plats à définir, et vérifier par capture la lisibilité d'un menu de plusieurs jours en clair et en sombre
+- [x] 2.1 Présenter le tri dans l'ordre `reviewOrder`, et vérifier en e2e le scénario « Plats en premier »
+- [x] 2.2 Fixer le pied de la feuille du tri, et vérifier en e2e, avec un tri d'une vingtaine de propositions, que « Ajouter N à la liste » est visible sans défiler
+- [x] 2.3 Replier le rappel des textes reçus avec leur nombre, et vérifier en e2e les scénarios de « Rappel du texte reçu »
+- [x] 2.4 Ne donner qu'une fois l'explication des plats à définir, et vérifier par capture la lisibilité d'un menu de plusieurs jours en clair et en sombre
 
 ## 3. Annulation dans la liste
 

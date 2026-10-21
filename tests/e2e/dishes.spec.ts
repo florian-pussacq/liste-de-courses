@@ -182,3 +182,15 @@ test('keeps a recognised dish as a plain item this time only', async ({ page }) 
   await pasteByHand(page, 'Lundi 3 : risotto');
   await expect(ingredientsOf(page, 'risotto')).toHaveText(['riz', 'parmesan']);
 });
+
+test('presents dishes, recognised or to define, before plain items', async ({ page }) => {
+  await pasteByHand(page, 'risotto');
+  await defineDish(page, 'risotto', 'riz');
+  await page.getByRole('button', { name: 'Annuler', exact: true }).click();
+  await openInboxByHand(page);
+
+  await pasteByHand(page, 'Lundi 3 : risotto / carottes\nMardi 4 : gratin / brocolis');
+
+  const reviewed = page.getByRole('list', { name: 'Articles proposés' }).locator(':scope > li');
+  await expect(reviewed).toHaveText([/^risotto/, /^gratin/, 'carottes', 'brocolis']);
+});

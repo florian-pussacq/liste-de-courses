@@ -18,13 +18,22 @@ test('proposes one item per line of a pasted list and recalls the text', async (
   await pasteByHand(page, '- pain\n* beurre\n\n1. confiture');
 
   await expect(proposals(page)).toHaveText(['pain', 'beurre', 'confiture']);
+  await page.getByText('1 texte reçu').click();
   await expect(page.getByRole('region', { name: 'Textes reçus' })).toContainText('1. confiture');
+});
+
+test('folds the received texts by default, telling how many there are', async ({ page }) => {
+  await pasteByHand(page, 'pense à prendre du lait stp');
+
+  await expect(page.getByText('1 texte reçu')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Textes reçus' })).toBeHidden();
 });
 
 test('recalls several received texts in their order', async ({ page }) => {
   await pasteByHand(page, 'pain');
   await pasteByHand(page, 'beurre');
 
+  await page.getByText('2 textes reçus').click();
   await expect(page.getByRole('region', { name: 'Textes reçus' }).locator('blockquote')).toHaveText(
     ['pain', 'beurre'],
   );
@@ -84,4 +93,12 @@ test('keeps pending proposals when the application is reopened', async ({ page }
 
   await page.getByRole('button', { name: '2 articles à trier' }).click();
   await expect(proposals(page)).toHaveText(['pain', 'beurre']);
+});
+
+test('keeps the validation in sight however long the review is', async ({ page }) => {
+  const labels = Array.from({ length: 20 }, (_, index) => `article ${index + 1}`);
+  await pasteByHand(page, labels.join('\n'));
+
+  await expect(page.getByRole('button', { name: 'Ajouter 20 à la liste' })).toBeInViewport();
+  await expect(page.getByRole('button', { name: 'Annuler', exact: true })).toBeInViewport();
 });

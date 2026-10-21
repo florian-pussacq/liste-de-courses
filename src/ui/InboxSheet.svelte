@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
-  import { keptEntries, type Inbox, type Proposal } from '../domain/inbox';
+  import { keptEntries, reviewOrder, type Inbox, type Proposal } from '../domain/inbox';
   import type { ShoppingList } from '../domain/shopping-list';
   import { messageFor } from './messages';
   import { labelKey } from '../domain/label';
@@ -41,7 +41,7 @@
 
   // Consecutive ingredients of the same dish are shown as one group under its name.
   const segments = $derived(
-    inbox.proposals.reduce<Segment[]>((grouped, proposal) => {
+    reviewOrder(inbox).reduce<Segment[]>((grouped, proposal) => {
       const last = grouped.at(-1);
       if (proposal.dishToDefine) return [...grouped, { key: proposal.id, toDefine: proposal }];
       if (proposal.dish === undefined) return [...grouped, { key: proposal.id, proposal }];
@@ -51,6 +51,10 @@
       return [...grouped, { key: proposal.id, dish: proposal.dish, proposals: [proposal] }];
     }, []),
   );
+
+  // Explained once, on the first dish to define, rather than repeated on each of them.
+  const firstToDefine = $derived(inbox.proposals.find((proposal) => proposal.dishToDefine)?.id);
+  const received = $derived(inbox.capturedTexts.length);
 
   type DishEditing =
     | { readonly kind: 'define'; readonly proposalId: string; readonly name: string }
@@ -146,12 +150,15 @@
 >
   {#if visibleNotice}<p class="notice" role="status">{visibleNotice}</p>{/if}
 
-  {#if inbox.capturedTexts.length > 0}
-    <section aria-label="Textes reçus" class="received">
-      {#each inbox.capturedTexts as text, index (index)}
-        <blockquote>{text}</blockquote>
-      {/each}
-    </section>
+  {#if received > 0}
+    <details class="received">
+      <summary>{received} texte{received > 1 ? 's' : ''} reçu{received > 1 ? 's' : ''}</summary>
+      <section aria-label="Textes reçus">
+        {#each inbox.capturedTexts as text, index (index)}
+          <blockquote>{text}</blockquote>
+        {/each}
+      </section>
+    </details>
   {/if}
 
   {#if inbox.proposals.length > 0}
@@ -197,9 +204,11 @@
             >
               {proposal.label}{#if proposal.toCheck}&nbsp;?{/if}
             </button>
-            <p class="to-define-hint">
-              Plat inconnu : rien ne sera ajouté tant qu'il n'est pas défini.
-            </p>
+            {#if proposal.id === firstToDefine}
+              <p class="to-define-hint">
+                Un plat inconnu n'ajoute rien à la liste tant qu'il n'est pas défini.
+              </p>
+            {/if}
             <div class="to-define-actions">
               <button
                 type="button"
@@ -244,7 +253,7 @@
     </form>
   </details>
 
-  <div class="actions">
+  <div class="actions validation">
     <button type="button" class="button" onclick={abandon}>Annuler</button>
     <button type="button" class="button primary" disabled={kept === 0} onclick={validate}>
       Ajouter {kept} à la liste
@@ -292,10 +301,13 @@
   }
 
   .received {
+    margin: 0 0 12px;
+  }
+
+  .received section {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-bottom: 16px;
   }
 
   blockquote {
@@ -394,6 +406,16 @@
 
   details {
     margin-top: 8px;
+  }
+
+  /* The sheet scrolls; the way out of it stays at hand. */
+  .validation {
+    position: sticky;
+    bottom: calc(-20px - env(safe-area-inset-bottom));
+    margin-inline: -20px;
+    padding: 12px 20px calc(20px + env(safe-area-inset-bottom));
+    margin-bottom: calc(-20px - env(safe-area-inset-bottom));
+    background: var(--ink);
   }
 
   summary {

@@ -32,7 +32,7 @@ L'application est mono-utilisateur et locale : avant un retrait, l'interface gar
 ## Risks / Trade-offs
 
 - [Un instantané périmé si la liste change entre le retrait et l'annulation (cochage d'un autre article)] → L'annulation rétablit l'état d'avant le retrait, ce qui annulerait aussi ce cochage. Pour l'éviter, toute autre modification de la liste fait disparaître le bandeau.
-- [Un pied fixe masque le bas du contenu] → Une marge basse équivalente est ajoutée au contenu de la feuille.
+- [Un pied fixe masque le bas du contenu] → Un élément `sticky` reste dans le flux : en fin de défilement, il se place après le dernier élément, sans rien recouvrir.
 
 ## Migration Plan
 
