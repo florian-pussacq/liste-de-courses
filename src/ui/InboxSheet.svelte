@@ -3,6 +3,8 @@
   import { keptEntries, type Inbox, type Proposal } from '../domain/inbox';
   import type { ShoppingList } from '../domain/shopping-list';
   import { messageFor } from './messages';
+  import { labelKey } from '../domain/label';
+  import DishSheet from './DishSheet.svelte';
   import ProposalChip from './ProposalChip.svelte';
   import Sheet from './Sheet.svelte';
 
@@ -24,6 +26,27 @@
   let draft = $state('');
   let error = $state('');
   const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
+
+  type Segment =
+    | { readonly key: string; readonly proposal: Proposal }
+    | { readonly key: string; readonly dish: string; readonly proposals: readonly Proposal[] };
+
+  // Consecutive ingredients of the same dish are shown as one group under its name.
+  const segments = $derived(
+    inbox.proposals.reduce<Segment[]>((grouped, proposal) => {
+      const last = grouped.at(-1);
+      if (proposal.dish === undefined) return [...grouped, { key: proposal.id, proposal }];
+      if (last && 'dish' in last && labelKey(last.dish) === labelKey(proposal.dish)) {
+        return [...grouped.slice(0, -1), { ...last, proposals: [...last.proposals, proposal] }];
+      }
+      return [...grouped, { key: proposal.id, dish: proposal.dish, proposals: [proposal] }];
+    }, []),
+  );
+
+  type DishEditing =
+    | { readonly kind: 'define'; readonly proposalId: string; readonly name: string }
+    | { readonly kind: 'update'; readonly name: string; readonly ingredientsText: string };
+  let dishEditing: DishEditing | undefined = $state();
 
   const kept = $derived(keptEntries(inbox).length);
   const title = $derived(
@@ -55,6 +78,34 @@
   }
 
   const toggle = async (proposal: Proposal) => (inbox = await app.toggleProposal(proposal.id));
+
+  function defineDish() {
+    if (!editing) return;
+    dishEditing = { kind: 'define', proposalId: editing.id, name: editing.label };
+    editingId = undefined;
+  }
+
+  // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
+  async function editDish(event: MouseEvent, name: string) {
+    event.preventDefault();
+    const dish = await app.dish(name);
+    if (!dish) return;
+    const ingredientsText = dish.ingredients
+      .map(({ label, toCheck }) => (toCheck ? `${label} ?` : label))
+      .join('\n');
+    dishEditing = { kind: 'update', name: dish.name, ingredientsText };
+  }
+
+  async function saveDish(ingredientsText: string): Promise<string | undefined> {
+    if (!dishEditing) return undefined;
+    const result =
+      dishEditing.kind === 'define'
+        ? await app.defineDishFromProposal(dishEditing.proposalId, ingredientsText)
+        : await app.updateDish(dishEditing.name, ingredientsText);
+    if (!result.ok) return messageFor(result.error);
+    inbox = result.value;
+    return undefined;
+  }
 
   function startEditing(proposal: Proposal) {
     editingId = proposal.id;
@@ -106,8 +157,29 @@
 
   {#if inbox.proposals.length > 0}
     <ul aria-label="Articles proposés" class="chips">
-      {#each inbox.proposals as proposal (proposal.id)}
-        <ProposalChip {proposal} ontoggle={toggle} onedit={startEditing} />
+      {#each segments as segment (segment.key)}
+        {#if 'dish' in segment}
+          {@const allDiscarded = segment.proposals.every((proposal) => proposal.discarded)}
+          <li class="dish">
+            <button
+              type="button"
+              class="dish-name"
+              class:discarded={allDiscarded}
+              aria-label="{allDiscarded ? 'Remettre' : 'Écarter'} le plat {segment.dish}"
+              onclick={async () => (inbox = await app.toggleDish(segment.dish))}
+              oncontextmenu={(event) => editDish(event, segment.dish)}
+            >
+              {segment.dish}
+            </button>
+            <ul aria-label="Ingrédients de {segment.dish}" class="chips">
+              {#each segment.proposals as proposal (proposal.id)}
+                <ProposalChip {proposal} ontoggle={toggle} onedit={startEditing} />
+              {/each}
+            </ul>
+          </li>
+        {:else}
+          <ProposalChip proposal={segment.proposal} ontoggle={toggle} onedit={startEditing} />
+        {/if}
       {/each}
     </ul>
   {/if}
@@ -125,6 +197,9 @@
     >
       {editing.toCheck ? 'Rendre certain' : 'Marquer à vérifier'}
     </button>
+    {#if editing.dish === undefined}
+      <button type="button" class="button" onclick={defineDish}>C'est un plat</button>
+    {/if}
   {/if}
 
   <form class="field" onsubmit={addProposal}>
@@ -151,6 +226,15 @@
     </button>
   </div>
 </Sheet>
+
+{#if dishEditing}
+  <DishSheet
+    name={dishEditing.name}
+    ingredientsText={dishEditing.kind === 'update' ? dishEditing.ingredientsText : ''}
+    onsave={saveDish}
+    onclose={() => (dishEditing = undefined)}
+  />
+{/if}
 
 <style>
   .notice {
@@ -186,6 +270,36 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+  }
+
+  .dish {
+    flex-basis: 100%;
+    padding: 10px 12px 2px;
+    border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    border-radius: 22px;
+  }
+
+  .dish .chips {
+    margin-bottom: 8px;
+  }
+
+  .dish-name {
+    min-height: var(--target);
+    padding: 0 6px;
+    border: none;
+    background: transparent;
+    color: var(--ground);
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-align: left;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  .dish-name.discarded {
+    color: var(--surface-muted);
+    text-decoration: line-through;
   }
 
   details {

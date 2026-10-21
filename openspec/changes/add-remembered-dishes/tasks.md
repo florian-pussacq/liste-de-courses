@@ -15,11 +15,11 @@
 
 ## 3. Interface
 
-- [ ] 3.1 Rendre les groupes de plats dans le tri (en-tête qui écarte ou remet le groupe, pastilles d'ingrédients), et vérifier en e2e les scénarios « Plat reconnu dans un texte reçu », « Écarter le plat entier » et « Écarter un seul ingrédient »
-- [ ] 3.2 Ajouter « C'est un plat » au formulaire de correction et la feuille de définition d'un plat, et vérifier en e2e les scénarios « Définition d'un plat », « Remplacement immédiat dans le tri » et « Plat sans ingrédient »
-- [ ] 3.3 Ouvrir la modification d'un plat par appui long sur son en-tête, et vérifier en e2e le scénario « Ajout d'un ingrédient à un plat », y compris la reconnaissance suivante
-- [ ] 3.4 Vérifier en e2e le collage d'un menu de plusieurs jours (lignes de menu, plat reconnu deux fois, jour vide, doute) et vérifier que les plats ne figurent pas dans le texte envoyé de la liste
-- [ ] 3.5 Vérifier en clair et en sombre, par captures, que les groupes de plats et la feuille de définition respectent les contrastes de 4,5:1
+- [x] 3.1 Rendre les groupes de plats dans le tri (en-tête qui écarte ou remet le groupe, pastilles d'ingrédients), et vérifier en e2e les scénarios « Plat reconnu dans un texte reçu », « Écarter le plat entier » et « Écarter un seul ingrédient »
+- [x] 3.2 Ajouter « C'est un plat » au formulaire de correction et la feuille de définition d'un plat, et vérifier en e2e les scénarios « Définition d'un plat », « Remplacement immédiat dans le tri » et « Plat sans ingrédient »
+- [x] 3.3 Ouvrir la modification d'un plat par appui long sur son en-tête, et vérifier en e2e le scénario « Ajout d'un ingrédient à un plat », y compris la reconnaissance suivante
+- [x] 3.4 Vérifier en e2e le collage d'un menu de plusieurs jours (lignes de menu, plat reconnu deux fois, jour vide, doute) et vérifier que les plats ne figurent pas dans le texte envoyé de la liste
+- [x] 3.5 Vérifier en clair et en sombre, par captures, que les groupes de plats et la feuille de définition respectent les contrastes de 4,5:1
 
 ## 4. Vérification d'intégration
 
