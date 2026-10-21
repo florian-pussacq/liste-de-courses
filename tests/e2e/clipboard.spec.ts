@@ -42,3 +42,16 @@ test('lets the user type while the clipboard read waits for permission', async (
   await page.getByRole('button', { name: 'Proposer les articles' }).click();
   await expect(proposals(page)).toHaveText(['pain']);
 });
+
+test('stops warning about the clipboard once a list was pasted by hand', async ({ page }) => {
+  await stubClipboard(page, { text: '' });
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Coller une liste' }).click();
+  await expect(page.getByRole('status')).toContainText('Le presse-papiers est vide.');
+
+  await page.getByLabel('Texte à découper').fill('pain');
+  await page.getByRole('button', { name: 'Proposer les articles' }).click();
+
+  await expect(proposals(page)).toHaveText(['pain']);
+  await expect(page.getByRole('status')).toBeHidden();
+});

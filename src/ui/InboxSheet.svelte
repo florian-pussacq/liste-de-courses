@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
   import { keptEntries, type Inbox, type Proposal } from '../domain/inbox';
   import type { ShoppingList } from '../domain/shopping-list';
@@ -24,6 +25,11 @@
   let capturedText = $state('');
   let newLabel = $state('');
   let error = $state('');
+  // A notice is about the capture that raised it: once a text is received, it is outdated.
+  const capturesAtOpening = untrack(() => inbox.capturedTexts.length);
+  const visibleNotice = $derived(
+    inbox.capturedTexts.length === capturesAtOpening ? notice : undefined,
+  );
   let actionsFor: Proposal | undefined = $state();
   let dishActionsFor: string | undefined = $state();
   const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
@@ -138,7 +144,7 @@
     : undefined}
   {onclose}
 >
-  {#if notice}<p class="notice" role="status">{notice}</p>{/if}
+  {#if visibleNotice}<p class="notice" role="status">{visibleNotice}</p>{/if}
 
   {#if inbox.capturedTexts.length > 0}
     <section aria-label="Textes reçus" class="received">
