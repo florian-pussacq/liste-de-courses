@@ -30,8 +30,18 @@ export const emptyInbox = (): Inbox => ({ proposals: [], capturedTexts: [] });
 export const proposedLabels = (inbox: Inbox): string[] =>
   inbox.proposals.map((proposal) => proposal.label);
 
+const isAboutADish = (proposal: Proposal) =>
+  proposal.dish !== undefined || proposal.dishToDefine === true;
+
+// Dishes first, then plain items, each in the order received. Storage keeps the received
+// order so that insertions at a proposal's place stay simple.
+export const reviewOrder = (inbox: Inbox): Proposal[] => [
+  ...inbox.proposals.filter(isAboutADish),
+  ...inbox.proposals.filter((proposal) => !isAboutADish(proposal)),
+];
+
 export const keptEntries = (inbox: Inbox): Entry[] =>
-  inbox.proposals
+  reviewOrder(inbox)
     .filter((proposal) => !proposal.discarded && !proposal.dishToDefine)
     .map(({ label, toCheck }) => ({ label, toCheck }));
 

@@ -8,6 +8,7 @@ import {
   keepDishAsItem,
   keptEntries,
   refreshDish,
+  reviewOrder,
   toggleDish,
   toggleProposal,
   type Inbox,
@@ -199,5 +200,34 @@ describe('keeping a recognised dish as a plain item', () => {
       'risotto|-||',
       'lait|-||',
     ]);
+  });
+});
+
+describe('review order', () => {
+  const reviewed = (inbox: Inbox) => view({ ...inbox, proposals: reviewOrder(inbox) });
+
+  it('presents dishes, recognised or to define, before plain items', () => {
+    const inbox = captureText(
+      emptyInbox(),
+      'Lundi 3 : risotto / carottes\nMardi 4 : gratin / brocolis',
+      sequentialIds(),
+      [risotto],
+    );
+
+    expect(reviewed(inbox)).toEqual([
+      'riz|risotto||',
+      'parmesan|risotto|?|',
+      'gratin|to-define||',
+      'carottes|-||',
+      'brocolis|-||',
+    ]);
+  });
+
+  it('adds kept items to the list in the review order', () => {
+    const inbox = captureText(emptyInbox(), 'carottes\nLundi 3 : risotto', sequentialIds(), [
+      risotto,
+    ]);
+
+    expect(keptEntries(inbox).map((entry) => entry.label)).toEqual(['riz', 'parmesan', 'carottes']);
   });
 });

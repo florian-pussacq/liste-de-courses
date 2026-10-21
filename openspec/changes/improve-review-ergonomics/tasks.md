@@ -2,7 +2,7 @@
 
 ## 1. Domaine et application
 
-- [ ] 1.1 Implémenter en TDD `reviewOrder` (plats reconnus et à définir d'abord, puis articles simples, chacun dans l'ordre de réception) et faire suivre cet ordre à `keptEntries`, et vérifier les scénarios « Plats en premier » et « Ordre conservé à la validation »
+- [x] 1.1 Implémenter en TDD `reviewOrder` (plats reconnus et à définir d'abord, puis articles simples, chacun dans l'ordre de réception) et faire suivre cet ordre à `keptEntries`, et vérifier les scénarios « Plats en premier » et « Ordre conservé à la validation »
 - [ ] 1.2 Ajouter le cas d'usage `restoreList`, et vérifier sur des dépôts en mémoire qu'une liste rétablie est identique à l'instantané
 
 ## 2. Interface du tri
