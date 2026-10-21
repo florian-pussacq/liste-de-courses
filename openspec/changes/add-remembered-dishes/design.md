@@ -47,6 +47,12 @@ Dans `splitIntoEntries`, chaque ligne est d'abord testée par `/^\s*(lundi|mardi
 - Le formulaire de correction d'une pastille simple (appui long) gagne « C'est un plat ». Il ouvre une feuille `DishSheet` : le nom en titre, une zone d'ingrédients (un par ligne, « ? » accepté), « Enregistrer ». En modification, la zone est pré-remplie avec les ingrédients actuels, les doutes suffixés de « ? ».
 - La feuille du plat s'ouvre par-dessus le tri : deux `<dialog>` modaux s'empilent dans la couche supérieure du navigateur.
 
+### Révision après essai sur téléphone
+L'essai réel a montré trois défauts, corrigés dans ce même change :
+- **Actions invisibles.** Le formulaire de correction s'affichait sous toutes les pastilles, hors de l'écran dès que le tri est long. Les actions d'une pastille s'ouvrent désormais dans une feuille `ProposalActionsSheet` (un `<dialog>` modal par-dessus le tri), comme les actions d'un article dans la liste. Les tests de bout en bout trouvaient le bouton hors écran : ils prouvaient l'existence de la fonction, pas son accessibilité.
+- **Plats indiscernables.** Dans une ligne de menu, la partie avant le premier « / » est un nom de plat. `splitIntoEntries` marque ces entrées (`Entry.isDish`) et ne les découpe pas sur « - ». À la capture, un nom de plat inconnu devient une proposition `dishToDefine`, rendue comme un bloc distinct avec deux boutons visibles, « Définir » et « C'est un article ». Elle est exclue de `keptEntries` : on n'achète pas un nom de plat.
+- **Pas de retour arrière.** `keepDishAsItem(inbox, dishName, newId)` remplace un groupe par une proposition simple portant le nom du plat, à sa place ; `keepAsItem(inbox, id)` retire le marquage `dishToDefine`. La définition mémorisée n'est jamais touchée. Les actions d'un groupe (modifier, garder comme article) s'ouvrent par un bouton visible dans l'en-tête du groupe, en plus de l'appui long.
+
 ## Risks / Trade-offs
 
 - [Une ligne de courses ordinaire commence par un jour (« Mardi gras : crêpes »)] → Elle est traitée comme une ligne de menu. Le cas est rare et visible au tri.

@@ -7,7 +7,7 @@ Mémorise la traduction d'un plat en ingrédients, pour qu'un nom de plat reçu 
 ## ADDED Requirements
 
 ### Requirement: Définition d'un plat depuis le tri
-Le système SHALL permettre, depuis les actions d'un article proposé, de le définir comme plat : son libellé devient le nom du plat, et l'utilisateur saisit les ingrédients, un par ligne. Un ingrédient qui se termine par « ? » est un ingrédient à vérifier. Un plat sans nom ou sans ingrédient MUST être refusé.
+Le système SHALL permettre de définir comme plat un article proposé, depuis ses actions ouvertes par un appui long dans une feuille affichée par-dessus le tri, ou un plat à définir, depuis une action visible sur celui-ci : son libellé devient le nom du plat, et l'utilisateur saisit les ingrédients, un par ligne. Un ingrédient qui se termine par « ? » est à vérifier. Un plat sans nom ou sans ingrédient MUST être refusé.
 
 #### Scenario: Définition d'un plat
 - **WHEN** l'article proposé « omelette » est défini comme plat avec les ingrédients « œufs », « fromage ? » et « ciboulette »
@@ -20,6 +20,36 @@ Le système SHALL permettre, depuis les actions d'un article proposé, de le dé
 #### Scenario: Plat sans ingrédient
 - **WHEN** l'utilisateur tente de définir un plat sans saisir d'ingrédient
 - **THEN** le plat n'est pas mémorisé et l'utilisateur en est informé
+
+#### Scenario: Actions visibles quelle que soit la longueur du tri
+- **WHEN** le tri propose une vingtaine d'articles et que l'utilisateur fait un appui long sur l'un d'eux
+- **THEN** ses actions s'affichent par-dessus le tri, sans avoir à faire défiler
+
+### Requirement: Plat à définir
+Le système SHALL présenter un nom de plat inconnu issu d'une ligne de menu comme un plat à définir, distinct d'un article, avec une action visible pour définir ses ingrédients. Un plat à définir MUST NOT être ajouté à la liste à la validation, sauf s'il a été gardé comme article.
+
+#### Scenario: Nom de plat inconnu dans un menu
+- **WHEN** aucun plat ne s'appelle « gratin » et que le texte reçu est « Lundi 3 : gratin / carottes »
+- **THEN** « gratin » est présenté comme un plat à définir et « carottes » comme un article
+
+#### Scenario: Plat à définir non ajouté
+- **WHEN** « gratin » est un plat à définir et que l'utilisateur valide
+- **THEN** « gratin » n'est pas ajouté à la liste
+
+#### Scenario: Définition depuis le menu
+- **WHEN** l'utilisateur définit le plat à définir « gratin » avec « pommes de terre » et « crème ? »
+- **THEN** « gratin » est mémorisé et remplacé dans le tri par son groupe
+
+### Requirement: Plat gardé comme article
+Le système SHALL permettre, pour un plat reconnu ou un plat à définir, de le garder comme un simple article pour ce tri seulement : il est remplacé par un article proposé portant son nom, et la définition mémorisée du plat MUST rester inchangée.
+
+#### Scenario: Plat reconnu acheté tel quel
+- **WHEN** le plat « risotto » est reconnu dans le tri et que l'utilisateur le garde comme article
+- **THEN** le groupe « risotto » est remplacé par l'article proposé « risotto », et un « risotto » reçu plus tard est de nouveau reconnu comme plat
+
+#### Scenario: Plat à définir gardé comme article
+- **WHEN** « gratin » est un plat à définir, que l'utilisateur le garde comme article puis valide
+- **THEN** « gratin » est ajouté à la liste
 
 ### Requirement: Reconnaissance d'un plat connu
 Le système SHALL remplacer, dans la boîte de réception, tout article proposé dont le libellé est identique au nom d'un plat mémorisé par les ingrédients de ce plat, regroupés sous son nom, avec leur état certain ou à vérifier. Deux noms sont identiques s'ils ne diffèrent que par la casse, les accents ou les espaces superflus.
