@@ -164,6 +164,10 @@ describe('merging duplicate proposals', () => {
     expect(proposedLabels(captured('carottes\nCarottes'))).toEqual(['carottes']);
   });
 
+  it('proposes an item received in the singular and the plural only once', () => {
+    expect(proposedLabels(captured('tomates cerises\ntomate cerise'))).toEqual(['tomates cerises']);
+  });
+
   it('does not propose again an item already pending from an earlier capture', () => {
     const newId = sequentialIds();
 

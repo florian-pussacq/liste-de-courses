@@ -82,6 +82,12 @@ describe('preventing duplicates', () => {
     expect(find(list, 'Œufs').checked).toBe(false);
   });
 
+  it('keeps the existing label when the same item is added in the singular', () => {
+    const list = added(listOf('petits pois'), 'petit pois');
+
+    expect(list.items.map((item) => item.label)).toEqual(['petits pois']);
+  });
+
   it('unchecks an already checked item instead of duplicating it', () => {
     const initial = listOf('lait');
     const checked = toggleItem(initial, find(initial, 'lait').id, 5);

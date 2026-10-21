@@ -104,3 +104,9 @@ test('removes an item from its actions', async ({ page }) => {
 
   await expect(page.getByText('La liste est vide.')).toBeVisible();
 });
+
+test('does not add the singular of an item already listed in the plural', async ({ page }) => {
+  await addItems(page, 'petits pois', 'petit pois');
+
+  await expect(toBuy(page)).toHaveText(['petits pois']);
+});

@@ -19,7 +19,19 @@ describe('labelKey', () => {
     expect(labelKey('  pommes   de  terre ')).toBe(labelKey('pommes de terre'));
   });
 
+  it('ignores the plural mark at the end of each word', () => {
+    expect(labelKey('petits pois')).toBe(labelKey('petit pois'));
+    expect(labelKey('Tomates cerises')).toBe(labelKey('tomate cerise'));
+    expect(labelKey('choux')).toBe(labelKey('chou'));
+    expect(labelKey('pains')).toBe(labelKey('pain'));
+  });
+
+  it('leaves words of two letters or fewer intact', () => {
+    expect(labelKey('os')).not.toBe(labelKey('o'));
+  });
+
   it('keeps distinct labels distinct', () => {
-    expect(labelKey('pain')).not.toBe(labelKey('pains'));
+    expect(labelKey('pain')).not.toBe(labelKey('pâte'));
+    expect(labelKey('pommes')).not.toBe(labelKey('pommes de terre'));
   });
 });
