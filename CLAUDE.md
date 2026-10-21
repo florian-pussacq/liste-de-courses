@@ -69,6 +69,9 @@ Ce dépôt est public. Tout ce qui y entre (code, specs, commits, messages, noms
 | actions d'un article | `ItemActions`  |
 | à vérifier           | `toCheck`      |
 | entrée (découpage)   | `Entry`        |
+| plat                 | `Dish`         |
+| ingrédient           | `ingredient`   |
+| ligne de menu        | `menuLine`     |
 
 Le panier n'est pas un concept du domaine : c'est la présentation des articles cochés, et il n'apparaît que dans l'interface.
 

@@ -6,7 +6,7 @@
 - [x] 1.2 Introduire en TDD la fusion des doublons dans la boîte de réception (capture et ajout manuel, le certain l'emporte), et vérifier les scénarios « Article reçu deux fois » et « Le certain l'emporte dans le tri »
 - [x] 1.3 Implémenter en TDD `Dish`, `defineDish` et `findDish` (nom vide ou sans ingrédient refusé, « ? » des ingrédients, comparaison normalisée), et vérifier les scénarios « Définition d'un plat » et « Plat sans ingrédient »
 - [x] 1.4 Implémenter en TDD la reconnaissance des plats à la capture, `expandIntoDish`, `refreshDish` et `toggleDish`, et vérifier les scénarios de « Reconnaissance d'un plat connu », « Écart d'un plat entier », « Modification d'un plat » et « Plat reçu deux fois »
-- [ ] 1.5 Compléter le glossaire du `CLAUDE.md` (`Dish`, `ingredient`, `menuLine`), et vérifier sa cohérence avec le code
+- [x] 1.5 Compléter le glossaire du `CLAUDE.md` (`Dish`, `ingredient`, `menuLine`), et vérifier sa cohérence avec le code
 
 ## 2. Application et persistance
 
