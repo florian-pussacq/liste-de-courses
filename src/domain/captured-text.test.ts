@@ -51,6 +51,42 @@ describe('splitIntoEntries', () => {
   });
 });
 
+describe('splitIntoEntries on menu lines', () => {
+  it('drops the day prefix and splits on slash and dash', () => {
+    expect(labelsOf('Lundi 3 : omelette / carottes-brocolis')).toEqual([
+      'omelette',
+      'carottes',
+      'brocolis',
+    ]);
+  });
+
+  it('recognises the day whatever its case or spacing', () => {
+    expect(labelsOf('MARDI 4:soupe\n  jeudi 1er : risotto')).toEqual(['soupe', 'risotto']);
+  });
+
+  it('proposes nothing for a day without meal', () => {
+    expect(labelsOf('Mardi 4 :\nMercredi 5 : risotto')).toEqual(['risotto']);
+  });
+
+  it('keeps slashes and dashes in ordinary lines', () => {
+    expect(labelsOf('sel/poivre\npâte brisée - pur beurre')).toEqual([
+      'sel/poivre',
+      'pâte brisée - pur beurre',
+    ]);
+  });
+
+  it('keeps doubts on menu lines', () => {
+    expect(splitIntoEntries('Samedi 8 : restaurant ? / purée')).toEqual([
+      toCheck('restaurant'),
+      certain('purée'),
+    ]);
+  });
+
+  it('does not take a word starting like a day for a menu line', () => {
+    expect(labelsOf('lundis : rien')).toEqual(['lundis : rien']);
+  });
+});
+
 describe('sharedText', () => {
   it('uses the text alone when there is no title', () => {
     expect(sharedText({ text: 'lait, œufs' })).toBe('lait, œufs');

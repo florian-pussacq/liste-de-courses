@@ -1,6 +1,10 @@
 import { cleanLabel } from './label';
 
-const SEPARATORS = /[\r\n,;]+/;
+const LINE_BREAKS = /\r?\n/;
+const SEPARATORS = /[,;]+/;
+// A menu line ("Lundi 3 : dish / side-side") also separates on slash and dash.
+const MENU_LINE_PREFIX = /^\s*(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b[^:]*:/i;
+const MENU_SEPARATORS = /[,;/-]+/;
 const LEADING_BULLET_OR_NUMBER = /^\s*(?:[-*•·–—]|\d+[.)])\s*/;
 const TRAILING_QUESTION_MARK = /\s*\?$/;
 
@@ -17,9 +21,16 @@ export interface SharedContent {
 
 export function splitIntoEntries(capturedText: string): Entry[] {
   return capturedText
-    .split(SEPARATORS)
+    .split(LINE_BREAKS)
+    .flatMap(splitLine)
     .map((element) => toEntry(cleanLabel(element.replace(LEADING_BULLET_OR_NUMBER, ''))))
     .filter((entry) => entry.label !== '');
+}
+
+function splitLine(line: string): string[] {
+  return MENU_LINE_PREFIX.test(line)
+    ? line.replace(MENU_LINE_PREFIX, '').split(MENU_SEPARATORS)
+    : line.split(SEPARATORS);
 }
 
 function toEntry(element: string): Entry {
