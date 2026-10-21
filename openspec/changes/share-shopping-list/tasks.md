@@ -11,8 +11,8 @@
 
 ## 3. Interface
 
-- [ ] 3.1 Ajouter « Envoyer la liste » dans l'en-tête, désactivé sans rien à envoyer, avec les messages de copie et d'échec, et vérifier en e2e (Web Share simulé) les scénarios « Liste envoyée », « Rien à envoyer », « Pas de menu de partage » et « Envoi annulé »
-- [ ] 3.2 Vérifier en e2e qu'aucune requête vers une autre origine n'est émise pendant un envoi (scénario « Envoi de la liste par l'utilisateur »)
+- [x] 3.1 Ajouter « Envoyer la liste » dans l'en-tête, désactivé sans rien à envoyer, avec les messages de copie et d'échec, et vérifier en e2e (Web Share simulé) les scénarios « Liste envoyée », « Rien à envoyer », « Pas de menu de partage » et « Envoi annulé »
+- [x] 3.2 Vérifier en e2e qu'aucune requête vers une autre origine n'est émise pendant un envoi (scénario « Envoi de la liste par l'utilisateur »)
 
 ## 4. Vérification d'intégration
 

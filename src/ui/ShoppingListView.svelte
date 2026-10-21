@@ -31,6 +31,16 @@
   }: Props = $props();
 
   let basketOpen = $state(false);
+  let sendNotice = $state('');
+
+  const SEND_NOTICES: Record<string, string> = {
+    copied: 'Liste copiée : colle-la dans ta messagerie.',
+    unavailable: "Impossible d'envoyer la liste depuis ce téléphone.",
+  };
+
+  async function send() {
+    sendNotice = SEND_NOTICES[await app.sendList()] ?? '';
+  }
 
   const toBuy = $derived(itemsToBuy(list));
   const toCheck = $derived(itemsToCheck(list));
@@ -46,15 +56,32 @@
 </script>
 
 <header>
-  {#if list.items.length === 0}
-    <h1>Liste de courses</h1>
-  {:else if total === 0}
-    <h1>À vérifier d'abord</h1>
-  {:else if toBuy.length === 0}
-    <h1>Tout est pris</h1>
-  {:else}
-    <h1>{toBuy.length}&nbsp;<span>à prendre</span></h1>
-  {/if}
+  <div class="title">
+    {#if list.items.length === 0}
+      <h1>Liste de courses</h1>
+    {:else if total === 0}
+      <h1>À vérifier d'abord</h1>
+    {:else if toBuy.length === 0}
+      <h1>Tout est pris</h1>
+    {:else}
+      <h1>{toBuy.length}&nbsp;<span>à prendre</span></h1>
+    {/if}
+    <button
+      type="button"
+      class="send"
+      aria-label="Envoyer la liste"
+      disabled={toBuy.length + toCheck.length === 0}
+      onclick={send}
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+      </svg>
+    </button>
+  </div>
+  {#if sendNotice}<p class="send-notice" role="status">{sendNotice}</p>{/if}
   {#if total > 0}
     <p class="count">{basket.length} / {total} pris</p>
     <div
@@ -150,6 +177,35 @@
 <style>
   header {
     padding: 28px 24px 12px;
+  }
+
+  .title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .send {
+    width: var(--target);
+    height: var(--target);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    background: transparent;
+  }
+
+  .send:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .send-notice {
+    margin: 10px 0 0;
+    font-weight: 600;
   }
 
   h1 {
