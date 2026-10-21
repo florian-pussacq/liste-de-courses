@@ -13,6 +13,10 @@ export default ts.config(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
+    rules: {
+      // Destructuring is the idiomatic way to omit a key from an immutable object.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+    },
   },
   {
     files: ['src/domain/**'],
