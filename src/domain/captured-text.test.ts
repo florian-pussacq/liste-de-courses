@@ -75,15 +75,42 @@ describe('splitIntoEntries on menu lines', () => {
     ]);
   });
 
-  it('keeps doubts on menu lines', () => {
-    expect(splitIntoEntries('Samedi 8 : restaurant ? / purée')).toEqual([
-      toCheck('restaurant'),
+  it('does not take a word starting like a day for a menu line', () => {
+    expect(labelsOf('lundis : rien')).toEqual(['lundis : rien']);
+  });
+});
+
+describe('dish names in menu lines', () => {
+  const dish = (label: string, toCheck = false): Entry => ({ label, toCheck, isDish: true });
+
+  it('marks the part before the first slash as a dish name', () => {
+    expect(splitIntoEntries('Lundi 3 : omelette / carottes-brocolis')).toEqual([
+      dish('omelette'),
+      certain('carottes'),
+      certain('brocolis'),
+    ]);
+  });
+
+  it('does not split a dish name on dashes', () => {
+    expect(splitIntoEntries('Jeudi 6 : chou-fleur gratiné / purée')).toEqual([
+      dish('chou-fleur gratiné'),
       certain('purée'),
     ]);
   });
 
-  it('does not take a word starting like a day for a menu line', () => {
-    expect(labelsOf('lundis : rien')).toEqual(['lundis : rien']);
+  it('keeps a doubt on a dish name', () => {
+    expect(splitIntoEntries('Samedi 8 : restaurant ? / purée')).toEqual([
+      dish('restaurant', true),
+      certain('purée'),
+    ]);
+  });
+
+  it('treats a menu line without slash as a dish name', () => {
+    expect(splitIntoEntries('Dimanche 9 : soupe, salade')).toEqual([dish('soupe'), dish('salade')]);
+  });
+
+  it('marks nothing as a dish in ordinary lines', () => {
+    expect(splitIntoEntries('omelette')).toEqual([certain('omelette')]);
   });
 });
 
