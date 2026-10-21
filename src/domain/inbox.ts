@@ -1,5 +1,5 @@
 import { splitIntoEntries, type Entry } from './captured-text';
-import { cleanLabel } from './label';
+import { cleanLabel, labelKey } from './label';
 import { failure, success, type Result } from './result';
 
 export type ProposalId = string;
@@ -37,12 +37,29 @@ const newProposal = (id: ProposalId, { label, toCheck }: Entry): Proposal => ({
   discarded: false,
 });
 
+// An item is never proposed twice; a certain item settles a pending doubt about it.
+function mergeProposal(
+  proposals: readonly Proposal[],
+  entry: Entry,
+  newId: () => ProposalId,
+): readonly Proposal[] {
+  const key = labelKey(entry.label);
+  const existing = proposals.find((proposal) => labelKey(proposal.label) === key);
+  if (!existing) return [...proposals, newProposal(newId(), entry)];
+  if (entry.toCheck || !existing.toCheck) return proposals;
+  return proposals.map((proposal) =>
+    proposal.id === existing.id ? { ...proposal, toCheck: false } : proposal,
+  );
+}
+
 export function captureText(inbox: Inbox, capturedText: string, newId: () => ProposalId): Inbox {
   const text = capturedText.trim();
   if (text === '') return inbox;
-  const captured = splitIntoEntries(text).map((entry) => newProposal(newId(), entry));
   return {
-    proposals: [...inbox.proposals, ...captured],
+    proposals: splitIntoEntries(text).reduce(
+      (proposals, entry) => mergeProposal(proposals, entry, newId),
+      inbox.proposals,
+    ),
     capturedTexts: [...inbox.capturedTexts, text],
   };
 }
@@ -56,7 +73,7 @@ export function addProposal(
   if (label === '') return failure('empty-label');
   return success({
     ...inbox,
-    proposals: [...inbox.proposals, newProposal(newId(), { label, toCheck: false })],
+    proposals: mergeProposal(inbox.proposals, { label, toCheck: false }, newId),
   });
 }
 

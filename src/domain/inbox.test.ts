@@ -158,3 +158,39 @@ describe('proposals to check', () => {
     expect(result.ok && result.value.proposals[0]?.toCheck).toBe(false);
   });
 });
+
+describe('merging duplicate proposals', () => {
+  it('proposes an item received twice only once', () => {
+    expect(proposedLabels(captured('carottes\nCarottes'))).toEqual(['carottes']);
+  });
+
+  it('does not propose again an item already pending from an earlier capture', () => {
+    const newId = sequentialIds();
+
+    expect(proposedLabels(captured('Pain', captured('pain', emptyInbox(), newId), newId))).toEqual([
+      'pain',
+    ]);
+  });
+
+  it('makes a proposal to check certain when the item arrives as certain', () => {
+    const newId = sequentialIds();
+    const inbox = captured('parmesan', captured('parmesan ?', emptyInbox(), newId), newId);
+
+    expect(inbox.proposals).toHaveLength(1);
+    expect(inbox.proposals[0]?.toCheck).toBe(false);
+  });
+
+  it('keeps a certain proposal certain when the item arrives as a doubt', () => {
+    const newId = sequentialIds();
+
+    expect(captured('riz ?', captured('riz', emptyInbox(), newId), newId).proposals).toEqual([
+      { id: 'proposal-1', label: 'riz', discarded: false, toCheck: false },
+    ]);
+  });
+
+  it('does not add by hand an item already proposed', () => {
+    const result = addProposal(captured('lait'), 'Lait', () => 'manual');
+
+    expect(result.ok && proposedLabels(result.value)).toEqual(['lait']);
+  });
+});
