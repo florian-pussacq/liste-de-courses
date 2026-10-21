@@ -3,11 +3,11 @@
 ## 1. Domaine et application
 
 - [x] 1.1 Implémenter en TDD `listAsText` (articles à prendre puis à vérifier suffixés de « ? », articles pris exclus), et vérifier le scénario « Liste envoyée » et la relecture sans perte par `splitIntoEntries`
-- [ ] 1.2 Ajouter le port `sendText` et le cas d'usage `sendList`, et vérifier sur des doubles qu'il transmet le texte de la liste et qu'il ne transmet rien quand il n'y a rien à envoyer
+- [x] 1.2 Ajouter le port `sendText` et le cas d'usage `sendList`, et vérifier sur des doubles qu'il transmet le texte de la liste et qu'il ne transmet rien quand il n'y a rien à envoyer
 
 ## 2. Infrastructure
 
-- [ ] 2.1 Implémenter en TDD l'adaptateur `sendText` (partagé, copié, annulé, indisponible), et vérifier qu'aucun cas ne lève d'exception
+- [x] 2.1 Implémenter en TDD l'adaptateur `sendText` (partagé, copié, annulé, indisponible), et vérifier qu'aucun cas ne lève d'exception
 
 ## 3. Interface
 

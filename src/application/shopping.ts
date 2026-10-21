@@ -9,7 +9,8 @@ import {
 import type { Result } from '../domain/result';
 import * as lists from '../domain/shopping-list';
 import type { AddItemError, ItemId, RenameItemError, ShoppingList } from '../domain/shopping-list';
-import type { Dependencies } from './ports';
+import { listAsText } from '../domain/list-text';
+import type { Dependencies, SendOutcome } from './ports';
 
 export type Shopping = ReturnType<typeof shopping>;
 
@@ -24,6 +25,7 @@ export function shopping({
   now,
   newId,
   readClipboard,
+  sendText,
 }: Dependencies) {
   async function changeList(change: (list: ShoppingList) => ShoppingList): Promise<ShoppingList> {
     const list = change(await shoppingLists.load());
@@ -99,5 +101,10 @@ export function shopping({
     setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>
       changeList((list) => lists.setToCheck(list, id, toCheck, now())),
     clearChecked: (): Promise<ShoppingList> => changeList(lists.clearChecked),
+
+    async sendList(): Promise<SendOutcome | 'nothing-to-send'> {
+      const text = listAsText(await shoppingLists.load());
+      return text === '' ? 'nothing-to-send' : sendText(text);
+    },
   };
 }

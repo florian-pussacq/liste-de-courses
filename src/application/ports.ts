@@ -16,10 +16,13 @@ export type ClipboardContent =
   | { readonly kind: 'empty' }
   | { readonly kind: 'unavailable' };
 
+export type SendOutcome = 'shared' | 'copied' | 'cancelled' | 'unavailable';
+
 export interface Dependencies {
   readonly shoppingLists: ShoppingListRepository;
   readonly inboxes: InboxRepository;
   readonly now: () => number;
   readonly newId: () => string;
   readonly readClipboard: () => Promise<ClipboardContent>;
+  readonly sendText: (text: string) => Promise<SendOutcome>;
 }

@@ -11,6 +11,7 @@ let shoppingLists: InMemoryShoppingListRepository;
 let inboxes: InMemoryInboxRepository;
 let app: Shopping;
 let clipboard: ClipboardContent;
+let sent: string[];
 
 beforeEach(() => {
   shoppingLists = new InMemoryShoppingListRepository();
@@ -18,12 +19,17 @@ beforeEach(() => {
   let clock = 0;
   let id = 0;
   clipboard = { kind: 'empty' };
+  sent = [];
   app = shopping({
     shoppingLists,
     inboxes,
     now: () => ++clock,
     newId: () => `id-${++id}`,
     readClipboard: async () => clipboard,
+    sendText: async (text) => {
+      sent.push(text);
+      return 'shared';
+    },
   });
 });
 
@@ -136,6 +142,7 @@ describe('pasting from the clipboard', () => {
 
   it('reports an empty clipboard without touching the inbox', async () => {
     clipboard = { kind: 'empty' };
+    sent = [];
 
     expect((await app.pasteFromClipboard()).outcome).toBe('empty');
     expect(proposedLabels(await inboxes.load())).toEqual([]);
@@ -215,5 +222,24 @@ describe('items to check', () => {
 
     expect(inbox.proposals[0]?.toCheck).toBe(true);
     expect((await inboxes.load()).proposals[0]?.toCheck).toBe(true);
+  });
+});
+
+describe('sending the list', () => {
+  it('sends the list as text', async () => {
+    await app.addItem('pain');
+    await app.captureText('compote ?');
+    await app.validateInbox();
+
+    expect(await app.sendList()).toBe('shared');
+    expect(sent).toEqual(['pain\ncompote ?']);
+  });
+
+  it('sends nothing when nothing is left to buy or check', async () => {
+    await app.addItem('pain');
+    await app.toggleItem(await idOf('pain'));
+
+    expect(await app.sendList()).toBe('nothing-to-send');
+    expect(sent).toEqual([]);
   });
 });

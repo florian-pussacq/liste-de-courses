@@ -3,6 +3,7 @@ import { shopping } from './application/shopping';
 import { readClipboard } from './infrastructure/clipboard';
 import { openStorage } from './infrastructure/indexed-db';
 import { requestPersistentStorage } from './infrastructure/persistent-storage';
+import { sendText } from './infrastructure/send-text';
 import { takeSharedContent } from './infrastructure/share-target';
 import App from './ui/App.svelte';
 import '@fontsource-variable/bricolage-grotesque';
@@ -18,6 +19,7 @@ async function start(target: HTMLElement): Promise<void> {
     now: () => Date.now(),
     newId: () => crypto.randomUUID(),
     readClipboard: () => readClipboard(),
+    sendText: (text) => sendText(text),
   });
 
   const shared = takeSharedContent(new URL(location.href), (cleanUrl) =>
