@@ -14,6 +14,9 @@
     app: Shopping;
     list: ShoppingList;
     pending: number;
+    // Items removed by the last change, while it can still be undone.
+    removed: number;
+    onundo: () => void;
     onpaste: () => void;
     onadd: () => void;
     onopeninbox: () => void;
@@ -24,6 +27,8 @@
     app,
     list = $bindable(),
     pending,
+    removed,
+    onundo,
     onpaste,
     onadd,
     onopeninbox,
@@ -155,6 +160,12 @@
 </main>
 
 <nav aria-label="Ajouter des articles">
+  {#if removed > 0}
+    <div class="undo" role="status">
+      <span>{plural(removed, 'article')} retiré{removed > 1 ? 's' : ''}</span>
+      <button type="button" onclick={onundo}>Annuler</button>
+    </div>
+  {/if}
   {#if pending > 0}
     <button type="button" class="pending" onclick={onopeninbox}>
       {plural(pending, 'article')} à trier
@@ -321,6 +332,30 @@
     gap: 10px;
     padding: 24px 16px calc(20px + env(safe-area-inset-bottom));
     background: linear-gradient(to top, var(--ground) 70%, transparent);
+  }
+
+  .undo {
+    width: 100%;
+    max-width: 40rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 4px 4px 18px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--ground);
+    font-weight: 600;
+  }
+
+  .undo button {
+    min-height: var(--target);
+    padding: 0 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 800;
   }
 
   .pending {

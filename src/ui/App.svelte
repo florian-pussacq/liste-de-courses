@@ -40,6 +40,28 @@
 
   const closeSheet = () => (sheet = { kind: 'none' });
 
+  const UNDO_DELAY_MS = 6000;
+  // Any change that removes items can be undone, for a while. Any other change makes the
+  // snapshot outdated: undoing then would also revert that change, so the offer is withdrawn.
+  let shownList = untrack(() => list);
+  let beforeRemoval: ShoppingList | undefined = $state.raw();
+  $effect(() => {
+    const previous = shownList;
+    shownList = list;
+    if (list === previous) return;
+    beforeRemoval = list.items.length < previous.items.length ? previous : undefined;
+  });
+  $effect(() => {
+    if (!beforeRemoval) return;
+    const expiry = setTimeout(() => (beforeRemoval = undefined), UNDO_DELAY_MS);
+    return () => clearTimeout(expiry);
+  });
+  const removed = $derived(beforeRemoval ? beforeRemoval.items.length - list.items.length : 0);
+
+  async function undoRemoval() {
+    if (beforeRemoval) list = await app.restoreList($state.snapshot(beforeRemoval));
+  }
+
   // The inbox opens at once: the browser may wait on a permission prompt the user ignores,
   // and typing by hand must stay possible meanwhile.
   async function paste() {
@@ -65,6 +87,8 @@
   {app}
   bind:list
   pending={inbox.proposals.length}
+  {removed}
+  onundo={undoRemoval}
   onpaste={paste}
   onadd={() => (sheet = { kind: 'add' })}
   onopeninbox={() => (sheet = { kind: 'inbox' })}

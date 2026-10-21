@@ -14,7 +14,7 @@
 
 ## 3. Annulation dans la liste
 
-- [ ] 3.1 Afficher le bandeau « Annuler » après « on en a », une suppression ou le retrait des articles pris, le masquer à toute autre modification ou après six secondes, et vérifier en e2e les quatre scénarios de « Annulation d'un retrait » (horloge simulée pour l'expiration)
+- [x] 3.1 Afficher le bandeau « Annuler » après « on en a », une suppression ou le retrait des articles pris, le masquer à toute autre modification ou après six secondes, et vérifier en e2e les quatre scénarios de « Annulation d'un retrait » (horloge simulée pour l'expiration)
 
 ## 4. Vérification d'intégration
 
