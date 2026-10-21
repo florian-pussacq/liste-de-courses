@@ -4,6 +4,8 @@ import {
   captureText,
   emptyInbox,
   expandIntoDish,
+  keepAsItem,
+  keepDishAsItem,
   keptEntries,
   refreshDish,
   toggleDish,
@@ -26,8 +28,13 @@ const risotto: Dish = {
 };
 
 const view = (inbox: Inbox) =>
-  inbox.proposals.map(({ label, dish, toCheck, discarded }) =>
-    [label, dish ?? '-', toCheck ? '?' : '', discarded ? 'x' : ''].join('|'),
+  inbox.proposals.map(({ label, dish, toCheck, discarded, dishToDefine }) =>
+    [
+      label,
+      dish ?? (dishToDefine ? 'to-define' : '-'),
+      toCheck ? '?' : '',
+      discarded ? 'x' : '',
+    ].join('|'),
   );
 
 const idOf = (inbox: Inbox, label: string) => {
@@ -138,6 +145,59 @@ describe('defining and updating a dish from the inbox', () => {
       'parmesan|risotto|?|',
       'bouillon|risotto||',
       'pain|-||',
+    ]);
+  });
+});
+
+describe('dishes to define', () => {
+  it('proposes an unknown dish name of a menu line as a dish to define', () => {
+    expect(
+      view(captureText(emptyInbox(), 'Lundi 3 : gratin / carottes', sequentialIds(), [])),
+    ).toEqual(['gratin|to-define||', 'carottes|-||']);
+  });
+
+  it('recognises a known dish name of a menu line as a dish', () => {
+    expect(
+      view(captureText(emptyInbox(), 'Lundi 3 : risotto / carottes', sequentialIds(), [risotto])),
+    ).toEqual(['riz|risotto||', 'parmesan|risotto|?|', 'carottes|-||']);
+  });
+
+  it('does not add a dish to define on validation', () => {
+    const inbox = captureText(emptyInbox(), 'Lundi 3 : gratin / carottes', sequentialIds(), []);
+
+    expect(keptEntries(inbox).map((entry) => entry.label)).toEqual(['carottes']);
+  });
+
+  it('keeps a dish to define as a plain item', () => {
+    const inbox = captureText(emptyInbox(), 'Lundi 3 : gratin / carottes', sequentialIds(), []);
+
+    const kept = keepAsItem(inbox, idOf(inbox, 'gratin'));
+
+    expect(view(kept)).toEqual(['gratin|-||', 'carottes|-||']);
+    expect(keptEntries(kept).map((entry) => entry.label)).toEqual(['gratin', 'carottes']);
+  });
+
+  it('defines a dish to define, replacing it by its group', () => {
+    const newId = sequentialIds();
+    const inbox = captureText(emptyInbox(), 'Lundi 3 : risotto ? / carottes', newId, []);
+
+    expect(view(expandIntoDish(inbox, idOf(inbox, 'risotto'), risotto, newId))).toEqual([
+      'riz|risotto|?|',
+      'parmesan|risotto|?|',
+      'carottes|-||',
+    ]);
+  });
+});
+
+describe('keeping a recognised dish as a plain item', () => {
+  it('replaces the group by a plain proposal named after the dish, at its place', () => {
+    const newId = sequentialIds();
+    const inbox = captureText(emptyInbox(), 'pain, risotto, lait', newId, [risotto]);
+
+    expect(view(keepDishAsItem(inbox, 'Risotto', newId))).toEqual([
+      'pain|-||',
+      'risotto|-||',
+      'lait|-||',
     ]);
   });
 });

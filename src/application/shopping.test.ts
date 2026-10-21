@@ -306,6 +306,27 @@ describe('dishes', () => {
     expect(await groups()).toEqual(['œufs|omelette', 'ciboulette|omelette']);
   });
 
+  it('keeps a recognised dish as a plain item for this inbox only', async () => {
+    await app.captureText('omelette');
+    await app.defineDishFromProposal(await proposalIdOf('omelette'), 'œufs');
+
+    await app.keepDishAsItem('omelette');
+    expect(await groups()).toEqual(['omelette|-']);
+    expect((await dishes.load()).map((dish) => dish.name)).toEqual(['omelette']);
+
+    await app.validateInbox();
+    await app.captureText('omelette');
+    expect(await groups()).toEqual(['œufs|omelette']);
+  });
+
+  it('keeps a dish to define as a plain item', async () => {
+    await app.captureText('Lundi 3 : gratin / carottes');
+
+    await app.keepAsItem(await proposalIdOf('gratin'));
+
+    expect(labels(await app.validateInbox())).toEqual(['gratin', 'carottes']);
+  });
+
   it('discards a whole dish', async () => {
     await app.captureText('omelette, pain');
     await app.defineDishFromProposal(await proposalIdOf('omelette'), 'œufs\nlait');

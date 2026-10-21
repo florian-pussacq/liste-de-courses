@@ -126,6 +126,10 @@ export function shopping({
       );
       return success(inbox);
     },
+    keepDishAsItem: (name: string): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.keepDishAsItem(inbox, name, newId)),
+    keepAsItem: (id: string): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.keepAsItem(inbox, id)),
     toggleDish: (name: string): Promise<Inbox> =>
       changeInbox((inbox) => inboxes.toggleDish(inbox, name)),
     dish: async (name: string): Promise<Dish | undefined> => findDish(await dishStore.load(), name),

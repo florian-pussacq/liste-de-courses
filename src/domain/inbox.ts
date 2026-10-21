@@ -12,6 +12,8 @@ export interface Proposal {
   readonly toCheck: boolean;
   // Name of the dish this proposal is an ingredient of, if any.
   readonly dish?: string;
+  // An unknown dish name: nothing to buy until it is defined or kept as an item.
+  readonly dishToDefine?: true;
 }
 
 export interface Inbox {
@@ -30,15 +32,20 @@ export const proposedLabels = (inbox: Inbox): string[] =>
 
 export const keptEntries = (inbox: Inbox): Entry[] =>
   inbox.proposals
-    .filter((proposal) => !proposal.discarded)
+    .filter((proposal) => !proposal.discarded && !proposal.dishToDefine)
     .map(({ label, toCheck }) => ({ label, toCheck }));
 
-const newProposal = (id: ProposalId, { label, toCheck }: Entry, dish?: string): Proposal => ({
+const newProposal = (
+  id: ProposalId,
+  { label, toCheck, isDish }: Entry,
+  dish?: string,
+): Proposal => ({
   id,
   label,
   toCheck,
   discarded: false,
   ...(dish !== undefined && { dish }),
+  ...(dish === undefined && isDish && { dishToDefine: true }),
 });
 
 const belongsTo = (proposal: Proposal, dishName: string) =>
@@ -177,5 +184,31 @@ export function toggleDish(inbox: Inbox, dishName: string): Inbox {
     proposals: inbox.proposals.map((proposal) =>
       belongsTo(proposal, dishName) ? { ...proposal, discarded } : proposal,
     ),
+  };
+}
+
+export function keepAsItem(inbox: Inbox, id: ProposalId): Inbox {
+  return {
+    ...inbox,
+    proposals: inbox.proposals.map((proposal) =>
+      proposal.id === id ? asPlainItem(proposal) : proposal,
+    ),
+  };
+}
+
+function asPlainItem(proposal: Proposal): Proposal {
+  const { dishToDefine, ...plain } = proposal;
+  return plain;
+}
+
+// For this inbox only: the remembered dish keeps its definition.
+export function keepDishAsItem(inbox: Inbox, dishName: string, newId: () => ProposalId): Inbox {
+  const index = inbox.proposals.findIndex((proposal) => belongsTo(proposal, dishName));
+  const name = inbox.proposals[index]?.dish;
+  if (name === undefined) return inbox;
+  const others = inbox.proposals.filter((proposal) => !belongsTo(proposal, dishName));
+  return {
+    ...inbox,
+    proposals: mergeInto(others, [{ label: name, toCheck: false }], index, newId),
   };
 }
