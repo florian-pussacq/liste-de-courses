@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { openInboxByHand, pasteByHand, proposals, stubClipboard, toBuy } from './helpers';
+import {
+  openInboxByHand,
+  pasteByHand,
+  proposals,
+  stubClipboard,
+  toBuy,
+  sheetClosed,
+} from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await stubClipboard(page, { text: '' });
@@ -42,6 +49,7 @@ test('corrects a proposal with a long press and adds one by hand', async ({ page
   await proposals(page).first().click({ button: 'right' });
   await page.getByLabel('Corriger pense à prendre du lait stp').fill('lait');
   await page.getByRole('button', { name: 'Corriger', exact: true }).click();
+  await sheetClosed(page, 'pense à prendre du lait stp');
   await page.getByLabel('Article à proposer').fill('farine');
   await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
 

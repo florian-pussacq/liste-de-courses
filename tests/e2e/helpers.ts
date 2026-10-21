@@ -44,3 +44,8 @@ export async function openInboxByHand(page: Page) {
   await page.getByRole('button', { name: 'Coller une liste' }).click();
   await expect(page.getByLabel('Texte à découper')).toBeVisible();
 }
+
+// A sheet is modal: what lies under it cannot be used until it has closed, as for a person.
+export async function sheetClosed(page: Page, title: string) {
+  await expect(page.getByRole('dialog', { name: title, exact: true })).toBeHidden();
+}

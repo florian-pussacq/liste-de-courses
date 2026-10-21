@@ -4,7 +4,9 @@
   import type { ShoppingList } from '../domain/shopping-list';
   import { messageFor } from './messages';
   import { labelKey } from '../domain/label';
+  import DishActionsSheet from './DishActionsSheet.svelte';
   import DishSheet from './DishSheet.svelte';
+  import ProposalActionsSheet from './ProposalActionsSheet.svelte';
   import ProposalChip from './ProposalChip.svelte';
   import Sheet from './Sheet.svelte';
 
@@ -21,20 +23,21 @@
 
   let capturedText = $state('');
   let newLabel = $state('');
-  let editingId: string | undefined = $state();
-  const editing = $derived(inbox.proposals.find((proposal) => proposal.id === editingId));
-  let draft = $state('');
   let error = $state('');
+  let actionsFor: Proposal | undefined = $state();
+  let dishActionsFor: string | undefined = $state();
   const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
 
   type Segment =
     | { readonly key: string; readonly proposal: Proposal }
+    | { readonly key: string; readonly toDefine: Proposal }
     | { readonly key: string; readonly dish: string; readonly proposals: readonly Proposal[] };
 
   // Consecutive ingredients of the same dish are shown as one group under its name.
   const segments = $derived(
     inbox.proposals.reduce<Segment[]>((grouped, proposal) => {
       const last = grouped.at(-1);
+      if (proposal.dishToDefine) return [...grouped, { key: proposal.id, toDefine: proposal }];
       if (proposal.dish === undefined) return [...grouped, { key: proposal.id, proposal }];
       if (last && 'dish' in last && labelKey(last.dish) === labelKey(proposal.dish)) {
         return [...grouped.slice(0, -1), { ...last, proposals: [...last.proposals, proposal] }];
@@ -79,21 +82,30 @@
 
   const toggle = async (proposal: Proposal) => (inbox = await app.toggleProposal(proposal.id));
 
-  function defineDish() {
-    if (!editing) return;
-    dishEditing = { kind: 'define', proposalId: editing.id, name: editing.label };
-    editingId = undefined;
+  function defineDish(proposal: Proposal) {
+    actionsFor = undefined;
+    dishEditing = { kind: 'define', proposalId: proposal.id, name: proposal.label };
   }
 
-  // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
-  async function editDish(event: MouseEvent, name: string) {
-    event.preventDefault();
+  async function editDish(name: string) {
+    dishActionsFor = undefined;
     const dish = await app.dish(name);
     if (!dish) return;
     const ingredientsText = dish.ingredients
       .map(({ label, toCheck }) => (toCheck ? `${label} ?` : label))
       .join('\n');
     dishEditing = { kind: 'update', name: dish.name, ingredientsText };
+  }
+
+  async function keepDishAsItem(name: string) {
+    dishActionsFor = undefined;
+    inbox = await app.keepDishAsItem(name);
+  }
+
+  // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
+  function openActions(event: MouseEvent, open: () => void) {
+    event.preventDefault();
+    open();
   }
 
   async function saveDish(ingredientsText: string): Promise<string | undefined> {
@@ -105,25 +117,6 @@
     if (!result.ok) return messageFor(result.error);
     inbox = result.value;
     return undefined;
-  }
-
-  function startEditing(proposal: Proposal) {
-    editingId = proposal.id;
-    draft = proposal.label;
-    error = '';
-  }
-
-  async function saveEdit(event: SubmitEvent) {
-    event.preventDefault();
-    if (!editing) return;
-    const result = await app.editProposal(editing.id, draft);
-    if (!result.ok) {
-      error = messageFor(result.error);
-      return;
-    }
-    inbox = result.value;
-    editingId = undefined;
-    error = '';
   }
 
   async function validate() {
@@ -141,7 +134,7 @@
 <Sheet
   {title}
   hint={inbox.proposals.length > 0
-    ? 'Touche un article pour l’écarter ou le remettre, appui long pour le corriger.'
+    ? 'Touche un article pour l’écarter ou le remettre, appui long pour plus d’actions.'
     : undefined}
   {onclose}
 >
@@ -167,39 +160,65 @@
               class:discarded={allDiscarded}
               aria-label="{allDiscarded ? 'Remettre' : 'Écarter'} le plat {segment.dish}"
               onclick={async () => (inbox = await app.toggleDish(segment.dish))}
-              oncontextmenu={(event) => editDish(event, segment.dish)}
+              oncontextmenu={(event) => openActions(event, () => (dishActionsFor = segment.dish))}
             >
               {segment.dish}
             </button>
+            <button
+              type="button"
+              class="more"
+              aria-label="Actions du plat {segment.dish}"
+              onclick={() => (dishActionsFor = segment.dish)}>⋯</button
+            >
             <ul aria-label="Ingrédients de {segment.dish}" class="chips">
               {#each segment.proposals as proposal (proposal.id)}
-                <ProposalChip {proposal} ontoggle={toggle} onedit={startEditing} />
+                <ProposalChip {proposal} ontoggle={toggle} onedit={(p) => (actionsFor = p)} />
               {/each}
             </ul>
           </li>
+        {:else if 'toDefine' in segment}
+          {@const proposal = segment.toDefine}
+          <li class="dish to-define">
+            <button
+              type="button"
+              class="dish-name"
+              class:discarded={proposal.discarded}
+              aria-label="{proposal.discarded
+                ? 'Remettre'
+                : 'Écarter'} le plat à définir {proposal.label}"
+              onclick={() => toggle(proposal)}
+              oncontextmenu={(event) => openActions(event, () => (actionsFor = proposal))}
+            >
+              {proposal.label}{#if proposal.toCheck}&nbsp;?{/if}
+            </button>
+            <p class="to-define-hint">
+              Plat inconnu : rien ne sera ajouté tant qu'il n'est pas défini.
+            </p>
+            <div class="to-define-actions">
+              <button
+                type="button"
+                class="button define"
+                aria-label="Définir le plat {proposal.label}"
+                onclick={() => defineDish(proposal)}>Définir</button
+              >
+              <button
+                type="button"
+                class="button keep"
+                aria-label="Garder {proposal.label} comme article"
+                onclick={async () => (inbox = await app.keepAsItem(proposal.id))}
+                >C'est un article</button
+              >
+            </div>
+          </li>
         {:else}
-          <ProposalChip proposal={segment.proposal} ontoggle={toggle} onedit={startEditing} />
+          <ProposalChip
+            proposal={segment.proposal}
+            ontoggle={toggle}
+            onedit={(p) => (actionsFor = p)}
+          />
         {/if}
       {/each}
     </ul>
-  {/if}
-
-  {#if editing}
-    <form class="field" onsubmit={saveEdit}>
-      <!-- svelte-ignore a11y_autofocus -->
-      <input aria-label="Corriger {editing.label}" bind:value={draft} autofocus />
-      <button type="submit" class="button primary">Corriger</button>
-    </form>
-    <button
-      type="button"
-      class="button"
-      onclick={async () => editing && (inbox = await app.toggleProposalToCheck(editing.id))}
-    >
-      {editing.toCheck ? 'Rendre certain' : 'Marquer à vérifier'}
-    </button>
-    {#if editing.dish === undefined}
-      <button type="button" class="button" onclick={defineDish}>C'est un plat</button>
-    {/if}
   {/if}
 
   <form class="field" onsubmit={addProposal}>
@@ -226,6 +245,26 @@
     </button>
   </div>
 </Sheet>
+
+{#if actionsFor}
+  <ProposalActionsSheet
+    {app}
+    proposal={actionsFor}
+    onchange={(changed) => (inbox = changed)}
+    ondefinedish={defineDish}
+    onclose={() => (actionsFor = undefined)}
+  />
+{/if}
+
+{#if dishActionsFor !== undefined}
+  {@const name = dishActionsFor}
+  <DishActionsSheet
+    {name}
+    onedit={() => editDish(name)}
+    onkeepasitem={() => keepDishAsItem(name)}
+    onclose={() => (dishActionsFor = undefined)}
+  />
+{/if}
 
 {#if dishEditing}
   <DishSheet
@@ -295,6 +334,51 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+  }
+
+  .dish {
+    position: relative;
+  }
+
+  .dish:not(.to-define) .dish-name {
+    max-width: calc(100% - var(--target) - 8px);
+  }
+
+  .more {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: var(--target);
+    height: var(--target);
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--ground);
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+
+  .to-define {
+    border-style: dashed;
+    padding-bottom: 12px;
+  }
+
+  .to-define-hint {
+    margin: 0 6px 10px;
+    color: var(--surface-muted);
+    font-size: 0.85rem;
+  }
+
+  .to-define-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .to-define .define {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
   }
 
   .dish-name.discarded {

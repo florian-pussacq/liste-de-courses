@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { addItems, proposals, toBuy } from './helpers';
+import { addItems, proposals, toBuy, sheetClosed } from './helpers';
 
 const toCheckList = (page: Page) => page.getByRole('list', { name: 'À vérifier' });
 
@@ -28,10 +28,12 @@ test('switches a proposal between certain and to check before validating', async
 
   await proposals(page).filter({ hasText: 'compote' }).click({ button: 'right' });
   await page.getByRole('button', { name: 'Rendre certain' }).click();
+  await sheetClosed(page, 'compote');
   await expect(page.getByRole('button', { name: 'Écarter compote', exact: true })).toBeVisible();
 
   await proposals(page).filter({ hasText: 'farine' }).click({ button: 'right' });
   await page.getByRole('button', { name: 'Marquer à vérifier' }).click();
+  await sheetClosed(page, 'farine');
   await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
 
   await expect(toCheckList(page)).toContainText('farine');
@@ -77,6 +79,7 @@ test('marks an item to buy as to check from its actions, and back', async ({ pag
 
   await toBuy(page).filter({ hasText: 'farine' }).click({ button: 'right' });
   await page.getByRole('button', { name: 'Marquer à vérifier' }).click();
+  await sheetClosed(page, 'farine');
   await expect(toCheckList(page)).toContainText('farine');
   await expect(toBuy(page)).toHaveText(['sel']);
 
