@@ -92,6 +92,7 @@ test('updates a dish from its group, for this inbox and the next ones', async ({
   await expect(ingredientsOf(page, 'risotto')).toHaveText(['riz', 'bouillon']);
 
   await page.getByRole('button', { name: 'Annuler' }).last().click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.reload();
   await openInboxByHand(page);
   await pasteByHand(page, 'risotto');
@@ -108,6 +109,7 @@ test('never sends dishes with the list', async ({ page }) => {
   await pasteByHand(page, 'omelette');
   await defineDish(page, 'omelette', 'œufs\nlait');
   await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await expect(toBuy(page)).toHaveText(['œufs', 'lait']);
   await page.reload();
 
   await page.getByRole('button', { name: 'Envoyer la liste' }).click();
