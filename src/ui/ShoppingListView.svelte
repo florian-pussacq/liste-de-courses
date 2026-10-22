@@ -9,6 +9,7 @@
   } from '../domain/shopping-list';
   import ItemRow from './ItemRow.svelte';
   import ItemToCheckRow from './ItemToCheckRow.svelte';
+  import PlusIcon from './PlusIcon.svelte';
 
   interface Props {
     app: Shopping;
@@ -216,7 +217,7 @@
       Coller une liste
     </button>
     <button type="button" class="add" aria-label="Ajouter un article" onclick={onadd}>
-      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+      <PlusIcon size={26} />
     </button>
   </div>
 </nav>
@@ -462,11 +463,5 @@
     border-radius: 20px;
     background: var(--accent);
     color: var(--on-accent);
-  }
-
-  .add svg {
-    width: 26px;
-    height: 26px;
-    stroke-width: 2.8;
   }
 </style>
