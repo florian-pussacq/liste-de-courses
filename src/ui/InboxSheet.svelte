@@ -32,7 +32,9 @@
   );
   let actionsFor: Proposal | undefined = $state();
   let dishActionsFor: string | undefined = $state();
-  const typingOpen = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
+  // Typing a text is the way in only when there is nothing to sort or the clipboard failed;
+  // during a sort, another text is pasted from the list and joins it.
+  const manualEntry = $derived((notice !== undefined && !reading) || inbox.proposals.length === 0);
 
   type Segment =
     | { readonly key: string; readonly proposal: Proposal }
@@ -243,16 +245,15 @@
   </form>
   {#if error}<p class="alert" role="alert">{error}</p>{/if}
 
-  <details open={typingOpen}>
-    <summary>Coller ou écrire une liste à la main</summary>
+  {#if manualEntry}
     <form class="field" onsubmit={propose}>
       <textarea
         aria-label="Texte à découper"
-        placeholder="Une liste, un message…"
+        placeholder="Colle ou écris une liste, un message…"
         bind:value={capturedText}></textarea>
       <button type="submit" class="button">Proposer les articles</button>
     </form>
-  </details>
+  {/if}
 
   <div class="actions validation">
     <button type="button" class="button" onclick={abandon}>Annuler</button>

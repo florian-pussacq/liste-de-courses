@@ -102,3 +102,11 @@ test('keeps the validation in sight however long the review is', async ({ page }
   await expect(page.getByRole('button', { name: 'Ajouter 20 à la liste' })).toBeInViewport();
   await expect(page.getByRole('button', { name: 'Annuler', exact: true })).toBeInViewport();
 });
+
+test('hides the manual entry while proposals are to be sorted', async ({ page }) => {
+  await page.goto(`./?text=${encodeURIComponent('pain, beurre')}`);
+
+  await expect(proposals(page)).toHaveText(['pain', 'beurre']);
+  await expect(page.getByLabel('Texte à découper')).toHaveCount(0);
+  await expect(page.getByText('Coller ou écrire une liste à la main')).toHaveCount(0);
+});
