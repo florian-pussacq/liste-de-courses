@@ -140,7 +140,7 @@ describe('adding several items at once', () => {
     );
 
     expect(added).toEqual(['lait']);
-    expect(alreadyListed).toEqual(['petits pois', 'sel']);
+    expect(alreadyListed).toEqual([{ label: 'petits pois' }, { label: 'sel' }]);
   });
 
   it('reports a taken item put back to buy as added', () => {
@@ -157,7 +157,9 @@ describe('adding several items at once', () => {
   it('reports an item to check made certain as already listed', () => {
     const initial = addItems(emptyShoppingList(), [{ label: 'compote', toCheck: true }], at(0));
 
-    expect(addItems(initial.list, certain('compote'), at(1)).alreadyListed).toEqual(['compote']);
+    expect(addItems(initial.list, certain('compote'), at(1)).alreadyListed).toEqual([
+      { label: 'compote' },
+    ]);
   });
 });
 
@@ -408,6 +410,29 @@ describe('quantities', () => {
     const renamed = renameItem(initial, find(initial, 'citrons').id, 'citrons jaunes', 2);
 
     expect(renamed.ok && quantityOf(renamed.value, 'citrons jaunes')).toBe(3);
+  });
+
+  it('reports how the quantity of an item already listed changed, once per batch', () => {
+    const { alreadyListed } = addItems(
+      added(added(emptyShoppingList(), '3 citrons'), 'lait'),
+      [certain('citrons', 2), certain('citrons', 1), certain('lait')],
+      at(2),
+    );
+
+    expect(alreadyListed).toEqual([
+      { label: 'citrons', quantity: { before: 3, after: 6 } },
+      { label: 'lait' },
+    ]);
+  });
+
+  it('reports a quantity given to an item that had none', () => {
+    const { alreadyListed } = addItems(
+      added(emptyShoppingList(), 'citrons'),
+      [certain('citrons', 2)],
+      at(2),
+    );
+
+    expect(alreadyListed).toEqual([{ label: 'citrons', quantity: { after: 2 } }]);
   });
 
   it('sets the quantity of an item, or removes it', () => {

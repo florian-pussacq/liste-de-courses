@@ -77,11 +77,17 @@ function addEntry(
   );
 }
 
+export interface ListedAgain {
+  readonly label: string;
+  // Present only when the batch changed the quantity of the item.
+  readonly quantity?: { readonly before?: Quantity; readonly after: Quantity };
+}
+
 export interface BatchAddition {
   readonly list: ShoppingList;
-  // Labels as they appear in the list, each item reported once, in the order of the batch.
+  // Each item reported once, as it stands after the whole batch, in the order of the batch.
   readonly added: readonly string[];
-  readonly alreadyListed: readonly string[];
+  readonly alreadyListed: readonly ListedAgain[];
 }
 
 // Blank labels carry no item, so a batch simply skips them. A taken item put back to buy
@@ -92,22 +98,34 @@ export function addItems(
   context: AddContext,
 ): BatchAddition {
   let current = list;
-  const added: string[] = [];
-  const alreadyListed: string[] = [];
-  const reported = new Set<ItemId>();
+  const beforeBatch = new Map<ItemId, Item | undefined>();
   for (const entry of entries) {
-    const { label } = entry;
     const result = addEntry(current, entry, context);
     if (!result.ok) continue;
-    const before = findByLabel(current, label);
+    const before = findByLabel(current, entry.label);
     current = result.value;
-    const item = findByLabel(current, label);
-    if (!item || reported.has(item.id)) continue;
-    reported.add(item.id);
+    const item = findByLabel(current, entry.label);
+    if (item && !beforeBatch.has(item.id)) beforeBatch.set(item.id, before);
+  }
+  const added: string[] = [];
+  const alreadyListed: ListedAgain[] = [];
+  for (const [id, before] of beforeBatch) {
+    const item = current.items.find((candidate) => candidate.id === id);
+    if (!item) continue;
     const putBack = before?.checked === true && !item.checked;
-    (before && !putBack ? alreadyListed : added).push(item.label);
+    if (!before || putBack) added.push(item.label);
+    else alreadyListed.push(listedAgain(before, item));
   }
   return { list: current, added, alreadyListed };
+}
+
+function listedAgain(before: Item, { label, quantity }: Item): ListedAgain {
+  if (quantity === undefined || quantity === before.quantity) return { label };
+  const previous = before.quantity;
+  return {
+    label,
+    quantity: previous === undefined ? { after: quantity } : { before: previous, after: quantity },
+  };
 }
 
 export function renameItem(

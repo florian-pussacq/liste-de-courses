@@ -132,7 +132,7 @@ describe('capture', () => {
 
     expect(await app.validateInbox()).toMatchObject({
       added: ['lait'],
-      alreadyListed: ['petits pois'],
+      alreadyListed: [{ label: 'petits pois' }],
     });
   });
 

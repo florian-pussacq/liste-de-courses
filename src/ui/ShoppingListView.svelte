@@ -4,6 +4,7 @@
     checkedItems,
     itemsToBuy,
     itemsToCheck,
+    type BatchAddition,
     type Item,
     type ShoppingList,
   } from '../domain/shopping-list';
@@ -18,7 +19,7 @@
     // Items removed by the last change, while it can still be undone.
     removed: number;
     onundo: () => void;
-    report?: { readonly added: readonly string[]; readonly alreadyListed: readonly string[] };
+    report?: Pick<BatchAddition, 'added' | 'alreadyListed'>;
     onclosereport: () => void;
     onpaste: () => void;
     onadd: () => void;
@@ -189,7 +190,12 @@
           <p>{@render labels(report.added.length > 1 ? 'Ajoutés' : 'Ajouté', report.added)}</p>
         {/if}
         {#if report.alreadyListed.length > 0}
-          <p>{@render labels('Déjà dans la liste', report.alreadyListed)}</p>
+          <p>
+            {@render labels(
+              'Déjà dans la liste',
+              report.alreadyListed.map(({ label }) => label),
+            )}
+          </p>
         {/if}
       </div>
       <button type="button" class="close" aria-label="Fermer le bilan" onclick={onclosereport}
