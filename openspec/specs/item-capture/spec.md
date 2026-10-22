@@ -71,7 +71,7 @@ Le système SHALL permettre, avant validation, d'écarter un article proposé pu
 - **THEN** « farine » est proposé à la suite des autres articles
 
 ### Requirement: Validation vers la liste
-Le système SHALL ajouter à la liste de courses les articles proposés qui ne sont pas écartés lorsque l'utilisateur valide, en conservant pour chacun son état certain ou à vérifier, puis SHALL vider la boîte de réception et afficher la liste. Le nombre d'articles qui seront ajoutés MUST être indiqué avant la validation.
+Le système SHALL ajouter à la liste de courses les articles proposés qui ne sont pas écartés lorsque l'utilisateur valide, en conservant pour chacun son état certain ou à vérifier, puis SHALL vider la boîte de réception et afficher la liste. Le nombre d'articles qui seront ajoutés MUST être indiqué avant la validation par le titre du tri ; l'action de validation s'intitule « Mettre dans la liste ».
 
 #### Scenario: Validation des articles proposés
 - **WHEN** la boîte de réception propose « pain » et « beurre » et que l'utilisateur valide
@@ -87,7 +87,7 @@ Le système SHALL ajouter à la liste de courses les articles proposés qui ne s
 
 #### Scenario: Nombre d'articles annoncé
 - **WHEN** trois articles sont proposés dont un écarté
-- **THEN** l'action de validation annonce l'ajout de deux articles
+- **THEN** le titre du tri annonce deux articles et l'action « Mettre dans la liste » est disponible
 
 #### Scenario: Abandon de la capture
 - **WHEN** l'utilisateur abandonne explicitement la capture en cours
