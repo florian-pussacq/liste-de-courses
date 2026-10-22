@@ -26,7 +26,8 @@ Alternative écartée : migrer toutes les quantités absentes vers 1. Elle ajout
 La diminution s'arrête toujours à 1 : `stepQuantity(q?, delta)` borne `quantityOf(q) + delta` entre 1 et 99. Les commandes des actions et des lignes deviennent identiques.
 
 ### Affichage : compteur partout à prendre, pastille au-delà de 1
-- `ItemRow` présente le compteur sur toute ligne non cochée ; la zone du libellé reste la cible de cochage.
+- `ItemRow` présente le compteur sur toute ligne non cochée ; tout le reste de la ligne, du rond au compteur, reste la cible de cochage.
+- La valeur du compteur est un texte simple, pas un `<output>` : ce dernier est une zone d'état annoncée par les lecteurs d'écran, et une liste en aurait une par ligne.
 - `QuantityBadge` ne s'affiche que pour `quantityOf(x) > 1` : tri, articles à vérifier, panier, historique, résultats de recherche.
 - `listAsText` n'écrit la quantité qu'au-delà de 1.
 - `listedAgain` compare `quantityOf(avant)` et `quantityOf(après)` ; « avant » est toujours un nombre, et le bilan affiche « Lait (1 → 3) ».

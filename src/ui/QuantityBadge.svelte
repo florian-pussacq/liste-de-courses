@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Quantity } from '../domain/quantity';
+  import { quantityOf, type Quantity } from '../domain/quantity';
 
   interface Props {
     quantity: Quantity | undefined;
@@ -8,7 +8,8 @@
   const { quantity }: Props = $props();
 </script>
 
-{#if quantity !== undefined}<span class="quantity">{quantity}</span>{/if}
+<!-- A quantity of 1 goes without saying: only the counter of an item to buy shows it. -->
+{#if quantityOf(quantity) > 1}<span class="quantity">{quantity}</span>{/if}
 
 <style>
   .quantity {

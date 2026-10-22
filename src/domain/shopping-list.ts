@@ -1,6 +1,6 @@
 import type { Entry } from './captured-text';
 import { cleanLabel, labelKey } from './label';
-import { addQuantities, readQuantity, withQuantity, type Quantity } from './quantity';
+import { addQuantities, quantityOf, readQuantity, withQuantity, type Quantity } from './quantity';
 import { failure, success, type Result } from './result';
 
 export type ItemId = string;
@@ -80,7 +80,7 @@ function addEntry(
 export interface ListedAgain {
   readonly label: string;
   // Present only when the batch changed the quantity of the item.
-  readonly quantity?: { readonly before?: Quantity; readonly after: Quantity };
+  readonly quantity?: { readonly before: Quantity; readonly after: Quantity };
 }
 
 export interface BatchAddition {
@@ -120,12 +120,9 @@ export function addItems(
 }
 
 function listedAgain(before: Item, { label, quantity }: Item): ListedAgain {
-  if (quantity === undefined || quantity === before.quantity) return { label };
-  const previous = before.quantity;
-  return {
-    label,
-    quantity: previous === undefined ? { after: quantity } : { before: previous, after: quantity },
-  };
+  const [previous, current] = [quantityOf(before.quantity), quantityOf(quantity)];
+  if (current === previous) return { label };
+  return { label, quantity: { before: previous, after: current } };
 }
 
 export function renameItem(

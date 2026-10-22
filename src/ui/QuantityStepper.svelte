@@ -1,32 +1,30 @@
 <script lang="ts">
-  import { stepQuantity, type Quantity } from '../domain/quantity';
+  import { quantityOf, stepQuantity, type Quantity } from '../domain/quantity';
 
   interface Props {
     label: string;
     quantity: Quantity | undefined;
-    // 0 lets the quantity go back to unspecified, 1 keeps at least one unit.
-    floor: 0 | 1;
     onchange: (quantity: Quantity | undefined) => void;
   }
 
-  const { label, quantity, floor, onchange }: Props = $props();
+  const { label, quantity, onchange }: Props = $props();
 
-  const lowered = $derived(stepQuantity(quantity, -1, floor));
-  const raised = $derived(stepQuantity(quantity, 1, floor));
+  const lowered = $derived(stepQuantity(quantity, -1));
+  const raised = $derived(stepQuantity(quantity, 1));
 </script>
 
 <div class="stepper" role="group" aria-label="Quantité de {label}">
   <button
     type="button"
     aria-label="Diminuer {label}"
-    disabled={lowered === quantity}
+    disabled={lowered === quantityOf(quantity)}
     onclick={() => onchange(lowered)}>−</button
   >
-  <output>{quantity ?? '–'}</output>
+  <span class="value">{quantityOf(quantity)}</span>
   <button
     type="button"
     aria-label="Augmenter {label}"
-    disabled={raised === quantity}
+    disabled={raised === quantityOf(quantity)}
     onclick={() => onchange(raised)}>+</button
   >
 </div>
@@ -54,7 +52,7 @@
     opacity: 0.3;
   }
 
-  output {
+  .value {
     min-width: 2ch;
     text-align: center;
     font-size: 1.15rem;

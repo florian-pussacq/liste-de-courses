@@ -39,9 +39,10 @@ test('checks an item by touching its whole row and keeps it in a folded basket',
 }) => {
   await addItems(page, 'beurre', 'sel');
 
-  await toBuy(page)
-    .filter({ hasText: 'beurre' })
-    .click({ position: { x: 300, y: 20 } });
+  // Far from the round mark, at the right end of the zone that checks the item.
+  const beurre = toBuy(page).filter({ hasText: 'beurre' });
+  const zone = await beurre.boundingBox();
+  await beurre.click({ position: { x: (zone?.width ?? 0) - 10, y: 20 } });
 
   await expect(toBuy(page)).toHaveText(['sel']);
   const basketToggle = page.getByRole('button', { name: '1 article dans le panier' });

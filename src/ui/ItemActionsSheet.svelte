@@ -53,7 +53,7 @@
   {#if !item.checked}
     <div class="quantity">
       <span>Quantité</span>
-      <QuantityStepper label={item.label} {quantity} floor={0} onchange={setQuantity} />
+      <QuantityStepper label={item.label} {quantity} onchange={setQuantity} />
     </div>
   {/if}
   <div class="actions">

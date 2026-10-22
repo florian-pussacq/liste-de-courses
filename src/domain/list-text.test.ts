@@ -62,19 +62,21 @@ describe('listAsText with quantities', () => {
       [
         { label: 'citrons', toCheck: false, quantity: 3 },
         { label: 'lait', toCheck: false },
+        { label: 'pain', toCheck: false, quantity: 1 },
         { label: 'œufs', toCheck: true, quantity: 6 },
       ],
       { now: 0, newId: sequentialIds() },
     ).list;
 
-  it('writes the quantity before the label', () => {
-    expect(listAsText(list())).toBe('3 citrons\nLait\n6 œufs ?');
+  it('writes the quantity before the label, 1 being understood', () => {
+    expect(listAsText(list())).toBe('3 citrons\nLait\nPain\n6 œufs ?');
   });
 
   it('reads back with the same quantities', () => {
     expect(splitIntoEntries(listAsText(list()))).toEqual([
       { label: 'citrons', toCheck: false, quantity: 3 },
       { label: 'Lait', toCheck: false },
+      { label: 'Pain', toCheck: false },
       { label: 'œufs', toCheck: true, quantity: 6 },
     ]);
   });

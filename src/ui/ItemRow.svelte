@@ -12,9 +12,8 @@
   }
 
   const { item, ontoggle, onactions, onquantity }: Props = $props();
-  // Only an item to buy that already has a quantity gets the controls: the rest of the line,
-  // and every other line, stays a single target to check.
-  const adjustable = $derived(!item.checked && item.quantity !== undefined);
+  // Every item to buy can be adjusted; taken items and items to check keep a single target.
+  const adjustable = $derived(!item.checked);
 
   // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
   function openActions(event: MouseEvent) {
@@ -47,7 +46,6 @@
     <QuantityStepper
       label={item.label}
       quantity={item.quantity}
-      floor={1}
       onchange={(quantity) => onquantity(item, quantity)}
     />
   {/if}

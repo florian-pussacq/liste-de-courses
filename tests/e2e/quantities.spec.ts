@@ -25,27 +25,23 @@ test('shows the quantity of an item to check as a badge', async ({ page }) => {
 });
 
 test.describe('from the actions of an item', () => {
-  test('gives a quantity to an item that had none', async ({ page }) => {
+  test('raises an item without written quantity from 1', async ({ page }) => {
     await addItems(page, 'lait');
     await toBuy(page).filter({ hasText: 'lait' }).click({ button: 'right' });
 
     await inSheet(page, 'Augmenter lait').click();
-    await expect(page.getByRole('dialog').getByText('1', { exact: true })).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('2', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Fermer' }).click();
     await sheetClosed(page, 'lait');
 
-    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('1');
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('2');
   });
 
-  test('removes the quantity below 1', async ({ page }) => {
-    await addItems(page, '1 citrons');
+  test('stops at 1', async ({ page }) => {
+    await addItems(page, 'citrons');
     await toBuy(page).filter({ hasText: 'citrons' }).click({ button: 'right' });
 
-    await inSheet(page, 'Diminuer citrons').click();
-    await page.getByRole('button', { name: 'Fermer' }).click();
-    await sheetClosed(page, 'citrons');
-
-    await expect(toBuy(page)).toHaveText(['citrons']);
+    await expect(inSheet(page, 'Diminuer citrons')).toBeDisabled();
   });
 });
 
@@ -66,10 +62,14 @@ test.describe('on the line of an item to buy', () => {
     ).toBeDisabled();
   });
 
-  test('offers no quantity control without a quantity, the line still checks', async ({ page }) => {
+  test('offers the controls on every line, 1 included, the label still checking it', async ({
+    page,
+  }) => {
     await addItems(page, 'lait');
 
-    await expect(row(page, 'lait').getByRole('button', { name: 'Augmenter lait' })).toHaveCount(0);
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('1');
+    await row(page, 'lait').getByRole('button', { name: 'Augmenter lait' }).click();
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('2');
     await toBuy(page).filter({ hasText: 'lait' }).click();
     await expect(page.getByRole('button', { name: '1 article dans le panier' })).toBeVisible();
   });
@@ -102,4 +102,11 @@ test('tells in the report how the quantity of an item already listed changed', a
   await expect(page.getByRole('status').filter({ hasText: 'Déjà dans la liste' })).toContainText(
     'citrons (3 → 5)',
   );
+});
+
+test('shows no quantity of 1 in the inbox, only those above', async ({ page }) => {
+  await openInboxByHand(page);
+  await pasteByHand(page, 'lait, 3 citrons');
+
+  await expect(proposals(page)).toHaveText(['lait', /^\s*3\s*citrons\s*$/]);
 });

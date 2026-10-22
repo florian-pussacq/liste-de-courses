@@ -54,7 +54,7 @@
   {#if proposal.dishToDefine === undefined}
     <div class="quantity">
       <span>Quantité</span>
-      <QuantityStepper label={proposal.label} {quantity} floor={0} onchange={setQuantity} />
+      <QuantityStepper label={proposal.label} {quantity} onchange={setQuantity} />
     </div>
   {/if}
   <div class="actions">

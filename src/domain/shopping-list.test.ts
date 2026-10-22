@@ -351,10 +351,14 @@ describe('quantities', () => {
     );
   });
 
-  it('gives its quantity to an item that had none', () => {
+  it('adds a written quantity to the 1 of an item without one', () => {
     expect(quantityOf(added(added(emptyShoppingList(), 'citrons'), '2 citrons'), 'citrons')).toBe(
-      2,
+      3,
     );
+  });
+
+  it('keeps the quantity of a duplicate added without a number', () => {
+    expect(quantityOf(added(added(emptyShoppingList(), 'lait'), 'lait'), 'lait')).toBeUndefined();
   });
 
   it('keeps the quantity when the item is added again without one', () => {
@@ -425,14 +429,14 @@ describe('quantities', () => {
     ]);
   });
 
-  it('reports a quantity given to an item that had none', () => {
+  it('reports the 1 of an item without quantity as where its quantity started', () => {
     const { alreadyListed } = addItems(
-      added(emptyShoppingList(), 'citrons'),
-      [certain('citrons', 2)],
+      added(emptyShoppingList(), 'lait'),
+      [certain('lait', 2)],
       at(2),
     );
 
-    expect(alreadyListed).toEqual([{ label: 'citrons', quantity: { after: 2 } }]);
+    expect(alreadyListed).toEqual([{ label: 'lait', quantity: { before: 1, after: 3 } }]);
   });
 
   it('sets the quantity of an item, or removes it', () => {

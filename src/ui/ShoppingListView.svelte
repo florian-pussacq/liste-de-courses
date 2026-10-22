@@ -72,7 +72,7 @@
   const alreadyHave = async (item: Item) => (list = await app.removeItem(item.id));
   const needed = async (item: Item) => (list = await app.setToCheck(item.id, false));
   const quantityChange = ({ before, after }: NonNullable<ListedAgain['quantity']>) =>
-    before === undefined ? `${after}` : `${before} → ${after}`;
+    `${before} → ${after}`;
   const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 </script>
 

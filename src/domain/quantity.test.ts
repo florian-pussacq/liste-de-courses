@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addQuantities, readQuantity, stepQuantity } from './quantity';
+import { addQuantities, quantityOf, readQuantity, stepQuantity } from './quantity';
 
 describe('readQuantity', () => {
   it('reads a leading number as a quantity', () => {
@@ -37,13 +37,23 @@ describe('readQuantity', () => {
   });
 });
 
+describe('quantityOf', () => {
+  it('reads a quantity not written as 1', () => {
+    expect(quantityOf(undefined)).toBe(1);
+    expect(quantityOf(4)).toBe(4);
+  });
+});
+
 describe('addQuantities', () => {
-  it('adds the quantities given', () => {
+  it('adds a written quantity to the existing one', () => {
     expect(addQuantities(3, 2)).toBe(5);
   });
 
-  it('adds nothing for a quantity not given', () => {
-    expect(addQuantities(undefined, 2)).toBe(2);
+  it('adds a written quantity to the 1 of an item without one', () => {
+    expect(addQuantities(undefined, 2)).toBe(3);
+  });
+
+  it('changes nothing when no quantity is written', () => {
     expect(addQuantities(3, undefined)).toBe(3);
     expect(addQuantities(undefined, undefined)).toBeUndefined();
   });
@@ -54,20 +64,17 @@ describe('addQuantities', () => {
 });
 
 describe('stepQuantity', () => {
-  it('starts an unspecified quantity at 1', () => {
-    expect(stepQuantity(undefined, 1, 0)).toBe(1);
+  it('raises a quantity not written from 1', () => {
+    expect(stepQuantity(undefined, 1)).toBe(2);
   });
 
-  it('removes the quantity below 1 when the floor is 0', () => {
-    expect(stepQuantity(1, -1, 0)).toBeUndefined();
-  });
-
-  it('stops at the floor of 1', () => {
-    expect(stepQuantity(1, -1, 1)).toBe(1);
-    expect(stepQuantity(3, -1, 1)).toBe(2);
+  it('stops at 1', () => {
+    expect(stepQuantity(undefined, -1)).toBe(1);
+    expect(stepQuantity(1, -1)).toBe(1);
+    expect(stepQuantity(3, -1)).toBe(2);
   });
 
   it('stops at 99', () => {
-    expect(stepQuantity(99, 1, 0)).toBe(99);
+    expect(stepQuantity(99, 1)).toBe(99);
   });
 });

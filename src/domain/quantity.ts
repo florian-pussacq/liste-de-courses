@@ -35,20 +35,18 @@ function quantified(
   return { label: rest, quantity };
 }
 
-// Only the quantities written down add up: an unspecified one adds nothing.
-export function addQuantities(a?: Quantity, b?: Quantity): Quantity | undefined {
-  if (a === undefined && b === undefined) return undefined;
-  return Math.min(MAX_QUANTITY, (a ?? 0) + (b ?? 0));
+// An item always has a quantity: none written means one.
+export const quantityOf = (quantity?: Quantity): Quantity => quantity ?? 1;
+
+// A written quantity adds to what is shown; an entry without a written number is the same
+// need again and changes nothing, so pasting a list twice does not double it.
+export function addQuantities(existing?: Quantity, written?: Quantity): Quantity | undefined {
+  if (written === undefined) return existing;
+  return Math.min(MAX_QUANTITY, quantityOf(existing) + written);
 }
 
-// With a floor of 0, stepping below 1 leaves the quantity unspecified.
-export function stepQuantity(
-  quantity: Quantity | undefined,
-  delta: 1 | -1,
-  floor: 0 | 1,
-): Quantity | undefined {
-  const next = Math.min(MAX_QUANTITY, Math.max(floor, (quantity ?? 0) + delta));
-  return next === 0 ? undefined : next;
+export function stepQuantity(quantity: Quantity | undefined, delta: 1 | -1): Quantity {
+  return Math.min(MAX_QUANTITY, Math.max(1, quantityOf(quantity) + delta));
 }
 
 // Leaves no `quantity: undefined` behind: an unspecified quantity is an absent one.
