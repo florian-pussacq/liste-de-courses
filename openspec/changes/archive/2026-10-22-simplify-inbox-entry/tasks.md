@@ -8,7 +8,7 @@
 ## 2. Vérification d'intégration
 
 - [x] 2.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
-- [ ] 2.2 Sur un téléphone Android réel : coller une liste, vérifier l'absence de la ligne « Coller ou écrire une liste à la main » et le bouton « + »
+- [x] 2.2 Sur un téléphone Android réel : coller une liste, vérifier l'absence de la ligne « Coller ou écrire une liste à la main » et le bouton « + »
 
 ## Workflow follow-up
 
