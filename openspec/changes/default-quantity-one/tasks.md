@@ -14,7 +14,7 @@
 
 ## 3. Vérification d'intégration
 
-- [ ] 3.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 3.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 3.2 Sur un téléphone Android réel : ajuster la quantité d'un article sans nombre depuis sa ligne, et vérifier qu'il se coche toujours en touchant son libellé
 
 ## Workflow follow-up
