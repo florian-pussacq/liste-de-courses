@@ -74,3 +74,70 @@ test.describe('clearing the history', () => {
     await expect(history(page).getByRole('button', { name: 'Effacer l’historique' })).toBeVisible();
   });
 });
+
+test.describe('searching the history', () => {
+  const search = (page: Page) => history(page).getByLabel('Rechercher un article');
+  const found = (page: Page) =>
+    history(page).getByRole('list', { name: 'Articles trouvés' }).getByRole('listitem');
+
+  async function buy(page: Page, ...labels: string[]) {
+    await addItems(page, ...labels);
+    for (const label of labels) {
+      await toBuy(page)
+        .filter({ hasText: label.replace(/^\d+ /, '') })
+        .click();
+    }
+    await page.getByRole('button', { name: /dans le panier/ }).click();
+    await page.getByRole('button', { name: 'Retirer les articles pris' }).click();
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./');
+  });
+
+  test('finds an item bought, then goes back to the days once cleared', async ({ page }) => {
+    await buy(page, 'parmesan', 'lait');
+    await openHistory(page);
+
+    await search(page).fill('parm');
+
+    await expect(found(page)).toHaveCount(1);
+    await expect(found(page).first()).toContainText('parmesan');
+    await expect(found(page).first()).toContainText('1 achat');
+    await search(page).fill('');
+    await expect(history(page).getByRole('heading', { level: 3 })).toHaveCount(1);
+  });
+
+  test('tells when no purchase matches', async ({ page }) => {
+    await buy(page, 'lait');
+    await openHistory(page);
+
+    await search(page).fill('sucre');
+
+    await expect(history(page)).toContainText('Aucun achat ne correspond à « sucre ».');
+  });
+
+  test('puts an item back on the list with its last quantity', async ({ page }) => {
+    await buy(page, '3 citrons');
+    await openHistory(page);
+    await search(page).fill('citr');
+
+    await history(page).getByRole('button', { name: 'Remettre citrons' }).click();
+
+    await expect(found(page).first()).toContainText('Dans la liste');
+    await history(page).getByRole('button', { name: 'Fermer' }).click();
+    await sheetClosed(page, 'Historique des achats');
+    await expect(page.getByRole('group', { name: 'Quantité de citrons' })).toContainText('3');
+  });
+
+  test('tells an item already on the list instead of offering it again', async ({ page }) => {
+    await buy(page, 'citrons');
+    await addItems(page, 'citrons');
+    await openHistory(page);
+
+    await search(page).fill('citr');
+
+    await expect(found(page).first()).toContainText('Dans la liste');
+    await expect(history(page).getByRole('button', { name: 'Remettre citrons' })).toHaveCount(0);
+  });
+});

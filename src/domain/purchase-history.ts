@@ -74,9 +74,13 @@ export interface PurchasedArticle {
 const MIN_QUERY_LENGTH = 2;
 
 // The same rule as duplicates decides what is one item: "tomate" finds "Tomates cerises".
-export function searchPurchases(history: PurchaseHistory, query: string): PurchasedArticle[] {
+// Too short a query is no search at all, which differs from a search finding nothing.
+export function searchPurchases(
+  history: PurchaseHistory,
+  query: string,
+): PurchasedArticle[] | undefined {
   const key = labelKey(query);
-  if (key.length < MIN_QUERY_LENGTH) return [];
+  if (key.length < MIN_QUERY_LENGTH) return undefined;
   const articles = new Map<string, PurchasedArticle>();
   for (const { label, quantity, takenAt } of history.purchases) {
     const articleKey = labelKey(label);

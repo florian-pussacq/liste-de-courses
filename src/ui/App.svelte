@@ -149,7 +149,7 @@
     onclose={closeSheet}
   />
 {:else if sheet.kind === 'history'}
-  <HistorySheet {app} onclose={closeSheet} />
+  <HistorySheet {app} {list} onchange={(changed) => (list = changed)} onclose={closeSheet} />
 {/if}
 
 <style>

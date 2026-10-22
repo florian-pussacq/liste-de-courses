@@ -1,45 +1,110 @@
 <script lang="ts">
   import type { Shopping } from '../application/shopping';
-  import { purchasesByDay, type Day, type PurchaseDay } from '../domain/purchase-history';
+  import { labelKey } from '../domain/label';
+  import {
+    purchasesByDay,
+    searchPurchases,
+    type PurchasedArticle,
+    type PurchaseHistory,
+  } from '../domain/purchase-history';
+  import type { ShoppingList } from '../domain/shopping-list';
   import QuantityBadge from './QuantityBadge.svelte';
   import Sheet from './Sheet.svelte';
 
   interface Props {
     app: Shopping;
+    list: ShoppingList;
+    onchange: (list: ShoppingList) => void;
     onclose: () => void;
   }
 
-  const { app, onclose }: Props = $props();
+  const { app, list, onchange, onclose }: Props = $props();
 
-  let days: PurchaseDay[] | undefined = $state();
+  let history: PurchaseHistory | undefined = $state.raw();
+  let query = $state('');
   let confirming = $state(false);
+  const days = $derived(history && purchasesByDay(history));
+  const results = $derived(history && searchPurchases(history, query));
+  // A search replaces the days; clearing it brings them back.
+  const shownDays = $derived(results ? [] : (days ?? []));
 
-  async function clear() {
-    days = purchasesByDay(await app.clearPurchaseHistory());
-    confirming = false;
-  }
   $effect(() => {
-    void app.purchaseHistory().then((history) => (days = purchasesByDay(history)));
+    void app.purchaseHistory().then((loaded) => (history = loaded));
   });
 
+  async function clear() {
+    history = await app.clearPurchaseHistory();
+    confirming = false;
+  }
+
+  // Already to buy or to check: putting it back would only add up the quantities by mistake.
+  const inList = ({ label }: PurchasedArticle) =>
+    list.items.some((item) => !item.checked && labelKey(item.label) === labelKey(label));
+
+  const buyAgain = async (article: PurchasedArticle) => onchange(await app.buyAgain(article));
+
   // The year is only worth reading when it is not the current one.
-  function dayTitle(day: Day): string {
-    const [year = 0, month = 1, date = 1] = day.split('-').map(Number);
-    const sameYear = year === new Date().getFullYear();
+  function dateTitle(date: Date): string {
+    const sameYear = date.getFullYear() === new Date().getFullYear();
     return new Intl.DateTimeFormat('fr-FR', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       ...(!sameYear && { year: 'numeric' }),
-    }).format(new Date(year, month - 1, date));
+    }).format(date);
+  }
+
+  function dayTitle(day: string): string {
+    const [year = 0, month = 1, date = 1] = day.split('-').map(Number);
+    return dateTitle(new Date(year, month - 1, date));
   }
 </script>
 
 <Sheet title="Historique des achats" {onclose}>
+  {#if days && days.length > 0}
+    <input
+      class="search"
+      type="search"
+      aria-label="Rechercher un article"
+      placeholder="Rechercher un article"
+      bind:value={query}
+    />
+  {/if}
   {#if days?.length === 0}
     <p class="empty">Aucun achat enregistré pour l’instant.</p>
   {/if}
-  {#each days ?? [] as { day, purchases } (day)}
+  {#if results}
+    {#if results.length === 0}
+      <p class="empty">Aucun achat ne correspond à « {query.trim()} ».</p>
+    {:else}
+      <ul aria-label="Articles trouvés" class="results">
+        {#each results as article (labelKey(article.label))}
+          <li>
+            <div>
+              <QuantityBadge quantity={article.lastQuantity} /><span class="capitalized"
+                >{article.label}</span
+              >
+              <p class="detail">
+                {article.purchaseCount}&nbsp;achat{article.purchaseCount > 1 ? 's' : ''} · dernier :
+                {dateTitle(new Date(article.lastTakenAt))}
+              </p>
+            </div>
+            {#if inList(article)}
+              <span class="in-list">Dans la liste</span>
+            {:else}
+              <button
+                type="button"
+                class="button"
+                aria-label="Remettre {article.label}"
+                onclick={() => buyAgain(article)}>Remettre</button
+              >
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  {/if}
+  {#each shownDays as { day, purchases } (day)}
     <section aria-labelledby="day-{day}">
       <h3 id="day-{day}" class="capitalized">{dayTitle(day)}</h3>
       <ul>
@@ -86,6 +151,37 @@
 
   .empty {
     color: var(--surface-muted);
+  }
+
+  .search {
+    width: 100%;
+    min-height: var(--target);
+    margin: 4px 0 16px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--ground);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .results li {
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .detail {
+    margin: 4px 0 0;
+    color: var(--surface-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .in-list {
+    flex-shrink: 0;
+    color: var(--surface-muted);
+    font-weight: 700;
   }
 
   section + section {

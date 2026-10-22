@@ -7,9 +7,9 @@
 
 ## 2. Interface
 
-- [ ] 2.1 Ajouter le champ de recherche et les résultats à la feuille d'historique, et vérifier en e2e la recherche, l'absence de résultat et le retour à la vue par jour quand le champ est vidé
-- [ ] 2.2 Ajouter « Remettre » et « Dans la liste », et vérifier en e2e « Article remis » et « Article déjà dans la liste »
-- [ ] 2.3 Vérifier par capture, en clair et en sombre, des résultats de recherche
+- [x] 2.1 Ajouter le champ de recherche et les résultats à la feuille d'historique, et vérifier en e2e la recherche, l'absence de résultat et le retour à la vue par jour quand le champ est vidé
+- [x] 2.2 Ajouter « Remettre » et « Dans la liste », et vérifier en e2e « Article remis » et « Article déjà dans la liste »
+- [x] 2.3 Vérifier par capture, en clair et en sombre, des résultats de recherche
 
 ## 3. Vérification d'intégration
 

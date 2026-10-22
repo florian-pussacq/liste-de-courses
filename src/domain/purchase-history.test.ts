@@ -108,7 +108,7 @@ describe('searching purchases', () => {
   it('finds an item by part of its label, as duplicates are recognised', () => {
     const history = record(emptyPurchaseHistory(), [item('i1', 'Tomates cerises'), october(1)]);
 
-    expect(searchPurchases(history, 'tomate').map(({ label }) => label)).toEqual([
+    expect(searchPurchases(history, 'tomate')?.map(({ label }) => label)).toEqual([
       'Tomates cerises',
     ]);
   });
@@ -119,10 +119,10 @@ describe('searching purchases', () => {
     expect(searchPurchases(history, 'sucre')).toEqual([]);
   });
 
-  it('waits for at least two characters', () => {
+  it('does not search before two characters, unlike a search finding nothing', () => {
     const history = record(emptyPurchaseHistory(), [item('i1', 'lait'), october(1)]);
 
-    expect(searchPurchases(history, ' l ')).toEqual([]);
+    expect(searchPurchases(history, ' l ')).toBeUndefined();
   });
 
   it('gives one result per item, with its count and its last purchase', () => {
@@ -144,7 +144,7 @@ describe('searching purchases', () => {
       [item('i2', 'parmesan'), october(21)],
     );
 
-    expect(searchPurchases(history, 'parmesan').map(({ label }) => label)).toEqual([
+    expect(searchPurchases(history, 'parmesan')?.map(({ label }) => label)).toEqual([
       'parmesan',
       'parmesan râpé',
     ]);
