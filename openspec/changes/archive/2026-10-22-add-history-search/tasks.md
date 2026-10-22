@@ -14,7 +14,7 @@
 ## 3. Vérification d'intégration
 
 - [x] 3.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
-- [ ] 3.2 Sur un téléphone Android réel : rechercher un article acheté, le remettre dans la liste, et vérifier « Dans la liste »
+- [x] 3.2 Sur un téléphone Android réel : rechercher un article acheté, le remettre dans la liste, et vérifier « Dans la liste »
 
 ## Workflow follow-up
 
