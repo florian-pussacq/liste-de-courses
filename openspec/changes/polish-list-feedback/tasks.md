@@ -13,7 +13,7 @@
 - [x] 2.2 Afficher les libellés de la liste et du tri avec une initiale en majuscule, et vérifier en e2e les scénarios « Article en minuscules » et « Proposition en minuscules »
 - [x] 2.3 Ajouter l'action « Vider la liste » en fin de liste, et vérifier en e2e les scénarios « Liste vidée », « Rien à vider » et « Vidage annulé »
 - [x] 2.4 Masquer « Vider la liste » quand tous les articles sont pris, et vérifier en e2e le scénario « Tout est pris »
-- [ ] 2.5 Ouvrir la boîte de réception sans activer de champ de saisie, et vérifier en e2e le scénario « Liste collée »
+- [x] 2.5 Ouvrir la boîte de réception sans activer de champ de saisie, et vérifier en e2e le scénario « Liste collée »
 
 ## 3. Vérification d'intégration
 

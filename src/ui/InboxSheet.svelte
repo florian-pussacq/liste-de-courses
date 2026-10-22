@@ -143,6 +143,7 @@
 
 <Sheet
   {title}
+  focusSheet
   hint={inbox.proposals.length > 0
     ? 'Touche un article pour l’écarter ou le remettre, appui long pour plus d’actions.'
     : undefined}

@@ -55,3 +55,13 @@ test('stops warning about the clipboard once a list was pasted by hand', async (
   await expect(proposals(page)).toHaveText(['pain']);
   await expect(page.getByRole('status')).toBeHidden();
 });
+
+test('opens the inbox without activating a field, so no keyboard pops up', async ({ page }) => {
+  await stubClipboard(page, { text: 'pain, beurre' });
+  await page.goto('./');
+
+  await page.getByRole('button', { name: 'Coller une liste' }).click();
+
+  await expect(proposals(page)).toHaveText(['pain', 'beurre']);
+  await expect(page.locator('input:focus, textarea:focus')).toHaveCount(0);
+});
