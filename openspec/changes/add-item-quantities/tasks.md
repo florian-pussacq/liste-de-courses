@@ -25,7 +25,7 @@
 ## 4. Vérification d'intégration
 
 - [x] 4.1 Ajouter « quantité → `quantity` » au glossaire de `CLAUDE.md`
-- [ ] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 4.3 Sur un téléphone Android réel : coller un menu où un plat revient deux fois, vérifier les quantités dans le tri et le bilan, puis ajuster une quantité sur une ligne
 
 ## Workflow follow-up
