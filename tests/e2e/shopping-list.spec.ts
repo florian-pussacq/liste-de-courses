@@ -27,8 +27,8 @@ test('shows the progress of the shopping', async ({ page }) => {
   await toBuy(page).filter({ hasText: 'lait' }).click();
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('3 à prendre');
-  await expect(page.getByText('2 / 5 pris')).toBeVisible();
-  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
+  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuetext', '2 pris sur 5');
+  await expect(page.getByText('2 / 5 pris')).toHaveCount(0);
 
   for (const label of ['sel', 'riz', 'café']) await toBuy(page).filter({ hasText: label }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tout est pris');

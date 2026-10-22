@@ -63,7 +63,7 @@ test('does not count items to check in the progress', async ({ page }) => {
   await toBuy(page).filter({ hasText: 'pain' }).click();
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('3 à prendre');
-  await expect(page.getByText('1 / 4 pris')).toBeVisible();
+  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuetext', '1 pris sur 4');
 });
 
 test('asks to check first when the list only holds items to check', async ({ page }) => {

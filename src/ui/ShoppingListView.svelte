@@ -128,7 +128,6 @@
   </div>
   {#if sendNotice}<p class="send-notice" role="status">{sendNotice}</p>{/if}
   {#if total > 0}
-    <p class="count">{basket.length} / {total} pris</p>
     <div
       class="progress"
       role="progressbar"
@@ -136,6 +135,7 @@
       aria-valuemin="0"
       aria-valuemax={total}
       aria-valuenow={basket.length}
+      aria-valuetext="{basket.length} pris sur {total}"
     >
       <div style:width="{progress}%"></div>
     </div>
@@ -320,14 +320,9 @@
     letter-spacing: 0;
   }
 
-  .count {
-    margin: 8px 0 10px;
-    color: var(--ink-muted);
-    font-weight: 600;
-  }
-
   .progress {
     height: 8px;
+    margin-top: 16px;
     border-radius: 999px;
     background: var(--surface-muted);
     overflow: hidden;
