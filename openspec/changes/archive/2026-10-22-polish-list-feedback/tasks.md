@@ -18,7 +18,7 @@
 ## 3. Vérification d'intégration
 
 - [x] 3.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
-- [ ] 3.2 Sur un téléphone Android réel : valider un tri contenant un doublon et lire le bilan, vérifier les majuscules, vider la liste puis annuler
+- [x] 3.2 Sur un téléphone Android réel : valider un tri contenant un doublon et lire le bilan, vérifier les majuscules, vider la liste puis annuler
 
 ## Workflow follow-up
 
