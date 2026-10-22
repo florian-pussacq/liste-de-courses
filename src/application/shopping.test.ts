@@ -232,6 +232,21 @@ describe('shopping list', () => {
   });
 });
 
+describe('quantities', () => {
+  it('sets the quantity of an item and of a proposal', async () => {
+    await app.addItem('lait');
+    await app.captureText('citrons');
+
+    const list = await app.setItemQuantity(await idOf('lait'), 2);
+    const inbox = await app.setProposalQuantity(await proposalIdOf('citrons'), 3);
+
+    expect(list.items[0]?.quantity).toBe(2);
+    expect((await shoppingLists.load()).items[0]?.quantity).toBe(2);
+    expect(inbox.proposals[0]?.quantity).toBe(3);
+    expect((await inboxes.load()).proposals[0]?.quantity).toBe(3);
+  });
+});
+
 describe('clearing the list', () => {
   it('removes every item, whatever its state, and leaves the inbox alone', async () => {
     await app.addItem('pain');

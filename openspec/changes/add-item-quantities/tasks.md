@@ -12,7 +12,7 @@
 
 ## 2. Application
 
-- [ ] 2.1 Ajouter les cas d'usage `setItemQuantity` et `setProposalQuantity`, et les vérifier sur des dépôts en mémoire
+- [x] 2.1 Ajouter les cas d'usage `setItemQuantity` et `setProposalQuantity`, et les vérifier sur des dépôts en mémoire
 
 ## 3. Interface
 

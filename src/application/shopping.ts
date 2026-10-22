@@ -23,6 +23,7 @@ import type {
   ShoppingList,
 } from '../domain/shopping-list';
 import { listAsText } from '../domain/list-text';
+import type { Quantity } from '../domain/quantity';
 import type { Dependencies, SendOutcome } from './ports';
 
 export type Shopping = ReturnType<typeof shopping>;
@@ -106,6 +107,8 @@ export function shopping({
       changeInbox((inbox) => inboxes.toggleProposal(inbox, id)),
     toggleProposalToCheck: (id: string): Promise<Inbox> =>
       changeInbox((inbox) => inboxes.toggleProposalToCheck(inbox, id)),
+    setProposalQuantity: (id: string, quantity: Quantity | undefined): Promise<Inbox> =>
+      changeInbox((inbox) => inboxes.setProposalQuantity(inbox, id, quantity)),
     abandonInbox: (): Promise<Inbox> => changeInbox(emptyInbox),
 
     async defineDishFromProposal(
@@ -158,6 +161,8 @@ export function shopping({
       changeList((list) => lists.removeItem(list, id)),
     toggleItem: (id: ItemId): Promise<ShoppingList> =>
       changeList((list) => lists.toggleItem(list, id, now())),
+    setItemQuantity: (id: ItemId, quantity: Quantity | undefined): Promise<ShoppingList> =>
+      changeList((list) => lists.setQuantity(list, id, quantity, now())),
     setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>
       changeList((list) => lists.setToCheck(list, id, toCheck, now())),
     clearChecked: (): Promise<ShoppingList> => changeList(lists.clearChecked),
