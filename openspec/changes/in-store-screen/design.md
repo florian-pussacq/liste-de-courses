@@ -30,7 +30,9 @@ La vue calcule `inStore` une fois et passe `adjustable={!inStore}` aux lignes à
 Alternative écartée : passer `inStore` à `ItemRow`, qui recombinerait avec `item.checked`. La ligne aurait alors deux raisons de cacher le compteur au lieu d'une.
 
 ### Collage réduit : même bouton, libellé masqué visuellement
-Le bouton de collage reste un seul élément ; en magasin, son libellé passe dans un `span.visually-hidden` (classe déjà présente dans `app.css`). Le nom accessible ne change pas, les sélecteurs e2e `getByRole('button', { name: 'Coller une liste' })` restent valables. En magasin, le bouton prend la taille du « + » (60 × 60), un style secondaire (fond `--surface`, icône `--ink`), et les deux boutons s'alignent à droite, dans la zone du pouce.
+Le bouton de collage reste un seul élément, nommé par `aria-label="Coller une liste"` ; son libellé visible n'est rendu qu'en préparation. Le nom accessible ne change donc jamais, les sélecteurs e2e `getByRole('button', { name: 'Coller une liste' })` restent valables, et l'absence de texte visible en magasin se vérifie directement. En magasin, le bouton prend la taille du « + » (60 × 60), le style secondaire des actions d'en-tête (bordure et icône `--ink`, fond `--ground`), et les deux boutons s'alignent à droite, dans la zone du pouce.
+
+Alternative écartée : masquer le libellé visuellement (`.visually-hidden`). Le texte resterait dans le DOM, et un test ne pourrait distinguer « affiché » de « masqué » qu'en mesurant le rendu.
 
 Alternative écartée : deux boutons distincts selon le moment. Elle dupliquerait le gestionnaire et ferait sauter le focus au changement de moment.
 

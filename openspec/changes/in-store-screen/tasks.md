@@ -8,8 +8,8 @@
 ## 2. Interface
 
 - [x] 2.1 Passer `adjustable` à `ItemRow` depuis la vue (`!inStore` à prendre, `false` au panier), et vérifier en e2e « Pas de commande sur la ligne en magasin », « Quantité affichée en magasin » et « Ajustement depuis les actions en magasin », les tests existants du compteur restant verts en préparation
-- [ ] 2.2 Réduire en magasin le bouton de collage à son icône, libellé masqué visuellement, aligné à droite avec le « + », et vérifier en e2e « Collage en préparation », « Collage en magasin » et « Coller en magasin »
-- [ ] 2.3 Vérifier par capture, en clair et en sombre, la liste en préparation puis en magasin (lignes à prendre et dock), sur une largeur de téléphone
+- [x] 2.2 Réduire en magasin le bouton de collage à son icône, libellé non rendu et nom gardé, aligné à droite avec le « + », et vérifier en e2e « Collage en préparation », « Collage en magasin » et « Coller en magasin »
+- [x] 2.3 Vérifier par capture, en clair et en sombre, la liste en préparation puis en magasin (lignes à prendre et dock), sur une largeur de téléphone
 
 ## 3. Vérification d'intégration
 

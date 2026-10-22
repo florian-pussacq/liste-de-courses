@@ -252,13 +252,13 @@
       {plural(pending, 'article')} à trier
     </button>
   {/if}
-  <div class="dock">
-    <button type="button" class="paste" onclick={onpaste}>
+  <div class="dock" class:in-store={inStore}>
+    <button type="button" class="paste" aria-label="Coller une liste" onclick={onpaste}>
       <svg aria-hidden="true" viewBox="0 0 24 24">
         <rect x="8" y="3" width="8" height="4" rx="1" />
         <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
       </svg>
-      Coller une liste
+      {#if !inStore}Coller une liste{/if}
     </button>
     <button type="button" class="add" aria-label="Ajouter un article" onclick={onadd}>
       <PlusIcon size={26} />
@@ -500,6 +500,22 @@
     stroke: var(--accent);
     width: 22px;
     height: 22px;
+  }
+
+  /* In store, the dock leaves the room to the list and keeps both actions under the thumb. */
+  .in-store {
+    justify-content: flex-end;
+  }
+
+  .in-store .paste {
+    flex: 0 0 60px;
+    border: 2px solid var(--ink);
+    background: var(--ground);
+    color: var(--ink);
+  }
+
+  .in-store .paste svg {
+    stroke: var(--ink);
   }
 
   .add {

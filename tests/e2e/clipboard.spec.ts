@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { proposals, stubClipboard } from './helpers';
+import { expect, test, type Page } from '@playwright/test';
+import { addItems, proposals, stubClipboard, toBuy } from './helpers';
 
 test('captures the list held by the clipboard in one touch', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -64,4 +64,35 @@ test('opens the inbox without activating a field, so no keyboard pops up', async
 
   await expect(proposals(page)).toHaveText(['pain', 'beurre']);
   await expect(page.locator('input:focus, textarea:focus')).toHaveCount(0);
+});
+
+test.describe('the paste action', () => {
+  const paste = (page: Page) => page.getByRole('button', { name: 'Coller une liste' });
+
+  test('shows its label while preparing the list', async ({ page }) => {
+    await page.goto('./');
+    await addItems(page, 'pain');
+
+    await expect(paste(page)).toHaveText('Coller une liste');
+  });
+
+  test('shrinks to its icon in store, keeping its name', async ({ page }) => {
+    await page.goto('./');
+    await addItems(page, 'pain');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+
+    await expect(paste(page)).toHaveText('');
+  });
+
+  test('still captures the clipboard in store', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('./');
+    await addItems(page, 'pain');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+    await page.evaluate(() => navigator.clipboard.writeText('beurre'));
+
+    await paste(page).click();
+
+    await expect(proposals(page)).toHaveText(['beurre']);
+  });
 });
