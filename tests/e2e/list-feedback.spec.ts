@@ -98,6 +98,20 @@ test.describe('clearing the list', () => {
     expect(button && dock && button.y + button.height).toBeLessThanOrEqual(dock?.y ?? 0);
   });
 
+  test('is not offered when everything is taken, leaving the removal of taken items', async ({
+    page,
+  }) => {
+    await addItems(page, 'pain', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+    await expect(clearList(page)).toBeVisible();
+
+    await toBuy(page).filter({ hasText: 'lait' }).click();
+    await page.getByRole('button', { name: '2 articles dans le panier' }).click();
+
+    await expect(page.getByRole('button', { name: 'Retirer les articles pris' })).toBeVisible();
+    await expect(clearList(page)).toBeHidden();
+  });
+
   test('is not offered for an empty list', async ({ page }) => {
     await expect(page.getByText('La liste est vide.')).toBeVisible();
 

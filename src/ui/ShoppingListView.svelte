@@ -172,7 +172,8 @@
     </section>
   {/if}
 
-  {#if list.items.length > 0}
+  <!-- When everything is taken, removing the taken items already empties the list. -->
+  {#if toBuy.length + toCheck.length > 0}
     <button type="button" class="button clear" onclick={async () => (list = await app.clearList())}>
       Vider la liste
     </button>

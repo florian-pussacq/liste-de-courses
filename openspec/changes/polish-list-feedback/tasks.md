@@ -12,7 +12,7 @@
 - [x] 2.1 Afficher le bandeau de bilan après la validation, fermable, masqué à toute modification de la liste, et vérifier en e2e les scénarios de « Bilan de la validation »
 - [x] 2.2 Afficher les libellés de la liste et du tri avec une initiale en majuscule, et vérifier en e2e les scénarios « Article en minuscules » et « Proposition en minuscules »
 - [x] 2.3 Ajouter l'action « Vider la liste » en fin de liste, et vérifier en e2e les scénarios « Liste vidée », « Rien à vider » et « Vidage annulé »
-- [ ] 2.4 Masquer « Vider la liste » quand tous les articles sont pris, et vérifier en e2e le scénario « Tout est pris »
+- [x] 2.4 Masquer « Vider la liste » quand tous les articles sont pris, et vérifier en e2e le scénario « Tout est pris »
 
 ## 3. Vérification d'intégration
 
