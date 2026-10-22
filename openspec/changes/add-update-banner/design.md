@@ -17,7 +17,7 @@
 ## Decisions
 
 ### Mode « prompt » et enregistrement par l'application
-`registerType: 'prompt'`, `injectRegister: false`, et un adaptateur d'infrastructure `watchForUpdates(onUpdateReady)` qui appelle `registerSW` de `virtual:pwa-register` :
+`registerType: 'prompt'`, `injectRegister: false`, et un adaptateur d'infrastructure `watchForUpdates(register, onUpdateReady)` qui appelle `registerSW` de `virtual:pwa-register`, reçu en paramètre :
 - `onNeedRefresh` signale qu'une version attend, avec une fonction `apply` qui active le nouveau service worker et recharge la page (`updateSW(true)`) ;
 - une fois l'enregistrement fait, `registration.update()` est appelé à chaque retour au premier plan (`visibilitychange` → `visible`).
 
@@ -28,12 +28,16 @@ Alternative écartée : garder `autoUpdate` et recharger automatiquement à l'ac
 ### Le bandeau dans `App`
 `main.ts` branche `watchForUpdates` et transmet l'événement à `App` par une propriété `onupdateready` à laquelle `App` s'abonne, pour que l'interface ne dépende pas du module virtuel du plugin. Le bandeau (`role="status"`, « Nouvelle version disponible » + « Recharger ») s'affiche en haut de l'écran, loin des bandeaux d'annulation et de bilan placés au-dessus du dock.
 
-### Test de bout en bout réel
-Le test e2e sert l'application construite, attend le service worker, puis intercepte la requête de `sw.js` (route Playwright) pour en servir une version modifiée d'un octet : le navigateur y voit une nouvelle version, l'installe, et le bandeau doit apparaître. Le rechargement est ensuite vérifié avec une liste existante.
+### Tests : à la frontière du plugin, puis sur téléphone
+Playwright n'intercepte pas la requête de `sw.js` faite par le navigateur pour vérifier une mise à jour (vérifié : la route n'est jamais appelée) ; simuler une nouvelle version en e2e demanderait de modifier les fichiers servis pendant que d'autres tests tournent. Les tests portent donc sur :
+- `watchForUpdates`, qui reçoit `registerSW` en paramètre (fourni par `main.ts`) : une version en attente est annoncée avec la fonction qui la charge, et `registration.update()` est appelé au retour au premier plan, pas au passage en arrière-plan ;
+- `App`, au niveau composant : le bandeau n'apparaît qu'une fois une version annoncée, et « Recharger » la charge ;
+- la conservation de la liste quand les fichiers de l'application sont remplacés, déjà couverte en e2e ;
+- la mise à jour réelle, vérifiée sur téléphone.
 
 ## Risks / Trade-offs
 
-- [L'interception de `sw.js` par Playwright pourrait ne pas couvrir la vérification de mise à jour faite par le navigateur] → À vérifier en premier ; à défaut, le bandeau est testé au niveau composant avec une source d'événements simulée, et la mise à jour réelle sur téléphone.
+- [Aucun test automatique ne déroule une vraie mise à jour de bout en bout] → Les deux moitiés sont testées à leur frontière ; l'enchaînement réel est vérifié sur téléphone avant l'archivage.
 - [Un rechargement efface un champ en cours de saisie] → Le rechargement n'a lieu que sur demande ; la liste et le tri sont en IndexedDB.
 
 ## Migration Plan

@@ -1,8 +1,10 @@
 import { mount } from 'svelte';
+import { registerSW } from 'virtual:pwa-register';
 import { shopping } from './application/shopping';
 import { readClipboard } from './infrastructure/clipboard';
 import { openStorage } from './infrastructure/indexed-db';
 import { requestPersistentStorage } from './infrastructure/persistent-storage';
+import { watchForUpdates } from './infrastructure/app-update';
 import { sendText } from './infrastructure/send-text';
 import { takeSharedContent } from './infrastructure/share-target';
 import App from './ui/App.svelte';
@@ -37,6 +39,7 @@ async function start(target: HTMLElement): Promise<void> {
       initialInbox,
       openInbox: shared !== undefined,
       emptyShare: shared !== undefined && initialInbox.proposals.length === pendingBefore,
+      onupdateready: (listener) => watchForUpdates(registerSW, listener),
     },
   });
 }

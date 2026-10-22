@@ -2,12 +2,12 @@
 
 ## 1. Infrastructure
 
-- [ ] 1.1 Passer `vite-plugin-pwa` en mode « prompt » sans script injecté, et ajouter `watchForUpdates` (attente d'une version, application, recherche au retour au premier plan)
+- [x] 1.1 Passer `vite-plugin-pwa` en mode « prompt » sans script injecté, et ajouter `watchForUpdates` (attente d'une version, application, recherche au retour au premier plan)
 
 ## 2. Interface
 
-- [ ] 2.1 Afficher le bandeau de mise à jour dans `App` et le brancher dans `main.ts`, et vérifier en e2e les scénarios « Nouvelle version disponible » et « Nouvelle version chargée »
-- [ ] 2.2 Vérifier en e2e le scénario « Retour au premier plan »
+- [x] 2.1 Afficher le bandeau de mise à jour dans `App` et le brancher dans `main.ts`, et vérifier au niveau composant les scénarios « Nouvelle version disponible » et « Nouvelle version chargée »
+- [x] 2.2 Vérifier sur `watchForUpdates` le scénario « Retour au premier plan »
 
 ## 3. Vérification d'intégration
 

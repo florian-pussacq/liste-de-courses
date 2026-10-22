@@ -14,9 +14,21 @@
     initialInbox: Inbox;
     openInbox?: boolean;
     emptyShare?: boolean;
+    // Subscribes to new versions of the application, each given with the way to load it.
+    onupdateready?: (listener: (apply: () => Promise<void>) => void) => void;
   }
 
-  const { app, initialList, initialInbox, openInbox = false, emptyShare = false }: Props = $props();
+  const {
+    app,
+    initialList,
+    initialInbox,
+    openInbox = false,
+    emptyShare = false,
+    onupdateready,
+  }: Props = $props();
+
+  let loadNewVersion: (() => Promise<void>) | undefined = $state();
+  untrack(() => onupdateready?.((apply) => (loadNewVersion = apply)));
 
   type Sheet =
     | { readonly kind: 'none' }
@@ -89,6 +101,14 @@
   }
 </script>
 
+{#if loadNewVersion}
+  {@const load = loadNewVersion}
+  <div class="update" role="status">
+    <span>Nouvelle version disponible</span>
+    <button type="button" class="button" onclick={load}>Recharger</button>
+  </div>
+{/if}
+
 <ShoppingListView
   {app}
   bind:list
@@ -126,3 +146,18 @@
     onclose={closeSheet}
   />
 {/if}
+
+<style>
+  .update {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 12px 0;
+    padding: 6px 6px 6px 18px;
+    border-radius: 18px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+</style>

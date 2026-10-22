@@ -35,7 +35,8 @@ export default defineConfig({
     svelte(),
     contentSecurityPolicyMeta(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['icon.svg'],
       manifest: {
         name: 'Liste de courses',
