@@ -189,6 +189,8 @@ export const itemsToCheck = (list: ShoppingList): readonly Item[] =>
 export const checkedItems = (list: ShoppingList): readonly Item[] =>
   list.items.filter((item) => item.checked);
 
+export const isInStore = (list: ShoppingList): boolean => list.items.some((item) => item.checked);
+
 function findByLabel(list: ShoppingList, label: string): Item | undefined {
   const key = labelKey(label);
   return list.items.find((item) => labelKey(item.label) === key);

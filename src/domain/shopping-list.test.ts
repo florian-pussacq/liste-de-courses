@@ -5,6 +5,7 @@ import {
   checkedItems,
   clearChecked,
   emptyShoppingList,
+  isInStore,
   itemsToBuy,
   itemsToCheck,
   removeItem,
@@ -223,6 +224,35 @@ describe('checking items while shopping', () => {
 
     const unchecked = toggleItem(checked, id, 6);
     expect(find(unchecked, 'beurre')).toMatchObject({ checked: false, updatedAt: 6 });
+  });
+});
+
+describe('moment of the shopping', () => {
+  it('is preparing while no item is taken', () => {
+    expect(isInStore(listOf('pain', 'lait'))).toBe(false);
+  });
+
+  it('is in store once an item is taken', () => {
+    const list = listOf('pain', 'lait');
+
+    expect(isInStore(toggleItem(list, find(list, 'pain').id, 2))).toBe(true);
+  });
+
+  it('does not count an item to check', () => {
+    expect(isInStore(addedToCheck(listOf('pain'), 'compote'))).toBe(false);
+  });
+
+  it('is preparing again once the last taken item is unchecked', () => {
+    const list = listOf('pain');
+    const id = find(list, 'pain').id;
+
+    expect(isInStore(toggleItem(toggleItem(list, id, 2), id, 3))).toBe(false);
+  });
+
+  it('is preparing again once taken items are cleared', () => {
+    const list = listOf('pain', 'sel');
+
+    expect(isInStore(clearChecked(toggleItem(list, find(list, 'pain').id, 2)))).toBe(false);
   });
 });
 

@@ -2,8 +2,8 @@
 
 ## 1. Domaine
 
-- [ ] 1.1 Ajouter en TDD `isInStore(list)` dans `shopping-list.ts`, et vérifier par des tests unitaires les cinq scénarios de « Moment des courses »
-- [ ] 1.2 Ajouter « en magasin » → `inStore` au glossaire de `CLAUDE.md`, et vérifier que le nom utilisé dans le code est le même
+- [x] 1.1 Ajouter en TDD `isInStore(list)` dans `shopping-list.ts`, et vérifier par des tests unitaires les cinq scénarios de « Moment des courses »
+- [x] 1.2 Ajouter « en magasin » → `inStore` au glossaire de `CLAUDE.md`, et vérifier que le nom utilisé dans le code est le même
 
 ## 2. Interface
 
