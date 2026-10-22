@@ -1,0 +1,25 @@
+# Spec Delta
+
+## ADDED Requirements
+
+### Requirement: Bilan de la validation
+Le système SHALL indiquer, après la validation du tri, les articles réellement ajoutés à la liste et ceux qui y figuraient déjà. Ce bilan MUST rester affiché jusqu'à ce que l'utilisateur le ferme ou modifie la liste.
+
+#### Scenario: Articles ajoutés et déjà présents
+- **WHEN** la liste contient « petits pois » et que l'utilisateur valide « petit pois » et « lait »
+- **THEN** le bilan indique que « lait » a été ajouté et que « petits pois » était déjà dans la liste
+
+#### Scenario: Bilan fermé
+- **WHEN** le bilan est affiché et que l'utilisateur le ferme
+- **THEN** le bilan disparaît
+
+#### Scenario: Bilan dépassé
+- **WHEN** le bilan est affiché et que l'utilisateur coche un article
+- **THEN** le bilan disparaît
+
+### Requirement: Initiale en majuscule dans le tri
+Le système SHALL afficher dans la boîte de réception chaque proposition, plat et ingrédient avec une initiale en majuscule, sans modifier le libellé enregistré.
+
+#### Scenario: Proposition en minuscules
+- **WHEN** le texte reçu est « carottes »
+- **THEN** la proposition s'affiche « Carottes »
