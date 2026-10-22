@@ -116,7 +116,7 @@ test('never sends dishes with the list', async ({ page }) => {
 
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { sharedTexts: string[] }).sharedTexts))
-    .toEqual(['œufs\nlait']);
+    .toEqual(['Œufs\nLait']);
 });
 
 test('shows the actions of a proposal on screen, even in a long inbox', async ({ page }) => {

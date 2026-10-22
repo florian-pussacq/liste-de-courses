@@ -34,7 +34,7 @@ test('sends items to buy then items to check, without taken items', async ({ pag
 
   await expect
     .poll(() => page.evaluate(() => window.sharedTexts))
-    .toEqual(['pain\nlait\ncompote ?']);
+    .toEqual(['Pain\nLait\nCompote ?']);
   await expect(page.getByRole('status')).toBeHidden();
 });
 
@@ -59,7 +59,7 @@ test('copies the list when the phone offers no share menu', async ({ page, conte
   await sendButton(page).click();
 
   await expect(page.getByRole('status')).toHaveText('Liste copiée : colle-la dans ta messagerie.');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('pain\nlait');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('Pain\nLait');
 });
 
 test('says nothing when the share menu is closed without choosing', async ({ page }) => {

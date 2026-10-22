@@ -5,7 +5,7 @@
 - [x] 1.1 Faire renvoyer en TDD à `addItems` les libellés ajoutés et déjà présents (doublons internes comptés une fois, article pris remis à prendre compté comme ajouté), et vérifier les scénarios « Articles ajoutés et déjà présents » et « Article pris ajouté de nouveau »
 - [x] 1.2 Faire renvoyer son bilan à `validateInbox`, et le vérifier sur des dépôts en mémoire
 - [x] 1.3 Ajouter en TDD le cas d'usage `clearList`, et vérifier les scénarios « Liste vidée » et « Tri préservé »
-- [ ] 1.4 Mettre l'initiale en majuscule dans `listAsText`, et vérifier le scénario « Liste envoyée » et la relecture par l'application
+- [x] 1.4 Mettre l'initiale en majuscule dans `listAsText`, et vérifier le scénario « Liste envoyée » et la relecture par l'application
 
 ## 2. Interface
 

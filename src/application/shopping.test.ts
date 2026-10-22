@@ -281,7 +281,7 @@ describe('sending the list', () => {
     await app.validateInbox();
 
     expect(await app.sendList()).toBe('shared');
-    expect(sent).toEqual(['pain\ncompote ?']);
+    expect(sent).toEqual(['Pain\nCompote ?']);
   });
 
   it('sends nothing when nothing is left to buy or check', async () => {
