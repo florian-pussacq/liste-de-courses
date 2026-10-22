@@ -50,3 +50,12 @@ export function stepQuantity(
   const next = Math.min(MAX_QUANTITY, Math.max(floor, (quantity ?? 0) + delta));
   return next === 0 ? undefined : next;
 }
+
+// Leaves no `quantity: undefined` behind: an unspecified quantity is an absent one.
+export function withQuantity<T extends { readonly quantity?: Quantity }>(
+  value: T,
+  quantity: Quantity | undefined,
+): T {
+  const { quantity: _replaced, ...rest } = value;
+  return (quantity === undefined ? rest : { ...rest, quantity }) as T;
+}

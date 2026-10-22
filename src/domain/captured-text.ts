@@ -1,4 +1,5 @@
 import { cleanLabel } from './label';
+import { readQuantity, type Quantity } from './quantity';
 
 const LINE_BREAKS = /\r?\n/;
 const SEPARATORS = /[,;]+/;
@@ -13,6 +14,7 @@ export interface Entry {
   readonly label: string;
   readonly toCheck: boolean;
   readonly isDish?: true;
+  readonly quantity?: Quantity;
 }
 
 interface Element {
@@ -48,8 +50,9 @@ const elements = (texts: readonly string[], isDish: boolean): Element[] =>
 function toEntry({ text, isDish }: Element): Entry {
   const element = cleanLabel(text.replace(LEADING_BULLET_OR_NUMBER, ''));
   const toCheck = TRAILING_QUESTION_MARK.test(element);
-  const label = toCheck ? element.replace(TRAILING_QUESTION_MARK, '') : element;
-  return isDish ? { label, toCheck, isDish: true } : { label, toCheck };
+  if (isDish) return { label: element.replace(TRAILING_QUESTION_MARK, ''), toCheck, isDish: true };
+  const { label, quantity } = readQuantity(element.replace(TRAILING_QUESTION_MARK, ''));
+  return quantity === undefined ? { label, toCheck } : { label, toCheck, quantity };
 }
 
 export function sharedText({ title, text }: SharedContent): string {

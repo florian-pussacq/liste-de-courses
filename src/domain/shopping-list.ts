@@ -1,5 +1,6 @@
 import type { Entry } from './captured-text';
 import { cleanLabel, labelKey } from './label';
+import { addQuantities, readQuantity, withQuantity, type Quantity } from './quantity';
 import { failure, success, type Result } from './result';
 
 export type ItemId = string;
@@ -9,6 +10,7 @@ export interface Item {
   readonly label: string;
   readonly checked: boolean;
   readonly toCheck: boolean;
+  readonly quantity?: Quantity;
   readonly addedAt: number;
   readonly updatedAt: number;
 }
@@ -31,10 +33,19 @@ export const emptyShoppingList = (): ShoppingList => ({ items: [] });
 export function addItem(
   list: ShoppingList,
   rawLabel: string,
-  { now, newId }: AddContext,
+  context: AddContext,
   toCheck = false,
 ): Result<ShoppingList, AddItemError> {
-  const label = cleanLabel(rawLabel);
+  const { label, quantity } = readQuantity(rawLabel);
+  return addEntry(list, withQuantity<Entry>({ label, toCheck }, quantity), context);
+}
+
+function addEntry(
+  list: ShoppingList,
+  entry: Entry,
+  { now, newId }: AddContext,
+): Result<ShoppingList, AddItemError> {
+  const label = cleanLabel(entry.label);
   if (label === '') return failure('empty-label');
 
   const existing = findByLabel(list, label);
@@ -43,19 +54,27 @@ export function addItem(
       id: newId(),
       label,
       checked: false,
-      toCheck,
+      toCheck: entry.toCheck,
       addedAt: now,
       updatedAt: now,
     };
-    return success({ items: [...list.items, item] });
+    return success({ items: [...list.items, withQuantity(item, entry.quantity)] });
   }
-  // A doubt never overrides what is already known; a certain item settles a doubt or a taken item.
-  if (toCheck) return success(list);
-  if (existing.checked)
-    return success(updateItem(list, existing.id, { checked: false, updatedAt: now }));
-  if (existing.toCheck)
-    return success(updateItem(list, existing.id, { toCheck: false, updatedAt: now }));
-  return success(list);
+  // A doubt never overrides what is already known; a certain item settles a doubt or a taken item,
+  // and brings its own quantity: the taken ones are already in the basket, the doubtful ones unsure.
+  if (entry.toCheck) return success(list);
+  if (existing.checked || existing.toCheck) {
+    return success(
+      updateItem(list, existing.id, (item) =>
+        withQuantity({ ...item, checked: false, toCheck: false, updatedAt: now }, entry.quantity),
+      ),
+    );
+  }
+  const quantity = addQuantities(existing.quantity, entry.quantity);
+  if (quantity === existing.quantity) return success(list);
+  return success(
+    updateItem(list, existing.id, (item) => withQuantity({ ...item, updatedAt: now }, quantity)),
+  );
 }
 
 export interface BatchAddition {
@@ -76,8 +95,9 @@ export function addItems(
   const added: string[] = [];
   const alreadyListed: string[] = [];
   const reported = new Set<ItemId>();
-  for (const { label, toCheck } of entries) {
-    const result = addItem(current, label, context, toCheck);
+  for (const entry of entries) {
+    const { label } = entry;
+    const result = addEntry(current, entry, context);
     if (!result.ok) continue;
     const before = findByLabel(current, label);
     current = result.value;
@@ -96,14 +116,19 @@ export function renameItem(
   rawLabel: string,
   now: number,
 ): Result<ShoppingList, RenameItemError> {
-  const label = cleanLabel(rawLabel);
+  const { label, quantity } = readQuantity(rawLabel);
   if (label === '') return failure('empty-label');
-  if (!list.items.some((item) => item.id === id)) return failure('item-not-found');
+  const item = list.items.find((candidate) => candidate.id === id);
+  if (!item) return failure('item-not-found');
 
   const homonym = findByLabel(list, label);
   if (homonym && homonym.id !== id) return failure('duplicate-label');
 
-  return success(updateItem(list, id, { label, updatedAt: now }));
+  return success(
+    updateItem(list, id, (current) =>
+      withQuantity({ ...current, label, updatedAt: now }, quantity ?? current.quantity),
+    ),
+  );
 }
 
 export function removeItem(list: ShoppingList, id: ItemId): ShoppingList {
@@ -124,7 +149,16 @@ export function setToCheck(
   toCheck: boolean,
   now: number,
 ): ShoppingList {
-  return updateItem(list, id, { toCheck, updatedAt: now });
+  return updateItem(list, id, (item) => ({ ...item, toCheck, updatedAt: now }));
+}
+
+export function setQuantity(
+  list: ShoppingList,
+  id: ItemId,
+  quantity: Quantity | undefined,
+  now: number,
+): ShoppingList {
+  return updateItem(list, id, (item) => withQuantity({ ...item, updatedAt: now }, quantity));
 }
 
 export function clearChecked(list: ShoppingList): ShoppingList {
@@ -145,10 +179,6 @@ function findByLabel(list: ShoppingList, label: string): Item | undefined {
   return list.items.find((item) => labelKey(item.label) === key);
 }
 
-function updateItem(
-  list: ShoppingList,
-  id: ItemId,
-  changes: Partial<Pick<Item, 'label' | 'checked' | 'toCheck' | 'updatedAt'>>,
-): ShoppingList {
-  return { items: list.items.map((item) => (item.id === id ? { ...item, ...changes } : item)) };
+function updateItem(list: ShoppingList, id: ItemId, update: (item: Item) => Item): ShoppingList {
+  return { items: list.items.map((item) => (item.id === id ? update(item) : item)) };
 }

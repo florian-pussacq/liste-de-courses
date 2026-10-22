@@ -231,3 +231,50 @@ describe('review order', () => {
     expect(keptEntries(inbox).map((entry) => entry.label)).toEqual(['riz', 'parmesan', 'carottes']);
   });
 });
+
+describe('quantities of dish ingredients', () => {
+  const ratatouille: Dish = {
+    id: 'd2',
+    name: 'ratatouille',
+    ingredients: [
+      { label: 'courgettes', toCheck: false, quantity: 2 },
+      { label: 'riz', toCheck: false },
+    ],
+  };
+  const quantities = (inbox: Inbox) =>
+    inbox.proposals.map(({ label, quantity }) => [label, quantity]);
+
+  it('proposes the ingredients of a recognised dish with their quantity', () => {
+    expect(
+      quantities(captureText(emptyInbox(), 'ratatouille', sequentialIds(), [ratatouille])),
+    ).toEqual([
+      ['courgettes', 2],
+      ['riz', undefined],
+    ]);
+  });
+
+  it('counts the quantities of a dish cited twice, still grouped once', () => {
+    const inbox = captureText(
+      emptyInbox(),
+      'Lundi 3 : ratatouille\nJeudi 6 : ratatouille',
+      sequentialIds(),
+      [ratatouille],
+    );
+
+    expect(quantities(inbox)).toEqual([
+      ['courgettes', 4],
+      ['riz', undefined],
+    ]);
+    expect(view(inbox)).toEqual(['courgettes|ratatouille||', 'riz|ratatouille||']);
+  });
+
+  it('counts a dish cited again in a later capture of the same inbox', () => {
+    const newId = sequentialIds();
+    const first = captureText(emptyInbox(), 'ratatouille', newId, [ratatouille]);
+
+    expect(quantities(captureText(first, 'ratatouille', newId, [ratatouille]))).toEqual([
+      ['courgettes', 4],
+      ['riz', undefined],
+    ]);
+  });
+});

@@ -128,3 +128,33 @@ describe('sharedText', () => {
     expect(sharedText({ title: ' ', text: '' })).toBe('');
   });
 });
+
+describe('quantities in captured text', () => {
+  it('reads the quantity of each element', () => {
+    expect(splitIntoEntries('4 courgettes, citrons x3\nlait')).toEqual([
+      { label: 'courgettes', toCheck: false, quantity: 4 },
+      { label: 'citrons', toCheck: false, quantity: 3 },
+      certain('lait'),
+    ]);
+  });
+
+  it('keeps the quantity of an item to check', () => {
+    expect(splitIntoEntries('3 citrons ?')).toEqual([
+      { label: 'citrons', toCheck: true, quantity: 3 },
+    ]);
+  });
+
+  it('does not take numbering for a quantity', () => {
+    expect(splitIntoEntries('1. citrons\n2) 3 courgettes')).toEqual([
+      certain('citrons'),
+      { label: 'courgettes', toCheck: false, quantity: 3 },
+    ]);
+  });
+
+  it('reads the quantity of a side in a menu line', () => {
+    expect(splitIntoEntries('Lundi 3 : risotto / 2 courgettes')).toEqual([
+      { label: 'risotto', toCheck: false, isDish: true },
+      { label: 'courgettes', toCheck: false, quantity: 2 },
+    ]);
+  });
+});

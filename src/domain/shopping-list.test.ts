@@ -9,6 +9,7 @@ import {
   itemsToCheck,
   removeItem,
   renameItem,
+  setQuantity,
   setToCheck,
   toggleItem,
   type ShoppingList,
@@ -323,5 +324,99 @@ describe('items to check', () => {
     );
 
     expect([stateOf(list, 'riz'), stateOf(list, 'compote')]).toEqual(['to-buy', 'to-check']);
+  });
+});
+
+describe('quantities', () => {
+  const quantityOf = (list: ShoppingList, label: string) => find(list, label).quantity;
+  const certain = (label: string, quantity?: number) =>
+    quantity === undefined ? { label, toCheck: false } : { label, toCheck: false, quantity };
+
+  it('reads the quantity of a label typed directly', () => {
+    const list = added(emptyShoppingList(), '3 citrons');
+
+    expect(labels(list)).toEqual(['citrons']);
+    expect(quantityOf(list, 'citrons')).toBe(3);
+  });
+
+  it('keeps an item typed without quantity without one', () => {
+    expect(quantityOf(added(emptyShoppingList(), 'lait'), 'lait')).toBeUndefined();
+  });
+
+  it('adds up the quantities of an item added again', () => {
+    expect(quantityOf(added(added(emptyShoppingList(), '3 citrons'), '2 citrons'), 'citrons')).toBe(
+      5,
+    );
+  });
+
+  it('gives its quantity to an item that had none', () => {
+    expect(quantityOf(added(added(emptyShoppingList(), 'citrons'), '2 citrons'), 'citrons')).toBe(
+      2,
+    );
+  });
+
+  it('keeps the quantity when the item is added again without one', () => {
+    expect(quantityOf(added(added(emptyShoppingList(), '3 citrons'), 'citrons'), 'citrons')).toBe(
+      3,
+    );
+  });
+
+  it('puts a taken item back to buy with the quantity added only', () => {
+    const initial = added(emptyShoppingList(), '3 citrons');
+    const taken = toggleItem(initial, find(initial, 'citrons').id, 1);
+
+    const list = added(taken, '2 citrons');
+
+    expect(find(list, 'citrons').checked).toBe(false);
+    expect(quantityOf(list, 'citrons')).toBe(2);
+  });
+
+  it('settles a doubt with the quantity of the certain item', () => {
+    const doubtful = addItems(
+      emptyShoppingList(),
+      [{ label: 'citrons', toCheck: true, quantity: 3 }],
+      at(0),
+    );
+
+    const { list } = addItems(doubtful.list, [certain('citrons', 2)], at(1));
+
+    expect(find(list, 'citrons').toCheck).toBe(false);
+    expect(quantityOf(list, 'citrons')).toBe(2);
+  });
+
+  it('leaves a certain item untouched by a doubt, quantity included', () => {
+    const list = addItems(
+      added(emptyShoppingList(), '3 citrons'),
+      [{ label: 'citrons', toCheck: true, quantity: 2 }],
+      at(1),
+    ).list;
+
+    expect(quantityOf(list, 'citrons')).toBe(3);
+  });
+
+  it('replaces the quantity with the one typed when renaming', () => {
+    const initial = added(emptyShoppingList(), '3 citrons');
+
+    const renamed = renameItem(initial, find(initial, 'citrons').id, '4 citrons', 2);
+
+    expect(renamed.ok && quantityOf(renamed.value, 'citrons')).toBe(4);
+  });
+
+  it('keeps the quantity when renaming without one', () => {
+    const initial = added(emptyShoppingList(), '3 citrons');
+
+    const renamed = renameItem(initial, find(initial, 'citrons').id, 'citrons jaunes', 2);
+
+    expect(renamed.ok && quantityOf(renamed.value, 'citrons jaunes')).toBe(3);
+  });
+
+  it('sets the quantity of an item, or removes it', () => {
+    const initial = added(emptyShoppingList(), 'lait');
+    const id = find(initial, 'lait').id;
+
+    expect(quantityOf(setQuantity(initial, id, 2, 1), 'lait')).toBe(2);
+    expect(quantityOf(setQuantity(setQuantity(initial, id, 2, 1), id, undefined, 2), 'lait')).toBe(
+      undefined,
+    );
   });
 });

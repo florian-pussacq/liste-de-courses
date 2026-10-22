@@ -1,6 +1,7 @@
 import { splitIntoEntries, type Entry } from './captured-text';
 import { findDish, type Dish } from './dish';
-import { cleanLabel, labelKey } from './label';
+import { labelKey } from './label';
+import { addQuantities, readQuantity, withQuantity, type Quantity } from './quantity';
 import { failure, success, type Result } from './result';
 
 export type ProposalId = string;
@@ -10,6 +11,7 @@ export interface Proposal {
   readonly label: string;
   readonly discarded: boolean;
   readonly toCheck: boolean;
+  readonly quantity?: Quantity;
   // Name of the dish this proposal is an ingredient of, if any.
   readonly dish?: string;
   // An unknown dish name: nothing to buy until it is defined or kept as an item.
@@ -43,20 +45,34 @@ export const reviewOrder = (inbox: Inbox): Proposal[] => [
 export const keptEntries = (inbox: Inbox): Entry[] =>
   reviewOrder(inbox)
     .filter((proposal) => !proposal.discarded && !proposal.dishToDefine)
-    .map(({ label, toCheck }) => ({ label, toCheck }));
+    .map(({ label, toCheck, quantity }) => withQuantity<Entry>({ label, toCheck }, quantity));
 
 const newProposal = (
   id: ProposalId,
-  { label, toCheck, isDish }: Entry,
+  { label, toCheck, isDish, quantity }: Entry,
   dish?: string,
-): Proposal => ({
-  id,
-  label,
-  toCheck,
-  discarded: false,
-  ...(dish !== undefined && { dish }),
-  ...(dish === undefined && isDish && { dishToDefine: true }),
-});
+): Proposal =>
+  withQuantity<Proposal>(
+    {
+      id,
+      label,
+      toCheck,
+      discarded: false,
+      ...(dish !== undefined && { dish }),
+      ...(dish === undefined && isDish && { dishToDefine: true }),
+    },
+    quantity,
+  );
+
+// Same rule as the list: a certain item settles a doubt with its own quantity, a doubt never
+// overrides a certainty, and otherwise the quantities written down add up.
+function mergedWith(existing: Proposal, entry: Entry): Proposal {
+  if (existing.toCheck && !entry.toCheck) {
+    return withQuantity({ ...existing, toCheck: false }, entry.quantity);
+  }
+  if (entry.toCheck && !existing.toCheck) return existing;
+  return withQuantity(existing, addQuantities(existing.quantity, entry.quantity));
+}
 
 const belongsTo = (proposal: Proposal, dishName: string) =>
   proposal.dish !== undefined && labelKey(proposal.dish) === labelKey(dishName);
@@ -65,7 +81,7 @@ const belongsTo = (proposal: Proposal, dishName: string) =>
 const ingredientsOf = (dish: Dish, doubtful: boolean): readonly Entry[] =>
   doubtful ? dish.ingredients.map((entry) => ({ ...entry, toCheck: true })) : dish.ingredients;
 
-// An item is never proposed twice; a certain item settles a pending doubt about it.
+// An item is never proposed twice: a known one is merged with the entry received again.
 // New proposals are inserted at `at`, in order; known ones stay where they are.
 function mergeInto(
   proposals: readonly Proposal[],
@@ -81,9 +97,9 @@ function mergeInto(
     const existing = merged.find((proposal) => labelKey(proposal.label) === key);
     if (!existing) {
       merged.splice(insertAt++, 0, newProposal(newId(), entry, dish));
-    } else if (!entry.toCheck && existing.toCheck) {
+    } else {
       merged = merged.map((proposal) =>
-        proposal.id === existing.id ? { ...proposal, toCheck: false } : proposal,
+        proposal.id === existing.id ? mergedWith(proposal, entry) : proposal,
       );
     }
   }
@@ -108,7 +124,7 @@ export function captureText(
   const proposals = splitIntoEntries(text).reduce((current, entry) => {
     const dish = findDish(dishes, entry.label);
     if (!dish) return append(current, [entry], newId);
-    if (current.some((proposal) => belongsTo(proposal, dish.name))) return current;
+    // A dish cited again is merged again: its quantities count once per citation.
     return append(current, ingredientsOf(dish, entry.toCheck), newId, dish.name);
   }, inbox.proposals);
   return { proposals, capturedTexts: [...inbox.capturedTexts, text] };
@@ -119,11 +135,15 @@ export function addProposal(
   rawLabel: string,
   newId: () => ProposalId,
 ): Result<Inbox, ProposalError> {
-  const label = cleanLabel(rawLabel);
+  const { label, quantity } = readQuantity(rawLabel);
   if (label === '') return failure('empty-label');
   return success({
     ...inbox,
-    proposals: append(inbox.proposals, [{ label, toCheck: false }], newId),
+    proposals: append(
+      inbox.proposals,
+      [withQuantity<Entry>({ label, toCheck: false }, quantity)],
+      newId,
+    ),
   });
 }
 
@@ -132,13 +152,15 @@ export function editProposal(
   id: ProposalId,
   rawLabel: string,
 ): Result<Inbox, EditProposalError> {
-  const label = cleanLabel(rawLabel);
+  const { label, quantity } = readQuantity(rawLabel);
   if (label === '') return failure('empty-label');
   if (!inbox.proposals.some((proposal) => proposal.id === id)) return failure('proposal-not-found');
   return success({
     ...inbox,
     proposals: inbox.proposals.map((proposal) =>
-      proposal.id === id ? { ...proposal, label } : proposal,
+      proposal.id === id
+        ? withQuantity({ ...proposal, label }, quantity ?? proposal.quantity)
+        : proposal,
     ),
   });
 }
@@ -158,6 +180,19 @@ export function toggleProposalToCheck(inbox: Inbox, id: ProposalId): Inbox {
     ...inbox,
     proposals: inbox.proposals.map((proposal) =>
       proposal.id === id ? { ...proposal, toCheck: !proposal.toCheck } : proposal,
+    ),
+  };
+}
+
+export function setProposalQuantity(
+  inbox: Inbox,
+  id: ProposalId,
+  quantity: Quantity | undefined,
+): Inbox {
+  return {
+    ...inbox,
+    proposals: inbox.proposals.map((proposal) =>
+      proposal.id === id ? withQuantity(proposal, quantity) : proposal,
     ),
   };
 }

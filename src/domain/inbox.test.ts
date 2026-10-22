@@ -6,6 +6,7 @@ import {
   emptyInbox,
   keptEntries,
   proposedLabels,
+  setProposalQuantity,
   toggleProposalToCheck,
   toggleProposal,
   type Inbox,
@@ -196,5 +197,56 @@ describe('merging duplicate proposals', () => {
     const result = addProposal(captured('lait'), 'Lait', () => 'manual');
 
     expect(result.ok && proposedLabels(result.value)).toEqual(['lait']);
+  });
+});
+
+describe('quantities in the inbox', () => {
+  const quantities = (inbox: Inbox) =>
+    inbox.proposals.map(({ label, quantity }) => [label, quantity]);
+
+  it('adds up the quantities of an item received twice', () => {
+    expect(quantities(captured('3 citrons\n2 citrons'))).toEqual([['citrons', 5]]);
+  });
+
+  it('settles a doubt with the quantity of the certain item', () => {
+    const inbox = captured('2 citrons', captured('3 citrons ?'));
+
+    expect(inbox.proposals).toMatchObject([{ label: 'citrons', toCheck: false, quantity: 2 }]);
+  });
+
+  it('reads the quantity of a proposal added by hand', () => {
+    const result = addProposal(captured('lait'), '3 citrons', sequentialIds());
+
+    expect(result.ok && quantities(result.value)).toEqual([
+      ['lait', undefined],
+      ['citrons', 3],
+    ]);
+  });
+
+  it('replaces the quantity typed when correcting a proposal, or keeps it', () => {
+    const inbox = captured('3 citrons');
+
+    const corrected = editProposal(inbox, idOf(inbox, 'citrons'), '4 citrons');
+    const renamed = editProposal(inbox, idOf(inbox, 'citrons'), 'citrons jaunes');
+
+    expect(corrected.ok && quantities(corrected.value)).toEqual([['citrons', 4]]);
+    expect(renamed.ok && quantities(renamed.value)).toEqual([['citrons jaunes', 3]]);
+  });
+
+  it('sets the quantity of a proposal, or removes it', () => {
+    const inbox = captured('lait');
+    const withTwo = setProposalQuantity(inbox, idOf(inbox, 'lait'), 2);
+
+    expect(quantities(withTwo)).toEqual([['lait', 2]]);
+    expect(quantities(setProposalQuantity(withTwo, idOf(inbox, 'lait'), undefined))).toEqual([
+      ['lait', undefined],
+    ]);
+  });
+
+  it('passes the quantities on to the list on validation', () => {
+    expect(keptEntries(captured('3 citrons, lait'))).toEqual([
+      { label: 'citrons', toCheck: false, quantity: 3 },
+      { label: 'lait', toCheck: false },
+    ]);
   });
 });
