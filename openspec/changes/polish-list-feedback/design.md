@@ -32,7 +32,7 @@ Une liste de noms se lit en plus de six secondes : pas de délai d'expiration. L
 Alternative écartée : mettre la majuscule à l'enregistrement. Elle changerait les données existantes et la casse que l'utilisateur a choisie (« iPhone », « pH »), pour un gain de présentation seulement. Avec `::first-letter`, « iPhone » s'affiche « IPhone » : c'est accepté, la présentation restant uniforme.
 
 ### Vider la liste réutilise l'annulation existante
-Le cas d'usage `clearList` enregistre `emptyShoppingList()`, la liste vide que le domaine fournit déjà. Comme tout retrait, il déclenche le bandeau « Annuler » sans code supplémentaire. L'action « Vider la liste » se place en fin de liste, loin du dock, et n'apparaît que si la liste contient au moins un article.
+Le cas d'usage `clearList` enregistre `emptyShoppingList()`, la liste vide que le domaine fournit déjà. Comme tout retrait, il déclenche le bandeau « Annuler » sans code supplémentaire. L'action « Vider la liste » se place en fin de liste, loin du dock, et n'apparaît que si au moins un article reste à prendre ou à vérifier : quand tout est pris, elle ferait la même chose que « Retirer les articles pris », et deux boutons pour un même geste se contredisent.
 
 ## Risks / Trade-offs
 

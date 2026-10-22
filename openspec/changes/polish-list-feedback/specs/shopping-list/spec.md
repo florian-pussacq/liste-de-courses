@@ -10,7 +10,7 @@ Le système SHALL afficher chaque article de la liste avec une initiale en majus
 - **THEN** l'article s'affiche « Lait » et reste reconnu comme « lait » lors d'un ajout suivant
 
 ### Requirement: Vidage de la liste
-Le système SHALL permettre de retirer d'un seul geste tous les articles de la liste, qu'ils soient à prendre, à vérifier ou pris. La boîte de réception et les plats mémorisés MUST rester inchangés. L'action MUST être indisponible lorsque la liste est vide.
+Le système SHALL permettre de retirer d'un seul geste tous les articles de la liste, qu'ils soient à prendre, à vérifier ou pris. La boîte de réception et les plats mémorisés MUST rester inchangés. L'action MUST être indisponible lorsque la liste est vide ou que tous ses articles sont pris, le retrait des articles pris faisant alors la même chose.
 
 #### Scenario: Liste vidée
 - **WHEN** la liste contient « pain » à prendre, « compote » à vérifier et « lait » pris, et que l'utilisateur vide la liste
@@ -23,6 +23,10 @@ Le système SHALL permettre de retirer d'un seul geste tous les articles de la l
 #### Scenario: Rien à vider
 - **WHEN** la liste est vide
 - **THEN** l'action pour vider la liste n'est pas proposée
+
+#### Scenario: Tout est pris
+- **WHEN** tous les articles de la liste sont pris
+- **THEN** seul le retrait des articles pris est proposé, pas le vidage de la liste
 
 ## MODIFIED Requirements
 
