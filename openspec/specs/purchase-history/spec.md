@@ -6,7 +6,7 @@ Garder une trace datée de ce qui a été acheté : chaque article coché devien
 ## Requirements
 
 ### Requirement: Enregistrement d'un achat
-Le système SHALL enregistrer un achat chaque fois qu'un article de la liste est coché, avec son libellé, sa quantité éventuelle, et la date et l'heure du cochage.
+Le système SHALL enregistrer un achat chaque fois qu'un article de la liste est coché, avec son libellé, sa quantité, et la date et l'heure du cochage.
 
 #### Scenario: Article coché
 - **WHEN** l'utilisateur coche « citrons », de quantité 3, le mardi 21 octobre
@@ -35,7 +35,7 @@ Le système MUST conserver les achats enregistrés lorsque les articles pris son
 - **THEN** l'historique contient toujours l'achat de « pain »
 
 ### Requirement: Consultation de l'historique
-Le système SHALL permettre de consulter l'historique depuis la liste : les achats y sont regroupés par jour, les jours du plus récent au plus ancien, et chaque jour présente ses achats dans l'ordre où ils ont été cochés, avec leur quantité éventuelle. Deux achats d'un même article le même jour MUST apparaître tous deux.
+Le système SHALL permettre de consulter l'historique depuis la liste : les achats y sont regroupés par jour, les jours du plus récent au plus ancien, et chaque jour présente ses achats dans l'ordre où ils ont été cochés, avec leur quantité lorsqu'elle dépasse 1. Deux achats d'un même article le même jour MUST apparaître tous deux.
 
 #### Scenario: Achats regroupés par jour
 - **WHEN** l'utilisateur a coché « lait » et « pain » le lundi 20 octobre, puis « citrons » le mardi 21 octobre, et qu'il consulte l'historique
