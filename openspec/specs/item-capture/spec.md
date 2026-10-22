@@ -116,14 +116,18 @@ Le système SHALL permettre, en une seule action depuis la liste, de lire le tex
 - **THEN** la boîte de réception s'ouvre avec la saisie manuelle et indique que le presse-papiers est vide
 
 ### Requirement: Rappel du texte reçu
-Le système SHALL afficher dans la boîte de réception le ou les textes reçus depuis la dernière validation ou le dernier abandon, afin que l'utilisateur vérifie qu'aucun article n'a été oublié.
+Le système SHALL permettre de consulter dans la boîte de réception le ou les textes reçus depuis la dernière validation ou le dernier abandon, afin que l'utilisateur vérifie qu'aucun article n'a été oublié. Ces textes MUST être repliés par défaut, derrière une action qui indique leur nombre.
 
 #### Scenario: Texte reçu rappelé
-- **WHEN** le texte « pense à prendre du lait stp » a été reçu
-- **THEN** la boîte de réception affiche ce texte au-dessus des articles proposés
+- **WHEN** le texte « pense à prendre du lait stp » a été reçu et que l'utilisateur déplie le rappel
+- **THEN** la boîte de réception affiche ce texte
+
+#### Scenario: Rappel replié par défaut
+- **WHEN** un texte a été reçu
+- **THEN** le rappel est replié et indique qu'un texte a été reçu, sans en afficher le contenu
 
 #### Scenario: Plusieurs textes reçus
-- **WHEN** les textes « pain » puis « beurre » ont été reçus sans validation entre les deux
+- **WHEN** les textes « pain » puis « beurre » ont été reçus sans validation entre les deux, et que l'utilisateur déplie le rappel
 - **THEN** la boîte de réception rappelle les deux textes, dans leur ordre de réception
 
 ### Requirement: Articles proposés à vérifier
@@ -180,11 +184,15 @@ Le système SHALL reconnaître comme ligne de menu toute ligne du texte reçu qu
 - **THEN** « restaurant » est proposé comme plat à vérifier et « purée » comme article certain
 
 ### Requirement: Fusion des doublons dans le tri
-Le système MUST NOT proposer deux fois le même article ni le même plat dans la boîte de réception. Lorsqu'un article certain arrive alors que le même article est proposé à vérifier, la proposition existante MUST devenir certaine. Deux libellés sont identiques s'ils ne diffèrent que par la casse, les accents ou les espaces superflus.
+Le système MUST NOT proposer deux fois le même article ni le même plat dans la boîte de réception. Lorsqu'un article certain arrive alors que le même article est proposé à vérifier, la proposition existante MUST devenir certaine. Deux libellés sont identiques s'ils ne diffèrent que par la casse, les accents, les espaces superflus ou la marque du pluriel (« s » ou « x ») en fin de mot.
 
 #### Scenario: Article reçu deux fois
 - **WHEN** le texte reçu est « carottes\nCarottes »
 - **THEN** « carottes » n'est proposé qu'une fois
+
+#### Scenario: Article reçu au singulier et au pluriel
+- **WHEN** le texte reçu est « tomates cerises\ntomate cerise »
+- **THEN** « tomates cerises » n'est proposé qu'une fois
 
 #### Scenario: Plat reçu deux fois
 - **WHEN** le plat « risotto » est mémorisé et que le texte reçu est « Lundi 3 : risotto\nMardi 4 : risotto »
@@ -193,3 +201,21 @@ Le système MUST NOT proposer deux fois le même article ni le même plat dans l
 #### Scenario: Le certain l'emporte dans le tri
 - **WHEN** « parmesan » est proposé à vérifier et que le texte reçu ensuite contient « parmesan »
 - **THEN** « parmesan » n'est proposé qu'une fois, comme article certain
+
+### Requirement: Ordre de présentation du tri
+Le système SHALL présenter dans la boîte de réception les plats, reconnus ou à définir, avant les articles simples, chaque catégorie dans l'ordre de réception. Les articles validés MUST être ajoutés à la liste dans ce même ordre.
+
+#### Scenario: Plats en premier
+- **WHEN** le plat « risotto » est mémorisé et que le texte reçu est « Lundi 3 : risotto / carottes\nMardi 4 : gratin / brocolis »
+- **THEN** le tri présente d'abord le groupe « risotto » et le plat à définir « gratin », puis « carottes » et « brocolis »
+
+#### Scenario: Ordre conservé à la validation
+- **WHEN** le tri présente le groupe « risotto » (« riz ») puis l'article « carottes », et que l'utilisateur valide
+- **THEN** « riz » est ajouté à la liste avant « carottes »
+
+### Requirement: Validation toujours accessible
+Le système SHALL garder l'action de validation et l'abandon du tri visibles en bas de l'écran, quelle que soit la longueur du tri.
+
+#### Scenario: Tri long
+- **WHEN** le tri propose une vingtaine d'articles
+- **THEN** l'action de validation est visible sans avoir à faire défiler

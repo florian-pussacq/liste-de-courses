@@ -19,7 +19,7 @@
 ## 4. Vérification d'intégration
 
 - [x] 4.1 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
-- [ ] 4.2 Sur un téléphone Android réel : coller un menu de plusieurs jours, valider sans défiler, annuler une suppression ; vérifier que chaque scénario se comporte comme spécifié
+- [x] 4.2 Sur un téléphone Android réel : coller un menu de plusieurs jours, valider sans défiler, annuler une suppression ; vérifier que chaque scénario se comporte comme spécifié
 
 ## Workflow follow-up
 

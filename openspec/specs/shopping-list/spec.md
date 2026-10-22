@@ -18,11 +18,15 @@ Le système SHALL permettre d'ajouter un article à la liste en saisissant son l
 - **THEN** aucun article n'est ajouté
 
 ### Requirement: Absence de doublons
-Le système MUST NOT créer un second article lorsqu'un article de même libellé figure déjà dans la liste. Deux libellés sont identiques s'ils ne diffèrent que par la casse, les accents ou les espaces superflus. Lorsqu'un article certain est ajouté alors qu'un article de même libellé est à vérifier, l'article existant MUST devenir certain ; l'ajout d'un article à vérifier MUST NOT modifier un article existant certain ou déjà pris.
+Le système MUST NOT créer un second article lorsqu'un article de même libellé figure déjà dans la liste. Deux libellés sont identiques s'ils ne diffèrent que par la casse, les accents, les espaces superflus ou la marque du pluriel (« s » ou « x ») en fin de mot. Lorsqu'un article certain est ajouté alors qu'un article de même libellé est à vérifier, l'article existant MUST devenir certain ; l'ajout d'un article à vérifier MUST NOT modifier un article existant certain ou déjà pris.
 
 #### Scenario: Doublon d'un article non coché
 - **WHEN** la liste contient « Œufs » non coché et que l'utilisateur ajoute « oeufs »
 - **THEN** la liste contient un seul article « Œufs », non coché
+
+#### Scenario: Doublon au singulier et au pluriel
+- **WHEN** la liste contient « petits pois » et que l'utilisateur ajoute « petit pois »
+- **THEN** la liste contient un seul article « petits pois »
 
 #### Scenario: Doublon d'un article déjà coché
 - **WHEN** la liste contient « lait » coché et que l'utilisateur ajoute « Lait »
@@ -175,3 +179,22 @@ Le système SHALL permettre d'envoyer la liste vers une autre application choisi
 #### Scenario: Envoi annulé
 - **WHEN** l'utilisateur ferme le menu de partage sans choisir d'application
 - **THEN** la liste reste inchangée et aucun message d'erreur n'est affiché
+
+### Requirement: Annulation d'un retrait
+Le système SHALL proposer, pendant au moins cinq secondes après qu'un ou plusieurs articles ont été retirés de la liste (« on en a », suppression d'un article, retrait des articles pris), une action « Annuler » qui rétablit la liste exactement telle qu'elle était avant le retrait. Seul le dernier retrait est annulable.
+
+#### Scenario: Suppression annulée
+- **WHEN** l'utilisateur supprime « sucre » puis choisit « Annuler »
+- **THEN** « sucre » figure de nouveau dans la liste, à sa place, dans son état
+
+#### Scenario: Retrait des articles pris annulé
+- **WHEN** l'utilisateur retire les articles pris « pain » et « lait » puis choisit « Annuler »
+- **THEN** « pain » et « lait » figurent de nouveau dans le panier
+
+#### Scenario: Doute levé par erreur
+- **WHEN** l'utilisateur indique qu'il a déjà de la « compote » puis choisit « Annuler »
+- **THEN** « compote » figure de nouveau parmi les articles à vérifier
+
+#### Scenario: Annulation expirée
+- **WHEN** l'utilisateur supprime « sucre » et ne choisit pas « Annuler »
+- **THEN** l'action « Annuler » disparaît après quelques secondes et « sucre » reste supprimé
