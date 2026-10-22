@@ -50,6 +50,11 @@ describe('listAsText', () => {
   });
 });
 
+function sequentialIds() {
+  let next = 0;
+  return () => `item-${++next}`;
+}
+
 describe('listAsText with quantities', () => {
   const list = () =>
     addItems(
@@ -59,13 +64,7 @@ describe('listAsText with quantities', () => {
         { label: 'lait', toCheck: false },
         { label: 'œufs', toCheck: true, quantity: 6 },
       ],
-      {
-        now: 0,
-        newId: (() => {
-          let next = 0;
-          return () => `item-${++next}`;
-        })(),
-      },
+      { now: 0, newId: sequentialIds() },
     ).list;
 
   it('writes the quantity before the label', () => {
