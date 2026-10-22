@@ -1,4 +1,4 @@
-import { sharedText, type SharedContent } from '../domain/captured-text';
+import { sharedText, type Entry, type SharedContent } from '../domain/captured-text';
 import * as inboxes from '../domain/inbox';
 import {
   emptyInbox,
@@ -15,7 +15,7 @@ import {
 } from '../domain/dish';
 import { failure, success, type Result } from '../domain/result';
 import * as purchases from '../domain/purchase-history';
-import type { PurchaseHistory } from '../domain/purchase-history';
+import type { PurchasedArticle, PurchaseHistory } from '../domain/purchase-history';
 import * as lists from '../domain/shopping-list';
 import type {
   AddItemError,
@@ -25,7 +25,7 @@ import type {
   ShoppingList,
 } from '../domain/shopping-list';
 import { listAsText } from '../domain/list-text';
-import type { Quantity } from '../domain/quantity';
+import { withQuantity, type Quantity } from '../domain/quantity';
 import type { Dependencies, SendOutcome } from './ports';
 
 export type Shopping = ReturnType<typeof shopping>;
@@ -177,6 +177,14 @@ export function shopping({
       return list;
     },
     purchaseHistory: (): Promise<PurchaseHistory> => purchaseStore.load(),
+    buyAgain: ({ label, lastQuantity }: PurchasedArticle): Promise<ShoppingList> =>
+      changeList(
+        (list) =>
+          lists.addItems(list, [withQuantity<Entry>({ label, toCheck: false }, lastQuantity)], {
+            now: now(),
+            newId,
+          }).list,
+      ),
     async clearPurchaseHistory(): Promise<PurchaseHistory> {
       const history = purchases.emptyPurchaseHistory();
       await purchaseStore.save(history);

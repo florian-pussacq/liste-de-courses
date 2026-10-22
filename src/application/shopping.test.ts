@@ -281,6 +281,29 @@ describe('purchase history', () => {
     ]);
   });
 
+  it('puts an item bought before back on the list with its last quantity', async () => {
+    const article = { label: 'citrons', purchaseCount: 1, lastTakenAt: 1, lastQuantity: 3 };
+
+    const list = await app.buyAgain(article);
+
+    expect(list.items).toMatchObject([{ label: 'citrons', checked: false, quantity: 3 }]);
+    expect((await shoppingLists.load()).items).toHaveLength(1);
+  });
+
+  it('puts a taken item back to buy with the quantity of its last purchase', async () => {
+    await app.addItem('5 citrons');
+    await app.toggleItem(await idOf('citrons'));
+
+    const list = await app.buyAgain({
+      label: 'citrons',
+      purchaseCount: 1,
+      lastTakenAt: 1,
+      lastQuantity: 3,
+    });
+
+    expect(list.items).toMatchObject([{ label: 'citrons', checked: false, quantity: 3 }]);
+  });
+
   it('clears the history without touching the list', async () => {
     await app.addItem('pain');
     await app.toggleItem(await idOf('pain'));

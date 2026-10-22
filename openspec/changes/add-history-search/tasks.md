@@ -3,7 +3,7 @@
 ## 1. Domaine et application
 
 - [x] 1.1 Ajouter en TDD `searchPurchases` (seuil de deux caractères, correspondance par `labelKey`, regroupement par article, dernier libellé et dernière quantité, tri par dernier achat), et vérifier les scénarios « Recherche partielle et pluriel », « Aucun résultat », « Article retrouvé » et « Plusieurs articles trouvés »
-- [ ] 1.2 Ajouter le cas d'usage `buyAgain`, et vérifier sur des dépôts en mémoire les scénarios « Article remis » et « Article pris remis »
+- [x] 1.2 Ajouter le cas d'usage `buyAgain`, et vérifier sur des dépôts en mémoire les scénarios « Article remis » et « Article pris remis »
 
 ## 2. Interface
 
