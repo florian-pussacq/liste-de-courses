@@ -9,6 +9,7 @@
   import DishSheet from './DishSheet.svelte';
   import ProposalActionsSheet from './ProposalActionsSheet.svelte';
   import ProposalChip from './ProposalChip.svelte';
+  import PlusIcon from './PlusIcon.svelte';
   import Sheet from './Sheet.svelte';
 
   interface Props {
@@ -241,7 +242,7 @@
 
   <form class="field" onsubmit={addProposal}>
     <input aria-label="Article à proposer" placeholder="Ajouter un article" bind:value={newLabel} />
-    <button type="submit" class="button">Ajouter</button>
+    <button type="submit" class="button icon" aria-label="Ajouter"><PlusIcon size={24} /></button>
   </form>
   {#if error}<p class="alert" role="alert">{error}</p>{/if}
 

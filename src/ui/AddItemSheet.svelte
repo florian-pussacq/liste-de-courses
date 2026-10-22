@@ -2,6 +2,7 @@
   import type { Shopping } from '../application/shopping';
   import type { ShoppingList } from '../domain/shopping-list';
   import { messageFor } from './messages';
+  import PlusIcon from './PlusIcon.svelte';
   import Sheet from './Sheet.svelte';
 
   interface Props {
@@ -35,7 +36,9 @@
   <form class="field" onsubmit={add}>
     <!-- svelte-ignore a11y_autofocus -->
     <input aria-label="Nouvel article" placeholder="Pain, lait…" bind:value={newLabel} autofocus />
-    <button type="submit" class="button primary">Ajouter</button>
+    <button type="submit" class="button primary icon" aria-label="Ajouter"
+      ><PlusIcon size={24} /></button
+    >
   </form>
   {#if error}<p class="alert" role="alert">{error}</p>{/if}
   <div class="actions">

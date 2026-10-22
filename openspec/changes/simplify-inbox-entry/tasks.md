@@ -3,7 +3,7 @@
 ## 1. Interface
 
 - [x] 1.1 Afficher la zone de saisie d'un texte, sans ligne repliable, seulement quand rien n'est à trier ou que le presse-papiers n'a pas pu être lu, et vérifier en e2e les scénarios « Collage d'une liste » et « Saisie masquée pendant le tri »
-- [ ] 1.2 Remplacer le texte des boutons « Ajouter » par l'icône « + » en gardant leur nom accessible, et vérifier par capture le rendu du tri et de la feuille d'ajout en clair et en sombre
+- [x] 1.2 Remplacer le texte des boutons « Ajouter » par l'icône « + » en gardant leur nom accessible, et vérifier par capture le rendu du tri et de la feuille d'ajout en clair et en sombre
 
 ## 2. Vérification d'intégration
 
