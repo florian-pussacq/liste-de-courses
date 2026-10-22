@@ -97,7 +97,7 @@ describe('capture', () => {
   it('moves the proposals to the list on validation and empties the inbox', async () => {
     await app.captureText('pain, beurre');
 
-    const list = await app.validateInbox();
+    const { list } = await app.validateInbox();
 
     expect(labels(list)).toEqual(['pain', 'beurre']);
     expect(labels(await shoppingLists.load())).toEqual(['pain', 'beurre']);
@@ -108,13 +108,13 @@ describe('capture', () => {
     await app.captureText('pain, stp');
     await app.toggleProposal(await proposalIdOf('stp'));
 
-    expect(labels(await app.validateInbox())).toEqual(['pain']);
+    expect(labels((await app.validateInbox()).list)).toEqual(['pain']);
   });
 
   it('adds proposals to check as items to check', async () => {
     await app.captureText('riz, compote ?');
 
-    const list = await app.validateInbox();
+    const { list } = await app.validateInbox();
 
     expect(itemsToCheck(list).map((item) => item.label)).toEqual(['compote']);
     expect(itemsToBuy(list).map((item) => item.label)).toEqual(['riz']);
@@ -123,7 +123,17 @@ describe('capture', () => {
   it('adds duplicates validated together only once', async () => {
     await app.captureText('pain\nPain');
 
-    expect(labels(await app.validateInbox())).toEqual(['pain']);
+    expect(labels((await app.validateInbox()).list)).toEqual(['pain']);
+  });
+
+  it('reports what the validation added and what was already listed', async () => {
+    await app.addItem('petits pois');
+    await app.captureText('petit pois, lait');
+
+    expect(await app.validateInbox()).toMatchObject({
+      added: ['lait'],
+      alreadyListed: ['petits pois'],
+    });
   });
 
   it('empties the inbox without touching the list when the capture is abandoned', async () => {
@@ -339,7 +349,7 @@ describe('dishes', () => {
 
     await app.keepAsItem(await proposalIdOf('gratin'));
 
-    expect(labels(await app.validateInbox())).toEqual(['gratin', 'carottes']);
+    expect(labels((await app.validateInbox()).list)).toEqual(['gratin', 'carottes']);
   });
 
   it('discards a whole dish', async () => {

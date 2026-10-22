@@ -58,16 +58,36 @@ export function addItem(
   return success(list);
 }
 
-// Blank labels carry no item, so a batch simply skips them.
+export interface BatchAddition {
+  readonly list: ShoppingList;
+  // Labels as they appear in the list, each item reported once, in the order of the batch.
+  readonly added: readonly string[];
+  readonly alreadyListed: readonly string[];
+}
+
+// Blank labels carry no item, so a batch simply skips them. A taken item put back to buy
+// counts as added: for the shopping, it is on the list again.
 export function addItems(
   list: ShoppingList,
   entries: readonly Entry[],
   context: AddContext,
-): ShoppingList {
-  return entries.reduce((current, { label, toCheck }) => {
+): BatchAddition {
+  let current = list;
+  const added: string[] = [];
+  const alreadyListed: string[] = [];
+  const reported = new Set<ItemId>();
+  for (const { label, toCheck } of entries) {
     const result = addItem(current, label, context, toCheck);
-    return result.ok ? result.value : current;
-  }, list);
+    if (!result.ok) continue;
+    const before = findByLabel(current, label);
+    current = result.value;
+    const item = findByLabel(current, label);
+    if (!item || reported.has(item.id)) continue;
+    reported.add(item.id);
+    const putBack = before?.checked === true && !item.checked;
+    (before && !putBack ? alreadyListed : added).push(item.label);
+  }
+  return { list: current, added, alreadyListed };
 }
 
 export function renameItem(

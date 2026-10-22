@@ -5,7 +5,7 @@ import { addItems, emptyShoppingList, toggleItem, type ShoppingList } from './sh
 
 function sampleList(): ShoppingList {
   let next = 0;
-  const list = addItems(
+  const { list } = addItems(
     emptyShoppingList(),
     [
       { label: 'pain', toCheck: false },

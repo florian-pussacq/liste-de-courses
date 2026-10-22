@@ -105,7 +105,7 @@ describe('preventing duplicates', () => {
 
 describe('adding several items at once', () => {
   it('adds each label without duplicates', () => {
-    const list = addItems(
+    const { list } = addItems(
       listOf('lait'),
       ['pain', 'Pain', 'LAIT'].map((label) => ({ label, toCheck: false })),
       at(1),
@@ -124,9 +124,39 @@ describe('adding several items at once', () => {
             { label: ' ', toCheck: false },
           ],
           at(1),
-        ),
+        ).list,
       ),
     ).toEqual(['pain']);
+  });
+
+  const certain = (...labels: string[]) => labels.map((label) => ({ label, toCheck: false }));
+
+  it('reports added items and items already listed, in the order validated', () => {
+    const { added, alreadyListed } = addItems(
+      listOf('petits pois', 'sel'),
+      certain('petit pois', 'lait', 'Lait', 'sel'),
+      at(1, () => 'new-item'),
+    );
+
+    expect(added).toEqual(['lait']);
+    expect(alreadyListed).toEqual(['petits pois', 'sel']);
+  });
+
+  it('reports a taken item put back to buy as added', () => {
+    const initial = listOf('lait');
+    const taken = toggleItem(initial, find(initial, 'lait').id, 1);
+
+    const { list, added, alreadyListed } = addItems(taken, certain('lait', 'lait'), at(2));
+
+    expect(added).toEqual(['lait']);
+    expect(alreadyListed).toEqual([]);
+    expect(find(list, 'lait').checked).toBe(false);
+  });
+
+  it('reports an item to check made certain as already listed', () => {
+    const initial = addItems(emptyShoppingList(), [{ label: 'compote', toCheck: true }], at(0));
+
+    expect(addItems(initial.list, certain('compote'), at(1)).alreadyListed).toEqual(['compote']);
   });
 });
 
@@ -283,7 +313,7 @@ describe('items to check', () => {
   });
 
   it('adds several entries keeping their state', () => {
-    const list = addItems(
+    const { list } = addItems(
       emptyShoppingList(),
       [
         { label: 'riz', toCheck: false },

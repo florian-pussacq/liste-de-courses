@@ -15,7 +15,13 @@ import {
 } from '../domain/dish';
 import { failure, success, type Result } from '../domain/result';
 import * as lists from '../domain/shopping-list';
-import type { AddItemError, ItemId, RenameItemError, ShoppingList } from '../domain/shopping-list';
+import type {
+  AddItemError,
+  BatchAddition,
+  ItemId,
+  RenameItemError,
+  ShoppingList,
+} from '../domain/shopping-list';
 import { listAsText } from '../domain/list-text';
 import type { Dependencies, SendOutcome } from './ports';
 
@@ -136,13 +142,12 @@ export function shopping({
 
     // The list is saved before the inbox is emptied: if the second write fails,
     // validating again is harmless because duplicates are not added twice.
-    async validateInbox(): Promise<ShoppingList> {
+    async validateInbox(): Promise<BatchAddition> {
       const entries = inboxes.keptEntries(await inboxStore.load());
-      const list = await changeList((current) =>
-        lists.addItems(current, entries, { now: now(), newId }),
-      );
+      const addition = lists.addItems(await shoppingLists.load(), entries, { now: now(), newId });
+      await shoppingLists.save(addition.list);
       await inboxStore.save(emptyInbox());
-      return list;
+      return addition;
     },
 
     addItem: (label: string): Promise<Result<ShoppingList, AddItemError>> =>

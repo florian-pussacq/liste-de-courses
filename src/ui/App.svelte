@@ -101,8 +101,8 @@
     bind:inbox
     notice={sheet.notice}
     reading={sheet.reading}
-    onvalidated={(validated) => {
-      list = validated;
+    onvalidated={(addition) => {
+      list = addition.list;
       closeSheet();
     }}
     onclose={closeSheet}

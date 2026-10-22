@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
   import { keptEntries, reviewOrder, type Inbox, type Proposal } from '../domain/inbox';
-  import type { ShoppingList } from '../domain/shopping-list';
+  import type { BatchAddition } from '../domain/shopping-list';
   import { messageFor } from './messages';
   import { labelKey } from '../domain/label';
   import DishActionsSheet from './DishActionsSheet.svelte';
@@ -16,7 +16,7 @@
     inbox: Inbox;
     notice?: string;
     reading?: boolean;
-    onvalidated: (list: ShoppingList) => void;
+    onvalidated: (addition: BatchAddition) => void;
     onclose: () => void;
   }
 
@@ -130,9 +130,9 @@
   }
 
   async function validate() {
-    const list = await app.validateInbox();
+    const addition = await app.validateInbox();
     inbox = await app.inbox();
-    onvalidated(list);
+    onvalidated(addition);
   }
 
   async function abandon() {
