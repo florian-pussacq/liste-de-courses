@@ -175,7 +175,7 @@
               onclick={async () => (inbox = await app.toggleDish(segment.dish))}
               oncontextmenu={(event) => openActions(event, () => (dishActionsFor = segment.dish))}
             >
-              {segment.dish}
+              <span class="capitalized">{segment.dish}</span>
             </button>
             <button
               type="button"
@@ -202,7 +202,7 @@
               onclick={() => toggle(proposal)}
               oncontextmenu={(event) => openActions(event, () => (actionsFor = proposal))}
             >
-              {proposal.label}{#if proposal.toCheck}&nbsp;?{/if}
+              <span class="capitalized">{proposal.label}</span>{#if proposal.toCheck}&nbsp;?{/if}
             </button>
             {#if proposal.id === firstToDefine}
               <p class="to-define-hint">

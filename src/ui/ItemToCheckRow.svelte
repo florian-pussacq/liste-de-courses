@@ -18,7 +18,7 @@
 </script>
 
 <li oncontextmenu={openActions}>
-  <span class="label">{item.label}</span>
+  <span class="label capitalized">{item.label}</span>
   <button
     type="button"
     class="have"

@@ -17,6 +17,8 @@
     // Items removed by the last change, while it can still be undone.
     removed: number;
     onundo: () => void;
+    report?: { readonly added: readonly string[]; readonly alreadyListed: readonly string[] };
+    onclosereport: () => void;
     onpaste: () => void;
     onadd: () => void;
     onopeninbox: () => void;
@@ -29,6 +31,8 @@
     pending,
     removed,
     onundo,
+    report,
+    onclosereport,
     onpaste,
     onadd,
     onopeninbox,
@@ -36,6 +40,8 @@
   }: Props = $props();
 
   let basketOpen = $state(false);
+  // The dock is fixed and grows with its banners: the list keeps room to scroll above it.
+  let dockHeight = $state(180);
   let sendNotice = $state('');
 
   const SEND_NOTICES: Record<string, string> = {
@@ -59,6 +65,14 @@
   const needed = async (item: Item) => (list = await app.setToCheck(item.id, false));
   const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 </script>
+
+{#snippet labels(title: string, names: readonly string[])}
+  <strong>{title}</strong> :
+  {#each names as name, index (index)}<span class="capitalized">{name}</span>{index <
+    names.length - 1
+      ? ', '
+      : ''}{/each}
+{/snippet}
 
 <header>
   <div class="title">
@@ -102,7 +116,7 @@
   {/if}
 </header>
 
-<main>
+<main style:padding-bottom="{dockHeight + 24}px">
   {#if list.items.length === 0}
     <p class="empty">
       La liste est vide. Colle une liste copiée dans une autre application, ou ajoute un article
@@ -157,11 +171,32 @@
       {/if}
     </section>
   {/if}
+
+  {#if list.items.length > 0}
+    <button type="button" class="button clear" onclick={async () => (list = await app.clearList())}>
+      Vider la liste
+    </button>
+  {/if}
 </main>
 
-<nav aria-label="Ajouter des articles">
+<nav aria-label="Ajouter des articles" bind:clientHeight={dockHeight}>
+  {#if report}
+    <div class="banner report" role="status">
+      <div>
+        {#if report.added.length > 0}
+          <p>{@render labels(report.added.length > 1 ? 'Ajoutés' : 'Ajouté', report.added)}</p>
+        {/if}
+        {#if report.alreadyListed.length > 0}
+          <p>{@render labels('Déjà dans la liste', report.alreadyListed)}</p>
+        {/if}
+      </div>
+      <button type="button" class="close" aria-label="Fermer le bilan" onclick={onclosereport}
+        >×</button
+      >
+    </div>
+  {/if}
   {#if removed > 0}
-    <div class="undo" role="status">
+    <div class="banner undo" role="status">
       <span>{plural(removed, 'article')} retiré{removed > 1 ? 's' : ''}</span>
       <button type="button" onclick={onundo}>Annuler</button>
     </div>
@@ -256,7 +291,7 @@
   main {
     max-width: 40rem;
     margin: 0 auto;
-    padding: 8px 12px 180px;
+    padding: 8px 12px;
   }
 
   ul {
@@ -334,7 +369,7 @@
     background: linear-gradient(to top, var(--ground) 70%, transparent);
   }
 
-  .undo {
+  .banner {
     width: 100%;
     max-width: 40rem;
     display: flex;
@@ -346,6 +381,25 @@
     background: var(--ink);
     color: var(--ground);
     font-weight: 600;
+  }
+
+  .report p {
+    margin: 8px 0;
+  }
+
+  .report .close {
+    align-self: flex-start;
+    width: var(--target);
+    height: var(--target);
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: var(--ground);
+    font-size: 1.6rem;
+  }
+
+  .clear {
+    margin: 24px 12px 0;
   }
 
   .undo button {

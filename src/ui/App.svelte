@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
   import type { Inbox } from '../domain/inbox';
-  import type { Item, ShoppingList } from '../domain/shopping-list';
+  import type { BatchAddition, Item, ShoppingList } from '../domain/shopping-list';
   import AddItemSheet from './AddItemSheet.svelte';
   import InboxSheet from './InboxSheet.svelte';
   import ItemActionsSheet from './ItemActionsSheet.svelte';
@@ -45,11 +45,17 @@
   // snapshot outdated: undoing then would also revert that change, so the offer is withdrawn.
   let shownList = untrack(() => list);
   let beforeRemoval: ShoppingList | undefined = $state.raw();
+  // A validation report describes the change made by the validation, and no later one.
+  type Report = Pick<BatchAddition, 'added' | 'alreadyListed'>;
+  let report: Report | undefined = $state.raw();
+  let reportOfNextChange: Report | undefined;
   $effect(() => {
     const previous = shownList;
     shownList = list;
     if (list === previous) return;
     beforeRemoval = list.items.length < previous.items.length ? previous : undefined;
+    report = reportOfNextChange;
+    reportOfNextChange = undefined;
   });
   $effect(() => {
     if (!beforeRemoval) return;
@@ -88,6 +94,8 @@
   bind:list
   pending={inbox.proposals.length}
   {removed}
+  {report}
+  onclosereport={() => (report = undefined)}
   onundo={undoRemoval}
   onpaste={paste}
   onadd={() => (sheet = { kind: 'add' })}
@@ -101,8 +109,9 @@
     bind:inbox
     notice={sheet.notice}
     reading={sheet.reading}
-    onvalidated={(addition) => {
-      list = addition.list;
+    onvalidated={({ list: validated, added, alreadyListed }) => {
+      reportOfNextChange = { added, alreadyListed };
+      list = validated;
       closeSheet();
     }}
     onclose={closeSheet}

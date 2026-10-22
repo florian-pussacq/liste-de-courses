@@ -27,7 +27,7 @@
     onclick={() => ontoggle(proposal)}
     oncontextmenu={edit}
   >
-    {proposal.label}
+    <span class="capitalized">{proposal.label}</span>
     {#if proposal.toCheck}<span class="doubt" aria-hidden="true">?</span>{/if}
   </button>
 </li>

@@ -178,6 +178,15 @@ button {
   cursor: default;
 }
 
+.capitalized {
+  display: inline-block;
+}
+
+/* The stored label is kept as typed: the capital is presentation only. */
+.capitalized::first-letter {
+  text-transform: uppercase;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
