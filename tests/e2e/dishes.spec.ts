@@ -70,11 +70,11 @@ test('discards a whole dish, or a single ingredient', async ({ page }) => {
   await defineDish(page, 'risotto', 'riz\nparmesan');
 
   await page.getByRole('button', { name: 'Écarter le plat risotto' }).click();
-  await expect(page.getByRole('button', { name: 'Ajouter 1 à la liste' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mettre dans la liste' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Remettre le plat risotto' }).click();
   await page.getByRole('button', { name: 'Écarter riz' }).click();
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(toBuy(page)).toHaveText(['parmesan', 'pain']);
 });
@@ -108,7 +108,7 @@ test('never sends dishes with the list', async ({ page }) => {
   });
   await pasteByHand(page, 'omelette');
   await defineDish(page, 'omelette', 'œufs\nlait');
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   await expect(toBuy(page)).toHaveText(['œufs', 'lait']);
   await page.reload();
 
@@ -142,7 +142,7 @@ test('presents an unknown dish of a menu as a dish to define, never added as suc
   await pasteByHand(page, 'Lundi 3 : gratin / carottes');
 
   await expect(page.getByRole('button', { name: 'Définir le plat gratin' })).toBeVisible();
-  await page.getByRole('button', { name: 'Ajouter 1 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(toBuy(page)).toHaveText(['carottes']);
 });
@@ -162,7 +162,7 @@ test('keeps a dish to define as a plain item', async ({ page }) => {
   await pasteByHand(page, 'Lundi 3 : gratin / carottes');
 
   await page.getByRole('button', { name: 'Garder gratin comme article' }).click();
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(toBuy(page)).toHaveText(['gratin', 'carottes']);
 });
@@ -175,7 +175,7 @@ test('keeps a recognised dish as a plain item this time only', async ({ page }) 
   await page.getByRole('button', { name: 'Garder comme article cette fois' }).click();
   await sheetClosed(page, 'risotto');
   await expect(page.getByRole('button', { name: 'Écarter risotto', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Ajouter 1 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   await expect(toBuy(page)).toHaveText(['risotto']);
 
   await openInboxByHand(page);

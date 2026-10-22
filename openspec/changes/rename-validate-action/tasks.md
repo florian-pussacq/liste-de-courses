@@ -2,7 +2,7 @@
 
 ## 1. Interface
 
-- [ ] 1.1 Renommer le bouton de validation du tri en « Mettre dans la liste », et vérifier en e2e le scénario « Nombre d'articles annoncé »
+- [x] 1.1 Renommer le bouton de validation du tri en « Mettre dans la liste », et vérifier en e2e le scénario « Nombre d'articles annoncé »
 
 ## 2. Vérification d'intégration
 

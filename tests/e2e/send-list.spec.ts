@@ -27,7 +27,7 @@ const sendButton = (page: Page) => page.getByRole('button', { name: 'Envoyer la 
 test('sends items to buy then items to check, without taken items', async ({ page }) => {
   await stubShareMenu(page, 'share');
   await page.goto(`./?text=${encodeURIComponent('pain\nlait\ncompote ?\nsel')}`);
-  await page.getByRole('button', { name: 'Ajouter 4 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   await toBuy(page).filter({ hasText: 'sel' }).click();
 
   await sendButton(page).click();

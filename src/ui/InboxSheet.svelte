@@ -259,7 +259,7 @@
   <div class="actions validation">
     <button type="button" class="button" onclick={abandon}>Annuler</button>
     <button type="button" class="button primary" disabled={kept === 0} onclick={validate}>
-      Ajouter {kept} à la liste
+      Mettre dans la liste
     </button>
   </div>
 </Sheet>

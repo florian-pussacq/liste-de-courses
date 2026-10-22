@@ -9,16 +9,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('validation report', () => {
-  async function validate(page: Page, text: string, count: number) {
+  async function validate(page: Page, text: string) {
     await openInboxByHand(page);
     await pasteByHand(page, text);
-    await page.getByRole('button', { name: `Ajouter ${count} à la liste` }).click();
+    await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   }
 
   test('tells what was added and what was already listed', async ({ page }) => {
     await addItems(page, 'petits pois');
 
-    await validate(page, 'petit pois\nlait', 2);
+    await validate(page, 'petit pois\nlait');
 
     await expect(report(page)).toContainText('Ajouté : lait');
     await expect(report(page)).toContainText('Déjà dans la liste : petits pois');
@@ -28,14 +28,14 @@ test.describe('validation report', () => {
     await addItems(page, 'lait');
     await toBuy(page).filter({ hasText: 'lait' }).click();
 
-    await validate(page, 'lait', 1);
+    await validate(page, 'lait');
 
     await expect(report(page)).toContainText('Ajouté : lait');
     await expect(toBuy(page)).toHaveText(['lait']);
   });
 
   test('closes on demand', async ({ page }) => {
-    await validate(page, 'lait', 1);
+    await validate(page, 'lait');
 
     await page.getByRole('button', { name: 'Fermer le bilan' }).click();
 
@@ -43,7 +43,7 @@ test.describe('validation report', () => {
   });
 
   test('disappears once the list changes', async ({ page }) => {
-    await validate(page, 'lait, pain', 2);
+    await validate(page, 'lait, pain');
     await expect(report(page)).toContainText('Ajoutés : lait, pain');
 
     await toBuy(page).filter({ hasText: 'pain' }).click();
@@ -88,7 +88,7 @@ test.describe('clearing the list', () => {
       page,
       'tomates cerises\npommes de terre\ncompote\nyaourts\narticle 1\narticle 2\narticle 3',
     );
-    await page.getByRole('button', { name: 'Ajouter 7 à la liste' }).click();
+    await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
     await expect(report(page)).toBeVisible();
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

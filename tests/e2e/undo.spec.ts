@@ -41,7 +41,7 @@ test('undoes the removal of the items taken', async ({ page }) => {
 
 test('undoes a doubt settled by mistake', async ({ page }) => {
   await page.goto(`./?text=${encodeURIComponent('riz\ncompote ?')}`);
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   await page.getByRole('button', { name: 'On a déjà compote' }).click();
   await expect(page.getByRole('list', { name: 'À vérifier' })).toBeHidden();
 

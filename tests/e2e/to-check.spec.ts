@@ -3,9 +3,9 @@ import { addItems, proposals, toBuy, sheetClosed } from './helpers';
 
 const toCheckList = (page: Page) => page.getByRole('list', { name: 'À vérifier' });
 
-async function shareAndValidate(page: Page, text: string, count: number) {
+async function shareAndValidate(page: Page, text: string) {
   await page.goto(`./?text=${encodeURIComponent(text)}`);
-  await page.getByRole('button', { name: `Ajouter ${count} à la liste` }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 }
 
 test('turns a shared element ending with a question mark into an item to check', async ({
@@ -16,7 +16,7 @@ test('turns a shared element ending with a question mark into an item to check',
   await expect(proposals(page)).toHaveText(['riz', /^compote\s*\?$/]);
   await expect(page.getByRole('button', { name: 'Écarter compote, à vérifier' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(page.getByRole('heading', { name: 'À vérifier avant de partir (1)' })).toBeVisible();
   await expect(toCheckList(page)).toContainText('compote');
@@ -34,14 +34,14 @@ test('switches a proposal between certain and to check before validating', async
   await proposals(page).filter({ hasText: 'farine' }).click({ button: 'right' });
   await page.getByRole('button', { name: 'Marquer à vérifier' }).click();
   await sheetClosed(page, 'farine');
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(toCheckList(page)).toContainText('farine');
   await expect(toBuy(page)).toHaveText(['compote']);
 });
 
 test('removes an item the user already has', async ({ page }) => {
-  await shareAndValidate(page, 'riz\ncompote ?', 2);
+  await shareAndValidate(page, 'riz\ncompote ?');
 
   await page.getByRole('button', { name: 'On a déjà compote' }).click();
 
@@ -50,7 +50,7 @@ test('removes an item the user already has', async ({ page }) => {
 });
 
 test('turns a needed item into an item to buy at its place', async ({ page }) => {
-  await shareAndValidate(page, 'pain\ncompote ?\nlait', 3);
+  await shareAndValidate(page, 'pain\ncompote ?\nlait');
 
   await page.getByRole('button', { name: 'Il faut compote' }).click();
 
@@ -59,7 +59,7 @@ test('turns a needed item into an item to buy at its place', async ({ page }) =>
 });
 
 test('does not count items to check in the progress', async ({ page }) => {
-  await shareAndValidate(page, 'pain\nlait\nsel\nriz\ncompote ?\nconfiture ?', 6);
+  await shareAndValidate(page, 'pain\nlait\nsel\nriz\ncompote ?\nconfiture ?');
   await toBuy(page).filter({ hasText: 'pain' }).click();
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('3 à prendre');
@@ -67,7 +67,7 @@ test('does not count items to check in the progress', async ({ page }) => {
 });
 
 test('asks to check first when the list only holds items to check', async ({ page }) => {
-  await shareAndValidate(page, 'compote ?', 1);
+  await shareAndValidate(page, 'compote ?');
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText("À vérifier d'abord");
   await expect(page.getByRole('progressbar')).toBeHidden();

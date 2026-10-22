@@ -45,9 +45,10 @@ test('discards a proposal, puts it back, and adds only kept proposals', async ({
   await page.getByRole('button', { name: 'Écarter stp' }).click();
   await page.getByRole('button', { name: 'Écarter confiture' }).click();
   await page.getByRole('button', { name: 'Remettre confiture' }).click();
-  await expect(page.getByRole('button', { name: 'Ajouter 2 à la liste' })).toBeEnabled();
+  await expect(page.getByRole('heading', { name: '2 articles trouvés' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mettre dans la liste' })).toBeEnabled();
 
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
 
   await expect(toBuy(page)).toHaveText(['pain', 'confiture']);
 });
@@ -99,7 +100,7 @@ test('keeps the validation in sight however long the review is', async ({ page }
   const labels = Array.from({ length: 20 }, (_, index) => `article ${index + 1}`);
   await pasteByHand(page, labels.join('\n'));
 
-  await expect(page.getByRole('button', { name: 'Ajouter 20 à la liste' })).toBeInViewport();
+  await expect(page.getByRole('button', { name: 'Mettre dans la liste' })).toBeInViewport();
   await expect(page.getByRole('button', { name: 'Annuler', exact: true })).toBeInViewport();
 });
 

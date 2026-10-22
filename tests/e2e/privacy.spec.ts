@@ -12,7 +12,7 @@ test('sends nothing to another origin during a complete capture', async ({ page,
   });
 
   await page.goto(`./?text=${encodeURIComponent('pain, beurre')}`);
-  await page.getByRole('button', { name: 'Ajouter 2 à la liste' }).click();
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
   await page.getByRole('checkbox', { name: 'pain' }).click();
 
   expect(foreignRequests).toEqual([]);
