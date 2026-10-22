@@ -20,7 +20,7 @@
 ## 4. Vérification d'intégration
 
 - [x] 4.1 Ajouter « achat → `Purchase` » et « historique des achats → `PurchaseHistory` » au glossaire de `CLAUDE.md`
-- [ ] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 4.3 Sur un téléphone Android réel : cocher des articles, retirer les articles pris, et retrouver les achats du jour dans l'historique
 
 ## Workflow follow-up
