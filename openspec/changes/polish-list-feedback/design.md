@@ -20,7 +20,7 @@ La validation du tri appelle `addItems(list, entries, ctx)`, qui fusionne les do
 ### Le bilan est calculé par le domaine, au moment de l'ajout
 `addItems` renvoie, en plus de la liste, les libellés ajoutés et les libellés déjà présents (dans l'ordre de validation). Un doublon interne à la validation (« pain » et « Pain ») ne compte qu'une fois, comme ajouté. Le domaine est le seul à savoir quelle entrée a été fusionnée : recalculer le bilan dans l'interface en comparant deux listes dupliquerait la règle des doublons.
 
-`validateInbox` renvoie `{ list, added, alreadyListed }`. Un article déjà présent mais pris, remis à prendre par la validation, compte comme déjà présent.
+`validateInbox` renvoie `{ list, added, alreadyListed }`. Un article déjà présent mais pris, remis à prendre par la validation, compte comme ajouté : il revient parmi les articles à prendre, ce qui est bien un ajout du point de vue des courses (il avait pu être coché par erreur). Un article à vérifier rendu certain compte comme déjà présent.
 
 ### Le bilan reste jusqu'à ce qu'on le ferme ou qu'on change la liste
 Une liste de noms se lit en plus de six secondes : pas de délai d'expiration. Le bandeau (`role="status"`) se ferme d'un bouton, et disparaît à toute autre modification de la liste, comme celui de l'annulation, pour ne jamais décrire un état dépassé. Il occupe la place du bandeau d'annulation, au-dessus du dock : les deux ne coexistent pas, puisque une validation n'est pas un retrait.

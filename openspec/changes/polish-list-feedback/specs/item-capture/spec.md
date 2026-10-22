@@ -9,6 +9,10 @@ Le système SHALL indiquer, après la validation du tri, les articles réellemen
 - **WHEN** la liste contient « petits pois » et que l'utilisateur valide « petit pois » et « lait »
 - **THEN** le bilan indique que « lait » a été ajouté et que « petits pois » était déjà dans la liste
 
+#### Scenario: Article pris ajouté de nouveau
+- **WHEN** la liste contient « lait » coché et que l'utilisateur valide « lait »
+- **THEN** le bilan indique que « lait » a été ajouté, et « lait » est de nouveau à prendre
+
 #### Scenario: Bilan fermé
 - **WHEN** le bilan est affiché et que l'utilisateur le ferme
 - **THEN** le bilan disparaît
