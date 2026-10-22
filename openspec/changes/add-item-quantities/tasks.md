@@ -2,8 +2,8 @@
 
 ## 1. Domaine
 
-- [ ] 1.1 Ajouter en TDD `readQuantity` (nombre en tête, « xN » et « ×N » en fin, 1 à 99, unités et nombres ailleurs laissés dans le libellé), et vérifier les scénarios de « Reconnaissance de la quantité »
-- [ ] 1.2 Ajouter `addQuantities` et `stepQuantity` en TDD (absence n'ajoutant rien, plafond à 99, plancher 0 ou 1)
+- [x] 1.1 Ajouter en TDD `readQuantity` (nombre en tête, « xN » et « ×N » en fin, 1 à 99, unités et nombres ailleurs laissés dans le libellé), et vérifier les scénarios de « Reconnaissance de la quantité »
+- [x] 1.2 Ajouter `addQuantities` et `stepQuantity` en TDD (absence n'ajoutant rien, plafond à 99, plancher 0 ou 1)
 - [ ] 1.3 Faire porter une quantité facultative à `Entry` et l'extraire dans `splitIntoEntries`, et vérifier qu'un marqueur « 1. » n'est pas pris pour une quantité et que « 3 citrons ? » donne une quantité à vérifier
 - [ ] 1.4 Additionner les quantités dans `addItem` et `addItems` (remplacement pour un article pris remis à prendre et pour un doute levé), lire la quantité dans `addItem` et `renameItem`, et vérifier les scénarios de « Addition des quantités » (liste), « Article avec quantité » et « Quantité tapée lors d'une modification »
 - [ ] 1.5 Additionner les quantités dans `mergeInto`, lire la quantité dans `addProposal` et `editProposal`, refusionner un plat cité de nouveau dans `captureText`, et vérifier les scénarios « Quantités additionnées dans le tri », « Ingrédient avec quantité » et « Plat cité deux fois »
