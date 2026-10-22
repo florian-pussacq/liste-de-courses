@@ -14,6 +14,8 @@ import {
   type Dish,
 } from '../domain/dish';
 import { failure, success, type Result } from '../domain/result';
+import * as purchases from '../domain/purchase-history';
+import type { PurchaseHistory } from '../domain/purchase-history';
 import * as lists from '../domain/shopping-list';
 import type {
   AddItemError,
@@ -37,6 +39,7 @@ export function shopping({
   shoppingLists,
   inboxes: inboxStore,
   dishes: dishStore,
+  purchases: purchaseStore,
   now,
   newId,
   readClipboard,
@@ -159,8 +162,21 @@ export function shopping({
       tryChangeList((list) => lists.renameItem(list, id, label, now())),
     removeItem: (id: ItemId): Promise<ShoppingList> =>
       changeList((list) => lists.removeItem(list, id)),
-    toggleItem: (id: ItemId): Promise<ShoppingList> =>
-      changeList((list) => lists.toggleItem(list, id, now())),
+    // The list comes first: if the history cannot be written, only a purchase is missing.
+    async toggleItem(id: ItemId): Promise<ShoppingList> {
+      const takenAt = now();
+      const list = await changeList((current) => lists.toggleItem(current, id, takenAt));
+      const item = list.items.find((candidate) => candidate.id === id);
+      if (!item) return list;
+      const history = await purchaseStore.load();
+      await purchaseStore.save(
+        item.checked
+          ? purchases.recordPurchase(history, item, takenAt)
+          : purchases.cancelPurchase(history, id),
+      );
+      return list;
+    },
+    purchaseHistory: (): Promise<PurchaseHistory> => purchaseStore.load(),
     setItemQuantity: (id: ItemId, quantity: Quantity | undefined): Promise<ShoppingList> =>
       changeList((list) => lists.setQuantity(list, id, quantity, now())),
     setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>

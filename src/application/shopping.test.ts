@@ -5,6 +5,7 @@ import type { ClipboardContent } from './ports';
 import {
   InMemoryDishRepository,
   InMemoryInboxRepository,
+  InMemoryPurchaseHistoryRepository,
   InMemoryShoppingListRepository,
 } from './in-memory-repositories';
 import { shopping, type Shopping } from './shopping';
@@ -14,6 +15,7 @@ const labels = (list: ShoppingList) => list.items.map((item) => item.label);
 let shoppingLists: InMemoryShoppingListRepository;
 let inboxes: InMemoryInboxRepository;
 let dishes: InMemoryDishRepository;
+let purchases: InMemoryPurchaseHistoryRepository;
 let app: Shopping;
 let clipboard: ClipboardContent;
 let sent: string[];
@@ -22,6 +24,7 @@ beforeEach(() => {
   shoppingLists = new InMemoryShoppingListRepository();
   inboxes = new InMemoryInboxRepository();
   dishes = new InMemoryDishRepository();
+  purchases = new InMemoryPurchaseHistoryRepository();
   let clock = 0;
   let id = 0;
   clipboard = { kind: 'empty' };
@@ -30,6 +33,7 @@ beforeEach(() => {
     shoppingLists,
     inboxes,
     dishes,
+    purchases,
     now: () => ++clock,
     newId: () => `id-${++id}`,
     readClipboard: async () => clipboard,
@@ -244,6 +248,37 @@ describe('quantities', () => {
     expect((await shoppingLists.load()).items[0]?.quantity).toBe(2);
     expect(inbox.proposals[0]?.quantity).toBe(3);
     expect((await inboxes.load()).proposals[0]?.quantity).toBe(3);
+  });
+});
+
+describe('purchase history', () => {
+  const bought = async () =>
+    (await app.purchaseHistory()).purchases.map(({ label, quantity }) => [label, quantity]);
+
+  it('records a purchase when an item is checked, and cancels it when unchecked', async () => {
+    await app.addItem('3 citrons');
+    await app.addItem('beurre');
+
+    await app.toggleItem(await idOf('citrons'));
+    await app.toggleItem(await idOf('beurre'));
+    await app.toggleItem(await idOf('beurre'));
+
+    expect(await bought()).toEqual([['citrons', 3]]);
+    expect((await purchases.load()).purchases).toHaveLength(1);
+  });
+
+  it('keeps the purchases when the taken items are removed or the list is cleared', async () => {
+    await app.addItem('pain');
+    await app.addItem('lait');
+    await app.toggleItem(await idOf('pain'));
+    await app.clearChecked();
+    await app.toggleItem(await idOf('lait'));
+    await app.clearList();
+
+    expect(await bought()).toEqual([
+      ['pain', undefined],
+      ['lait', undefined],
+    ]);
   });
 });
 

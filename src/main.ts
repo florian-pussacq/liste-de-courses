@@ -19,6 +19,7 @@ async function start(target: HTMLElement): Promise<void> {
     shoppingLists: storage.shoppingLists,
     inboxes: storage.inboxes,
     dishes: storage.dishes,
+    purchases: storage.purchases,
     now: () => Date.now(),
     newId: () => crypto.randomUUID(),
     readClipboard: () => readClipboard(),

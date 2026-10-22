@@ -1,7 +1,13 @@
 import type { Dish } from '../domain/dish';
 import { emptyInbox, type Inbox } from '../domain/inbox';
+import { emptyPurchaseHistory, type PurchaseHistory } from '../domain/purchase-history';
 import { emptyShoppingList, type ShoppingList } from '../domain/shopping-list';
-import type { DishRepository, InboxRepository, ShoppingListRepository } from './ports';
+import type {
+  DishRepository,
+  InboxRepository,
+  PurchaseHistoryRepository,
+  ShoppingListRepository,
+} from './ports';
 
 class InMemoryDocument<T> {
   constructor(private document: T) {}
@@ -36,5 +42,14 @@ export class InMemoryDishRepository
 {
   constructor(dishes: readonly Dish[] = []) {
     super(dishes);
+  }
+}
+
+export class InMemoryPurchaseHistoryRepository
+  extends InMemoryDocument<PurchaseHistory>
+  implements PurchaseHistoryRepository
+{
+  constructor(history: PurchaseHistory = emptyPurchaseHistory()) {
+    super(history);
   }
 }

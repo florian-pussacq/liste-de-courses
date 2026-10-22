@@ -7,8 +7,8 @@
 
 ## 2. Application et stockage
 
-- [ ] 2.1 Ajouter le port `PurchaseHistoryRepository`, son implémentation en mémoire et le document IndexedDB `purchases`, et vérifier qu'un historique enregistré se relit à l'identique et qu'un document absent vaut un historique vide
-- [ ] 2.2 Faire enregistrer ou annuler l'achat par `toggleItem` et ajouter le cas d'usage de lecture de l'historique, et vérifier sur des dépôts en mémoire les scénarios « Articles pris retirés » et « Liste vidée »
+- [x] 2.1 Ajouter le port `PurchaseHistoryRepository`, son implémentation en mémoire et le document IndexedDB `purchases`, et vérifier qu'un historique enregistré se relit à l'identique et qu'un document absent vaut un historique vide
+- [x] 2.2 Faire enregistrer ou annuler l'achat par `toggleItem` et ajouter le cas d'usage de lecture de l'historique, et vérifier sur des dépôts en mémoire les scénarios « Articles pris retirés » et « Liste vidée »
 
 ## 3. Interface
 

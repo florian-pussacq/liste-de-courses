@@ -116,4 +116,15 @@ describe('IndexedDB storage', () => {
 
     expect(await (await openStorage(name)).dishes.load()).toEqual([omelette]);
   });
+
+  it('keeps the purchase history after the database is reopened', async () => {
+    const name = uniqueName();
+    const first = await openStorage(name);
+    expect(await first.purchases.load()).toEqual({ purchases: [] });
+    const history = { purchases: [{ itemId: 'a', label: 'pain', quantity: 2, takenAt: 5 }] };
+    await first.purchases.save(history);
+    first.close();
+
+    expect(await (await openStorage(name)).purchases.load()).toEqual(history);
+  });
 });
