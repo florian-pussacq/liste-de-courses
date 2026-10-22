@@ -27,6 +27,7 @@
     onadd: () => void;
     onopeninbox: () => void;
     onactions: (item: Item) => void;
+    onhistory: () => void;
   }
 
   let {
@@ -41,6 +42,7 @@
     onadd,
     onopeninbox,
     onactions,
+    onhistory,
   }: Props = $props();
 
   let basketOpen = $state(false);
@@ -93,20 +95,33 @@
     {:else}
       <h1>{toBuy.length}&nbsp;<span>à prendre</span></h1>
     {/if}
-    <button
-      type="button"
-      class="send"
-      aria-label="Envoyer la liste"
-      disabled={toBuy.length + toCheck.length === 0}
-      onclick={send}
-    >
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <circle cx="18" cy="5" r="3" />
-        <circle cx="6" cy="12" r="3" />
-        <circle cx="18" cy="19" r="3" />
-        <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
-      </svg>
-    </button>
+    <div class="header-actions">
+      <button
+        type="button"
+        class="header-action"
+        aria-label="Historique des achats"
+        onclick={onhistory}
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="header-action"
+        aria-label="Envoyer la liste"
+        disabled={toBuy.length + toCheck.length === 0}
+        onclick={send}
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+        </svg>
+      </button>
+    </div>
   </div>
   {#if sendNotice}<p class="send-notice" role="status">{sendNotice}</p>{/if}
   {#if total > 0}
@@ -248,7 +263,13 @@
     gap: 12px;
   }
 
-  .send {
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .header-action {
     width: var(--target);
     height: var(--target);
     flex-shrink: 0;
@@ -260,7 +281,7 @@
     background: transparent;
   }
 
-  .send:disabled {
+  .header-action:disabled {
     opacity: 0.35;
     cursor: default;
   }

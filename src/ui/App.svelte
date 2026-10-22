@@ -4,6 +4,7 @@
   import type { Inbox } from '../domain/inbox';
   import type { BatchAddition, Item, ShoppingList } from '../domain/shopping-list';
   import AddItemSheet from './AddItemSheet.svelte';
+  import HistorySheet from './HistorySheet.svelte';
   import InboxSheet from './InboxSheet.svelte';
   import ItemActionsSheet from './ItemActionsSheet.svelte';
   import ShoppingListView from './ShoppingListView.svelte';
@@ -34,7 +35,8 @@
     | { readonly kind: 'none' }
     | { readonly kind: 'inbox'; readonly notice?: string; readonly reading?: boolean }
     | { readonly kind: 'add' }
-    | { readonly kind: 'actions'; readonly item: Item };
+    | { readonly kind: 'actions'; readonly item: Item }
+    | { readonly kind: 'history' };
 
   // Props only seed the state: from then on, the views own it.
   let list = $state(untrack(() => initialList));
@@ -121,6 +123,7 @@
   onadd={() => (sheet = { kind: 'add' })}
   onopeninbox={() => (sheet = { kind: 'inbox' })}
   onactions={(item) => (sheet = { kind: 'actions', item })}
+  onhistory={() => (sheet = { kind: 'history' })}
 />
 
 {#if sheet.kind === 'inbox'}
@@ -145,6 +148,8 @@
     onchange={(changed) => (list = changed)}
     onclose={closeSheet}
   />
+{:else if sheet.kind === 'history'}
+  <HistorySheet {app} onclose={closeSheet} />
 {/if}
 
 <style>

@@ -12,13 +12,13 @@
 
 ## 3. Interface
 
-- [ ] 3.1 Ajouter le bouton « Historique des achats » et la feuille d'historique, et vérifier en e2e « Achats regroupés par jour » (horloge simulée) et « Historique vide »
-- [ ] 3.2 Vérifier en e2e qu'un achat reste dans l'historique après le retrait des articles pris et après un rechargement de l'application
-- [ ] 3.3 Vérifier par capture, en clair et en sombre, un historique de plusieurs jours
+- [x] 3.1 Ajouter le bouton « Historique des achats » et la feuille d'historique, et vérifier en e2e « Achats regroupés par jour » (horloge simulée) et « Historique vide »
+- [x] 3.2 Vérifier en e2e qu'un achat reste dans l'historique après le retrait des articles pris et après un rechargement de l'application
+- [x] 3.3 Vérifier par capture, en clair et en sombre, un historique de plusieurs jours
 
 ## 4. Vérification d'intégration
 
-- [ ] 4.1 Ajouter « achat → `Purchase` » et « historique des achats → `PurchaseHistory` » au glossaire de `CLAUDE.md`
+- [x] 4.1 Ajouter « achat → `Purchase` » et « historique des achats → `PurchaseHistory` » au glossaire de `CLAUDE.md`
 - [ ] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 4.3 Sur un téléphone Android réel : cocher des articles, retirer les articles pris, et retrouver les achats du jour dans l'historique
 
