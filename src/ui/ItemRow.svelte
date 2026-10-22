@@ -9,11 +9,11 @@
     ontoggle: (item: Item) => void;
     onactions: (item: Item) => void;
     onquantity: (item: Item, quantity: Quantity | undefined) => void;
+    // Whether the line offers the quantity controls, or only shows the quantity.
+    adjustable: boolean;
   }
 
-  const { item, ontoggle, onactions, onquantity }: Props = $props();
-  // Every item to buy can be adjusted; taken items and items to check keep a single target.
-  const adjustable = $derived(!item.checked);
+  const { item, ontoggle, onactions, onquantity, adjustable }: Props = $props();
 
   // A long press emits `contextmenu` on Android, as do a right click and the keyboard menu key.
   function openActions(event: MouseEvent) {

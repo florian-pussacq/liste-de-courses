@@ -25,7 +25,7 @@ Alternatives écartées :
 - Un seuil de progression (par exemple 10 % pris) : arbitraire, et plus difficile à expliquer qu'« un article pris ».
 
 ### `ItemRow` reçoit `adjustable` de la vue
-La vue calcule `inStore` une fois et passe `adjustable={!item.checked && !inStore}` à chaque ligne. `ItemRow` garde sa logique existante : compteur si ajustable, pastille sinon (pastille qui ne s'affiche qu'au-delà de 1). On évite ainsi que la ligne connaisse la liste entière.
+La vue calcule `inStore` une fois et passe `adjustable={!inStore}` aux lignes à prendre, `adjustable={false}` à celles du panier : chaque liste sait déjà si ses articles sont pris. `ItemRow` garde sa logique existante : compteur si ajustable, pastille sinon (pastille qui ne s'affiche qu'au-delà de 1). On évite ainsi que la ligne connaisse la liste entière.
 
 Alternative écartée : passer `inStore` à `ItemRow`, qui recombinerait avec `item.checked`. La ligne aurait alors deux raisons de cacher le compteur au lieu d'une.
 

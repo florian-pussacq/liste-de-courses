@@ -2,6 +2,7 @@
   import type { Shopping } from '../application/shopping';
   import {
     checkedItems,
+    isInStore,
     itemsToBuy,
     itemsToCheck,
     type BatchAddition,
@@ -62,6 +63,8 @@
   const toBuy = $derived(itemsToBuy(list));
   const toCheck = $derived(itemsToCheck(list));
   const basket = $derived(checkedItems(list));
+  // The quantity controls serve the preparation: in store, the thumb that checks lands on them.
+  const inStore = $derived(isInStore(list));
   // Items to check are not counted until the doubt is settled.
   const total = $derived(toBuy.length + basket.length);
   const progress = $derived(total === 0 ? 0 : Math.round((basket.length / total) * 100));
@@ -162,7 +165,13 @@
   {#if toBuy.length > 0}
     <ul aria-label="À prendre">
       {#each toBuy as item (item.id)}
-        <ItemRow {item} ontoggle={toggle} {onactions} onquantity={setQuantity} />
+        <ItemRow
+          {item}
+          ontoggle={toggle}
+          {onactions}
+          onquantity={setQuantity}
+          adjustable={!inStore}
+        />
       {/each}
     </ul>
   {/if}
@@ -181,7 +190,13 @@
       {#if basketOpen}
         <ul aria-label="Panier">
           {#each basket as item (item.id)}
-            <ItemRow {item} ontoggle={toggle} {onactions} onquantity={setQuantity} />
+            <ItemRow
+              {item}
+              ontoggle={toggle}
+              {onactions}
+              onquantity={setQuantity}
+              adjustable={false}
+            />
           {/each}
         </ul>
         <button

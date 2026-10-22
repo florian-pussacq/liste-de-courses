@@ -75,6 +75,31 @@ test.describe('on the line of an item to buy', () => {
   });
 });
 
+test.describe('in store, once an item is taken', () => {
+  test.beforeEach(async ({ page }) => {
+    await addItems(page, 'pain', '3 citrons', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+  });
+
+  test('offers no quantity controls on the lines to buy', async ({ page }) => {
+    await expect(page.getByRole('group', { name: /^Quantité de/ })).toHaveCount(0);
+  });
+
+  test('shows a quantity only beyond 1', async ({ page }) => {
+    await expect(row(page, 'citrons')).toHaveText('3citrons');
+    await expect(row(page, 'lait')).toHaveText('lait');
+  });
+
+  test('still adjusts the quantity from the actions of an item', async ({ page }) => {
+    await toBuy(page).filter({ hasText: 'citrons' }).click({ button: 'right' });
+    await inSheet(page, 'Augmenter citrons').click();
+    await page.getByRole('button', { name: 'Fermer' }).click();
+    await sheetClosed(page, 'citrons');
+
+    await expect(row(page, 'citrons')).toHaveText('4citrons');
+  });
+});
+
 test('raises the quantity of a proposal from its actions', async ({ page }) => {
   await openInboxByHand(page);
   await pasteByHand(page, '3 citrons');
