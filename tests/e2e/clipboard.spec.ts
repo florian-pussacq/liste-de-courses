@@ -84,6 +84,24 @@ test.describe('the paste action', () => {
     await expect(paste(page)).toHaveText('');
   });
 
+  test.describe('in dark mode', () => {
+    test.use({ colorScheme: 'dark' });
+
+    test('keeps its icon visible against the button', async ({ page }) => {
+      await page.goto('./');
+
+      const background = await paste(page).evaluate(
+        (button) => getComputedStyle(button).backgroundColor,
+      );
+      const icon = await paste(page)
+        .locator('svg')
+        .evaluate((svg) => getComputedStyle(svg).stroke);
+
+      // WCAG 1.4.11: a graphic that identifies a control needs 3:1 against its background.
+      expect(contrast(icon, background)).toBeGreaterThanOrEqual(3);
+    });
+  });
+
   test('still captures the clipboard in store', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('./');
@@ -96,3 +114,20 @@ test.describe('the paste action', () => {
     await expect(proposals(page)).toHaveText(['beurre']);
   });
 });
+
+function luminance(color: string): number {
+  const rgb = /^rgba?\((\d+), (\d+), (\d+)/.exec(color);
+  if (!rgb) throw new Error(`Unexpected color "${color}"`);
+  const linear = (channel: string) => {
+    const value = Number(channel) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+  return (
+    0.2126 * linear(rgb[1] ?? '') + 0.7152 * linear(rgb[2] ?? '') + 0.0722 * linear(rgb[3] ?? '')
+  );
+}
+
+function contrast(first: string, second: string): number {
+  const [a, b] = [luminance(first), luminance(second)];
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}

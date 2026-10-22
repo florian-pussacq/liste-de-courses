@@ -492,7 +492,7 @@
   }
 
   .paste svg {
-    stroke: var(--accent);
+    stroke: var(--paste-icon);
     width: 22px;
     height: 22px;
   }

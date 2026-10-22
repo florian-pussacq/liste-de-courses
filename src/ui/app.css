@@ -12,6 +12,7 @@
   --mark-fill: #111210;
   --mark-check: #c8f13a;
   --sheet-alert: #c8f13a;
+  --paste-icon: #c8f13a;
   --radius: 18px;
   --target: 48px;
   color-scheme: light dark;
@@ -34,6 +35,7 @@
     --mark-fill: #c8f13a;
     --mark-check: #111210;
     --sheet-alert: #b42318;
+    --paste-icon: #111210;
   }
 }
 
