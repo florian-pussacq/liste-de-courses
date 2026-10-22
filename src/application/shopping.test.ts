@@ -232,6 +232,23 @@ describe('shopping list', () => {
   });
 });
 
+describe('clearing the list', () => {
+  it('removes every item, whatever its state, and leaves the inbox alone', async () => {
+    await app.addItem('pain');
+    await app.addItem('lait');
+    await app.toggleItem(await idOf('lait'));
+    await app.captureText('compote ?');
+    await app.validateInbox();
+    await app.captureText('beurre');
+
+    const cleared = await app.clearList();
+
+    expect(labels(cleared)).toEqual([]);
+    expect(labels(await shoppingLists.load())).toEqual([]);
+    expect(proposedLabels(await inboxes.load())).toEqual(['beurre']);
+  });
+});
+
 describe('items to check', () => {
   it('turns an item to check into an item to buy, and back', async () => {
     await app.captureText('compote ?');

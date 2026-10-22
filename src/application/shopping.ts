@@ -161,6 +161,7 @@ export function shopping({
     setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>
       changeList((list) => lists.setToCheck(list, id, toCheck, now())),
     clearChecked: (): Promise<ShoppingList> => changeList(lists.clearChecked),
+    clearList: (): Promise<ShoppingList> => changeList(lists.emptyShoppingList),
     // Undo: the snapshot taken before a removal is saved back as is.
     restoreList: (previous: ShoppingList): Promise<ShoppingList> => changeList(() => previous),
 
