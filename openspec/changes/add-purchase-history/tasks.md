@@ -2,8 +2,8 @@
 
 ## 1. Domaine
 
-- [ ] 1.1 Ajouter en TDD `Purchase`, `recordPurchase` et `cancelPurchase`, et vérifier les scénarios « Article coché », « Article racheté » et « Cochage par erreur »
-- [ ] 1.2 Ajouter en TDD `purchasesByDay`, et vérifier le scénario « Achats regroupés par jour », y compris deux achats d'un même article le même jour
+- [x] 1.1 Ajouter en TDD `Purchase`, `recordPurchase` et `cancelPurchase`, et vérifier les scénarios « Article coché », « Article racheté » et « Cochage par erreur »
+- [x] 1.2 Ajouter en TDD `purchasesByDay`, et vérifier le scénario « Achats regroupés par jour », y compris deux achats d'un même article le même jour
 
 ## 2. Application et stockage
 
