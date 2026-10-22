@@ -41,3 +41,14 @@ Le système SHALL permettre de consulter l'historique depuis la liste : les acha
 #### Scenario: Historique vide
 - **WHEN** aucun article n'a encore été coché et que l'utilisateur consulte l'historique
 - **THEN** l'historique indique qu'aucun achat n'a encore été enregistré
+
+### Requirement: Effacement de l'historique
+Le système SHALL permettre d'effacer tous les achats de l'historique depuis sa consultation. L'effacement MUST être confirmé avant d'avoir lieu, et MUST NOT modifier la liste de courses.
+
+#### Scenario: Historique effacé
+- **WHEN** l'utilisateur choisit d'effacer l'historique puis confirme
+- **THEN** l'historique indique qu'aucun achat n'a encore été enregistré, et la liste est inchangée
+
+#### Scenario: Effacement abandonné
+- **WHEN** l'utilisateur choisit d'effacer l'historique puis renonce
+- **THEN** l'historique contient toujours ses achats

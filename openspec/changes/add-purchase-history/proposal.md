@@ -8,9 +8,10 @@ Une fois les articles pris retirés de la liste, il ne reste aucune trace de ce 
 
 - **Enregistrement des achats** : cocher un article l'enregistre comme acheté, avec son libellé, sa quantité et la date ; le décocher annule cet achat.
 - **Historique indépendant de la liste** : retirer les articles pris, vider la liste, supprimer un article ou annuler un retrait ne modifient pas l'historique.
+- **Effacement** : l'historique peut être effacé en entier depuis son écran, après confirmation.
 - **Consultation** : un écran d'historique, ouvert depuis l'en-tête de la liste, présente les achats regroupés par jour, du plus récent au plus ancien.
 
-Hors périmètre : remettre un achat ou une journée dans la liste, rechercher dans l'historique (issue #3), supprimer des achats, limiter la durée de conservation.
+Hors périmètre : remettre un achat ou une journée dans la liste, rechercher dans l'historique (issue #3), supprimer un achat isolé, limiter la durée de conservation.
 
 ## Capabilities
 

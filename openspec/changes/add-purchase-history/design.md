@@ -11,7 +11,7 @@ La liste est un document unique (`shopping-list`) réécrit à chaque modificati
 - Présenter les achats par jour.
 
 **Non-Goals:**
-- Réutiliser un achat, rechercher (issue #3), supprimer ou purger l'historique.
+- Réutiliser un achat, rechercher (issue #3), supprimer un achat isolé ou purger automatiquement l'historique.
 - Synchroniser l'historique entre appareils : il reste local, comme le reste des données.
 
 ## Decisions
@@ -34,6 +34,9 @@ Un `PurchaseHistoryRepository` (port) avec une implémentation en mémoire pour 
 
 ### Interface : une feuille ouverte depuis l'en-tête
 Un bouton « Historique des achats » à côté de « Envoyer la liste » ouvre une feuille (`HistorySheet`) : un titre par jour (« Mardi 21 octobre », l'année ajoutée hors de l'année en cours, formaté par `Intl.DateTimeFormat('fr-FR')` dans l'interface), puis les achats avec la pastille de quantité existante. Le format de date reste dans l'interface ; le domaine ne connaît que la clé de jour.
+
+### Effacement : une confirmation plutôt qu'une annulation
+« Effacer l'historique » remplace le bouton par « Effacer tout » et « Garder » dans la feuille ; seul « Effacer tout » enregistre `emptyPurchaseHistory()` via le cas d'usage `clearPurchaseHistory`. L'annulation de six secondes de la liste ne s'applique pas : elle repose sur un instantané de la liste et un bandeau sous la liste, que la feuille d'historique recouvre. Un geste rare et définitif mérite une confirmation explicite.
 
 ## Risks / Trade-offs
 
