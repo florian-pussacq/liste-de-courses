@@ -1,3 +1,4 @@
+import { labelKey } from './label';
 import type { Quantity } from './quantity';
 import type { Item, ItemId } from './shopping-list';
 
@@ -60,4 +61,33 @@ function dayOf(time: number): Day {
   const date = new Date(time);
   const twoDigits = (value: number) => String(value).padStart(2, '0');
   return `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
+}
+
+// What the history knows about one item, all its purchases taken together.
+export interface PurchasedArticle {
+  readonly label: string;
+  readonly purchaseCount: number;
+  readonly lastTakenAt: number;
+  readonly lastQuantity?: Quantity;
+}
+
+const MIN_QUERY_LENGTH = 2;
+
+// The same rule as duplicates decides what is one item: "tomate" finds "Tomates cerises".
+export function searchPurchases(history: PurchaseHistory, query: string): PurchasedArticle[] {
+  const key = labelKey(query);
+  if (key.length < MIN_QUERY_LENGTH) return [];
+  const articles = new Map<string, PurchasedArticle>();
+  for (const { label, quantity, takenAt } of history.purchases) {
+    const articleKey = labelKey(label);
+    if (!articleKey.includes(key)) continue;
+    const known = articles.get(articleKey);
+    articles.set(articleKey, {
+      label,
+      purchaseCount: (known?.purchaseCount ?? 0) + 1,
+      lastTakenAt: takenAt,
+      ...(quantity !== undefined && { lastQuantity: quantity }),
+    });
+  }
+  return [...articles.values()].sort((a, b) => b.lastTakenAt - a.lastTakenAt);
 }
