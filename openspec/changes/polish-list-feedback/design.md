@@ -34,6 +34,9 @@ Alternative écartée : mettre la majuscule à l'enregistrement. Elle changerait
 ### Vider la liste réutilise l'annulation existante
 Le cas d'usage `clearList` enregistre `emptyShoppingList()`, la liste vide que le domaine fournit déjà. Comme tout retrait, il déclenche le bandeau « Annuler » sans code supplémentaire. L'action « Vider la liste » se place en fin de liste, loin du dock, et n'apparaît que si au moins un article reste à prendre ou à vérifier : quand tout est pris, elle ferait la même chose que « Retirer les articles pris », et deux boutons pour un même geste se contredisent.
 
+### Le tri prend le focus, pas son premier champ
+Un `<dialog>` ouvert par `showModal()` donne le focus à son premier élément focalisable : dans le tri, le champ « Ajouter un article », ce qui ouvre le clavier sur téléphone. La feuille du tri porte `autofocus` sur le `<dialog>` lui-même : le focus reste piégé dans la feuille (clavier, lecteur d'écran) sans activer de champ. Les autres feuilles, où l'on vient pour taper (ajout d'un article), gardent le comportement par défaut.
+
 ## Risks / Trade-offs
 
 - [`::first-letter` ne s'applique qu'à un bloc] → Les libellés concernés sont affichés en `inline-block` ou `block`.

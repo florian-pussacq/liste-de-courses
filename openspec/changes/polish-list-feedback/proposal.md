@@ -8,6 +8,7 @@ Après une validation, rien n'indique ce qui a réellement rejoint la liste : le
 
 - **Bilan de validation** : après la validation du tri, un bandeau indique les articles ajoutés et ceux qui figuraient déjà dans la liste, jusqu'à ce que l'utilisateur le ferme ou modifie la liste.
 - **Initiale en majuscule** : tout libellé (article, proposition, plat, ingrédient) s'affiche et s'envoie avec une initiale en majuscule. Le libellé enregistré n'est pas modifié.
+- **Tri sans clavier** : la boîte de réception s'ouvre sans activer de champ de saisie, pour que le clavier ne masque pas le tri.
 - **Vider la liste** : une action retire d'un coup tous les articles de la liste, annulable comme les autres retraits.
 
 Hors périmètre : vider la boîte de réception (l'abandon du tri existe déjà), oublier les plats mémorisés.
