@@ -103,11 +103,11 @@ Le système SHALL indiquer explicitement que la liste est vide lorsqu'elle ne co
 - **THEN** l'utilisateur voit un message indiquant que la liste est vide et comment ajouter des articles
 
 ### Requirement: Progression des courses
-Le système SHALL afficher en tête de la liste le nombre d'articles restant à prendre, ainsi que le nombre d'articles pris rapporté au nombre total d'articles. Les articles à vérifier MUST NOT être comptés, ni parmi les articles à prendre ni dans le total.
+Le système SHALL afficher en tête de la liste le nombre d'articles restant à prendre, ainsi qu'une barre de progression des articles pris rapportés au nombre total d'articles, qui annonce aux technologies d'assistance le nombre d'articles pris sur le total. Ce rapport MUST NOT être répété en texte dans l'en-tête. Les articles à vérifier MUST NOT être comptés, ni parmi les articles à prendre ni dans le total.
 
 #### Scenario: Courses en cours
 - **WHEN** la liste contient cinq articles dont deux cochés
-- **THEN** l'utilisateur voit trois articles restant à prendre et deux pris sur cinq
+- **THEN** l'utilisateur voit trois articles restant à prendre, et la barre de progression annonce deux pris sur cinq
 
 #### Scenario: Courses terminées
 - **WHEN** tous les articles de la liste sont cochés
@@ -115,7 +115,11 @@ Le système SHALL afficher en tête de la liste le nombre d'articles restant à 
 
 #### Scenario: Articles à vérifier non comptés
 - **WHEN** la liste contient quatre articles certains dont un coché, et deux articles à vérifier
-- **THEN** l'utilisateur voit trois articles restant à prendre et un pris sur quatre
+- **THEN** l'utilisateur voit trois articles restant à prendre, et la barre de progression annonce un pris sur quatre
+
+#### Scenario: Rapport non répété en texte
+- **WHEN** la liste contient cinq articles dont deux cochés
+- **THEN** l'en-tête n'affiche pas « 2 / 5 pris »
 
 ### Requirement: Panier repliable
 Le système SHALL regrouper les articles cochés dans un panier affiché après les articles restant à prendre, replié par défaut et indiquant le nombre d'articles qu'il contient. Une action SHALL déplier et replier le panier.
