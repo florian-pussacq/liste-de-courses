@@ -177,6 +177,11 @@ export function shopping({
       return list;
     },
     purchaseHistory: (): Promise<PurchaseHistory> => purchaseStore.load(),
+    async clearPurchaseHistory(): Promise<PurchaseHistory> {
+      const history = purchases.emptyPurchaseHistory();
+      await purchaseStore.save(history);
+      return history;
+    },
     setItemQuantity: (id: ItemId, quantity: Quantity | undefined): Promise<ShoppingList> =>
       changeList((list) => lists.setQuantity(list, id, quantity, now())),
     setToCheck: (id: ItemId, toCheck: boolean): Promise<ShoppingList> =>

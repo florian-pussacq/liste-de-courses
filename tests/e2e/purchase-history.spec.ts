@@ -48,3 +48,29 @@ test('keeps a purchase once the taken items are removed, across a reload', async
   await page.getByRole('button', { name: 'Fermer' }).click();
   await sheetClosed(page, 'Historique des achats');
 });
+
+test.describe('clearing the history', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./');
+    await addItems(page, 'pain');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+    await openHistory(page);
+    await history(page).getByRole('button', { name: 'Effacer l’historique' }).click();
+  });
+
+  test('clears every purchase once confirmed, and leaves the list alone', async ({ page }) => {
+    await history(page).getByRole('button', { name: 'Effacer tout' }).click();
+
+    await expect(history(page)).toContainText('Aucun achat enregistré pour l’instant.');
+    await history(page).getByRole('button', { name: 'Fermer' }).click();
+    await sheetClosed(page, 'Historique des achats');
+    await expect(page.getByRole('button', { name: '1 article dans le panier' })).toBeVisible();
+  });
+
+  test('keeps the purchases when the user changes their mind', async ({ page }) => {
+    await history(page).getByRole('button', { name: 'Garder' }).click();
+
+    await expect(history(page).getByRole('listitem')).toHaveText(['pain']);
+    await expect(history(page).getByRole('button', { name: 'Effacer l’historique' })).toBeVisible();
+  });
+});

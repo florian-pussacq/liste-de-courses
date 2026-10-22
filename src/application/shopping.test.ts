@@ -280,6 +280,16 @@ describe('purchase history', () => {
       ['lait', undefined],
     ]);
   });
+
+  it('clears the history without touching the list', async () => {
+    await app.addItem('pain');
+    await app.toggleItem(await idOf('pain'));
+
+    await app.clearPurchaseHistory();
+
+    expect(await bought()).toEqual([]);
+    expect(labels(await shoppingLists.load())).toEqual(['pain']);
+  });
 });
 
 describe('clearing the list', () => {

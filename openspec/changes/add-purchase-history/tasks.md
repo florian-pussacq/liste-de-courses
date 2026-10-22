@@ -15,7 +15,7 @@
 - [x] 3.1 Ajouter le bouton « Historique des achats » et la feuille d'historique, et vérifier en e2e « Achats regroupés par jour » (horloge simulée) et « Historique vide »
 - [x] 3.2 Vérifier en e2e qu'un achat reste dans l'historique après le retrait des articles pris et après un rechargement de l'application
 - [x] 3.3 Vérifier par capture, en clair et en sombre, un historique de plusieurs jours
-- [ ] 3.4 Ajouter le cas d'usage `clearPurchaseHistory` et l'effacement confirmé dans la feuille d'historique, et vérifier les scénarios « Historique effacé » et « Effacement abandonné »
+- [x] 3.4 Ajouter le cas d'usage `clearPurchaseHistory` et l'effacement confirmé dans la feuille d'historique, et vérifier les scénarios « Historique effacé » et « Effacement abandonné »
 
 ## 4. Vérification d'intégration
 

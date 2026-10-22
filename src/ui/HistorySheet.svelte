@@ -12,6 +12,12 @@
   const { app, onclose }: Props = $props();
 
   let days: PurchaseDay[] | undefined = $state();
+  let confirming = $state(false);
+
+  async function clear() {
+    days = purchasesByDay(await app.clearPurchaseHistory());
+    confirming = false;
+  }
   $effect(() => {
     void app.purchaseHistory().then((history) => (days = purchasesByDay(history)));
   });
@@ -47,12 +53,37 @@
       </ul>
     </section>
   {/each}
-  <div class="actions">
-    <button type="button" class="button" onclick={onclose}>Fermer</button>
-  </div>
+  {#if confirming}
+    <p class="confirm" role="alert">
+      Effacer tous les achats de l’historique ? La liste ne change pas.
+    </p>
+    <div class="actions">
+      <button type="button" class="button danger" onclick={clear}>Effacer tout</button>
+      <button type="button" class="button" onclick={() => (confirming = false)}>Garder</button>
+    </div>
+  {:else}
+    <div class="actions">
+      {#if days && days.length > 0}
+        <button type="button" class="button" onclick={() => (confirming = true)}
+          >Effacer l’historique</button
+        >
+      {/if}
+      <button type="button" class="button" onclick={onclose}>Fermer</button>
+    </div>
+  {/if}
 </Sheet>
 
 <style>
+  .confirm {
+    margin: 20px 0 0;
+    font-weight: 700;
+  }
+
+  .danger {
+    border-color: var(--sheet-alert);
+    color: var(--sheet-alert);
+  }
+
   .empty {
     color: var(--surface-muted);
   }
