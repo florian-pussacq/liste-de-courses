@@ -122,10 +122,7 @@
   <ItemActionsSheet
     {app}
     item={sheet.item}
-    onchange={(changed) => {
-      list = changed;
-      closeSheet();
-    }}
+    onchange={(changed) => (list = changed)}
     onclose={closeSheet}
   />
 {/if}

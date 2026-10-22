@@ -6,8 +6,10 @@
     itemsToCheck,
     type BatchAddition,
     type Item,
+    type ListedAgain,
     type ShoppingList,
   } from '../domain/shopping-list';
+  import type { Quantity } from '../domain/quantity';
   import ItemRow from './ItemRow.svelte';
   import ItemToCheckRow from './ItemToCheckRow.svelte';
   import PlusIcon from './PlusIcon.svelte';
@@ -63,15 +65,19 @@
   const progress = $derived(total === 0 ? 0 : Math.round((basket.length / total) * 100));
 
   const toggle = async (item: Item) => (list = await app.toggleItem(item.id));
+  const setQuantity = async (item: Item, quantity: Quantity | undefined) =>
+    (list = await app.setItemQuantity(item.id, quantity));
   const alreadyHave = async (item: Item) => (list = await app.removeItem(item.id));
   const needed = async (item: Item) => (list = await app.setToCheck(item.id, false));
+  const quantityChange = ({ before, after }: NonNullable<ListedAgain['quantity']>) =>
+    before === undefined ? `${after}` : `${before} → ${after}`;
   const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 </script>
 
-{#snippet labels(title: string, names: readonly string[])}
+{#snippet labels(title: string, listed: readonly ListedAgain[])}
   <strong>{title}</strong> :
-  {#each names as name, index (index)}<span class="capitalized">{name}</span>{index <
-    names.length - 1
+  {#each listed as { label, quantity }, index (index)}<span class="capitalized">{label}</span
+    >{quantity ? ` (${quantityChange(quantity)})` : ''}{index < listed.length - 1
       ? ', '
       : ''}{/each}
 {/snippet}
@@ -141,7 +147,7 @@
   {#if toBuy.length > 0}
     <ul aria-label="À prendre">
       {#each toBuy as item (item.id)}
-        <ItemRow {item} ontoggle={toggle} {onactions} />
+        <ItemRow {item} ontoggle={toggle} {onactions} onquantity={setQuantity} />
       {/each}
     </ul>
   {/if}
@@ -160,7 +166,7 @@
       {#if basketOpen}
         <ul aria-label="Panier">
           {#each basket as item (item.id)}
-            <ItemRow {item} ontoggle={toggle} {onactions} />
+            <ItemRow {item} ontoggle={toggle} {onactions} onquantity={setQuantity} />
           {/each}
         </ul>
         <button
@@ -187,14 +193,16 @@
     <div class="banner report" role="status">
       <div>
         {#if report.added.length > 0}
-          <p>{@render labels(report.added.length > 1 ? 'Ajoutés' : 'Ajouté', report.added)}</p>
+          <p>
+            {@render labels(
+              report.added.length > 1 ? 'Ajoutés' : 'Ajouté',
+              report.added.map((label) => ({ label })),
+            )}
+          </p>
         {/if}
         {#if report.alreadyListed.length > 0}
           <p>
-            {@render labels(
-              'Déjà dans la liste',
-              report.alreadyListed.map(({ label }) => label),
-            )}
+            {@render labels('Déjà dans la liste', report.alreadyListed)}
           </p>
         {/if}
       </div>

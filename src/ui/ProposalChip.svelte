@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Proposal } from '../domain/inbox';
+  import QuantityBadge from './QuantityBadge.svelte';
 
   interface Props {
     proposal: Proposal;
@@ -21,19 +22,21 @@
     type="button"
     class="chip"
     class:discarded={proposal.discarded}
-    aria-label="{proposal.discarded ? 'Remettre' : 'Écarter'} {proposal.label}{proposal.toCheck
-      ? ', à vérifier'
-      : ''}"
+    aria-label="{proposal.discarded ? 'Remettre' : 'Écarter'} {proposal.quantity === undefined
+      ? ''
+      : `${proposal.quantity} `}{proposal.label}{proposal.toCheck ? ', à vérifier' : ''}"
     onclick={() => ontoggle(proposal)}
     oncontextmenu={edit}
   >
-    <span class="capitalized">{proposal.label}</span>
+    <QuantityBadge quantity={proposal.quantity} /><span class="capitalized">{proposal.label}</span>
     {#if proposal.toCheck}<span class="doubt" aria-hidden="true">?</span>{/if}
   </button>
 </li>
 
 <style>
   .chip {
+    --badge-background: var(--on-accent);
+    --badge-color: var(--accent);
     min-height: var(--target);
     padding: 8px 18px;
     border: 2px solid var(--accent);

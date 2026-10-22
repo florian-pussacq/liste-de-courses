@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Item } from '../domain/shopping-list';
+  import QuantityBadge from './QuantityBadge.svelte';
 
   interface Props {
     item: Item;
@@ -18,7 +19,9 @@
 </script>
 
 <li oncontextmenu={openActions}>
-  <span class="label capitalized">{item.label}</span>
+  <span class="label"
+    ><QuantityBadge quantity={item.quantity} /><span class="capitalized">{item.label}</span></span
+  >
   <button
     type="button"
     class="have"

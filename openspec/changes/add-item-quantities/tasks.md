@@ -16,15 +16,15 @@
 
 ## 3. Interface
 
-- [ ] 3.1 Afficher la pastille de quantité dans la liste et le tri, et vérifier en e2e « Quantité affichée »
-- [ ] 3.2 Ajouter `QuantityStepper` aux actions d'un article et d'une proposition, et vérifier en e2e « Augmentation depuis les actions », « Quantité retirée depuis les actions » et « Quantité d'une proposition »
-- [ ] 3.3 Séparer la case à cocher et les boutons « − / + » sur les lignes à prendre qui ont une quantité, et vérifier en e2e « Diminution sur la ligne », « Minimum sur la ligne » et « Pas de commande sans quantité »
-- [ ] 3.4 Afficher l'évolution de la quantité dans le bilan, et vérifier en e2e « Quantité d'un article déjà présent »
-- [ ] 3.5 Vérifier par capture, en clair et en sombre, une liste mêlant articles avec et sans quantité, et les actions d'un article
+- [x] 3.1 Afficher la pastille de quantité dans la liste et le tri, et vérifier en e2e « Quantité affichée »
+- [x] 3.2 Ajouter `QuantityStepper` aux actions d'un article et d'une proposition, et vérifier en e2e « Augmentation depuis les actions », « Quantité retirée depuis les actions » et « Quantité d'une proposition »
+- [x] 3.3 Séparer la case à cocher et les boutons « − / + » sur les lignes à prendre qui ont une quantité, et vérifier en e2e « Diminution sur la ligne », « Minimum sur la ligne » et « Pas de commande sans quantité »
+- [x] 3.4 Afficher l'évolution de la quantité dans le bilan, et vérifier en e2e « Quantité d'un article déjà présent »
+- [x] 3.5 Vérifier par capture, en clair et en sombre, une liste mêlant articles avec et sans quantité, et les actions d'un article
 
 ## 4. Vérification d'intégration
 
-- [ ] 4.1 Ajouter « quantité → `quantity` » au glossaire de `CLAUDE.md`
+- [x] 4.1 Ajouter « quantité → `quantity` » au glossaire de `CLAUDE.md`
 - [ ] 4.2 Lancer `openspec validate --all --strict` et la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 4.3 Sur un téléphone Android réel : coller un menu où un plat revient deux fois, vérifier les quantités dans le tri et le bilan, puis ajuster une quantité sur une ligne
 
