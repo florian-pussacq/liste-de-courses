@@ -13,7 +13,7 @@
 
 ## 3. Vérification d'intégration
 
-- [ ] 3.1 Lancer `openspec validate --all --strict`, lint, typecheck, tests unitaires et e2e, puis la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 3.1 Lancer `openspec validate --all --strict`, lint, typecheck, tests unitaires et e2e, puis la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 - [ ] 3.2 Sur un téléphone Android réel : cocher un premier article d'une main, et vérifier que les compteurs disparaissent, que le collage se réduit, et que décocher ramène la préparation
 
 ## Workflow follow-up
