@@ -49,3 +49,34 @@ describe('listAsText', () => {
     expect(listAsText(emptyShoppingList())).toBe('');
   });
 });
+
+describe('listAsText with quantities', () => {
+  const list = () =>
+    addItems(
+      emptyShoppingList(),
+      [
+        { label: 'citrons', toCheck: false, quantity: 3 },
+        { label: 'lait', toCheck: false },
+        { label: 'œufs', toCheck: true, quantity: 6 },
+      ],
+      {
+        now: 0,
+        newId: (() => {
+          let next = 0;
+          return () => `item-${++next}`;
+        })(),
+      },
+    ).list;
+
+  it('writes the quantity before the label', () => {
+    expect(listAsText(list())).toBe('3 citrons\nLait\n6 œufs ?');
+  });
+
+  it('reads back with the same quantities', () => {
+    expect(splitIntoEntries(listAsText(list()))).toEqual([
+      { label: 'citrons', toCheck: false, quantity: 3 },
+      { label: 'Lait', toCheck: false },
+      { label: 'œufs', toCheck: true, quantity: 6 },
+    ]);
+  });
+});

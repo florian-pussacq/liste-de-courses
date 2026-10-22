@@ -8,7 +8,7 @@
 - [x] 1.4 Additionner les quantités dans `addItem` et `addItems` (remplacement pour un article pris remis à prendre et pour un doute levé), lire la quantité dans `addItem` et `renameItem`, et vérifier les scénarios de « Addition des quantités » (liste), « Article avec quantité » et « Quantité tapée lors d'une modification »
 - [x] 1.5 Additionner les quantités dans `mergeInto`, lire la quantité dans `addProposal` et `editProposal`, refusionner un plat cité de nouveau dans `captureText`, et vérifier les scénarios « Quantités additionnées dans le tri », « Ingrédient avec quantité » et « Plat cité deux fois »
 - [x] 1.6 Enrichir `alreadyListed` de l'évolution de la quantité, et vérifier le scénario « Quantité d'un article déjà présent »
-- [ ] 1.7 Écrire la quantité dans `listAsText`, et vérifier « Quantité envoyée » et la relecture à l'identique
+- [x] 1.7 Écrire la quantité dans `listAsText`, et vérifier « Quantité envoyée » et la relecture à l'identique
 
 ## 2. Application
 
