@@ -2,9 +2,9 @@
 
 ## 1. Interface
 
-- [ ] 1.1 Écrire les tests e2e « Pas de barre en préparation » et « Barre en magasin », et constater que le premier échoue
-- [ ] 1.2 N'afficher la barre de progression qu'en magasin dans `ShoppingListView`, et vérifier que les tests de 1.1 passent, les tests existants de la progression restant verts
-- [ ] 1.3 Vérifier par capture, en clair et en sombre, l'en-tête en préparation et en magasin, sur une largeur de téléphone
+- [x] 1.1 Écrire les tests e2e « Pas de barre en préparation » et « Barre en magasin », et constater que le premier échoue
+- [x] 1.2 N'afficher la barre de progression qu'en magasin dans `ShoppingListView`, et vérifier que les tests de 1.1 passent, les tests existants de la progression restant verts
+- [x] 1.3 Vérifier par capture, en clair et en sombre, l'en-tête en préparation et en magasin, sur une largeur de téléphone
 
 ## 2. Vérification d'intégration
 

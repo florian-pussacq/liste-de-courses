@@ -158,7 +158,8 @@
     </div>
   </div>
   {#if sendNotice}<p class="send-notice" role="status">{sendNotice}</p>{/if}
-  {#if total > 0}
+  <!-- While preparing, the bar would stay empty, or tell about a previous shopping. -->
+  {#if total > 0 && inStore}
     <div
       class="progress"
       role="progressbar"

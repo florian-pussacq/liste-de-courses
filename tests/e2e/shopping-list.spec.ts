@@ -39,6 +39,22 @@ test.describe('reminder of the long press', () => {
   });
 });
 
+test.describe('progress bar', () => {
+  test('is absent while preparing', async ({ page }) => {
+    await addItems(page, 'pain', 'lait');
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('2 à prendre');
+    await expect(page.getByRole('progressbar')).toBeHidden();
+  });
+
+  test('appears in store', async ({ page }) => {
+    await addItems(page, 'pain', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+
+    await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuetext', '1 pris sur 2');
+  });
+});
+
 test('shows the progress of the shopping', async ({ page }) => {
   await addItems(page, 'pain', 'lait', 'sel', 'riz', 'café');
   await toBuy(page).filter({ hasText: 'pain' }).click();
