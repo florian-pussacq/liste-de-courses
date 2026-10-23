@@ -23,6 +23,29 @@ test('turns a shared element ending with a question mark into an item to check',
   await expect(toBuy(page)).toHaveText(['riz']);
 });
 
+test.describe('place of the items to check', () => {
+  const top = async (locator: ReturnType<Page['locator']>) =>
+    (await locator.boundingBox())?.y ?? Number.NaN;
+
+  test('heads the list while preparing', async ({ page }) => {
+    await shareAndValidate(page, 'riz\ncompote ?');
+
+    const section = page.getByRole('heading', { name: 'À vérifier avant de partir (1)' });
+    expect(await top(section)).toBeLessThan(await top(toBuy(page).filter({ hasText: 'riz' })));
+  });
+
+  test('follows the items to buy in store, before the basket, as doubts', async ({ page }) => {
+    await shareAndValidate(page, 'pain\nriz\ncompote ?');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+
+    const section = page.getByRole('heading', { name: 'Dans le doute (1)' });
+    await expect(section).toBeVisible();
+    const basket = page.getByRole('button', { name: '1 article dans le panier' });
+    expect(await top(toBuy(page).filter({ hasText: 'riz' }))).toBeLessThan(await top(section));
+    expect(await top(section)).toBeLessThan(await top(basket));
+  });
+});
+
 test('switches a proposal between certain and to check before validating', async ({ page }) => {
   await page.goto(`./?text=${encodeURIComponent('farine, compote ?')}`);
 

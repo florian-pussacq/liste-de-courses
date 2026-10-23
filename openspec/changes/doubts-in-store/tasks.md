@@ -2,9 +2,9 @@
 
 ## 1. Interface
 
-- [ ] 1.1 Écrire les tests e2e « Articles à vérifier en tête » (titre « À vérifier avant de partir », au-dessus des articles à prendre) et « Doutes après les articles à prendre en magasin » (titre « Dans le doute », entre les articles à prendre et le panier), et constater que le second échoue
-- [ ] 1.2 Placer et intituler la section selon le moment des courses dans `ShoppingListView`, sans dupliquer son balisage, et vérifier que les tests de 1.1 passent, les tests existants des articles à vérifier restant verts
-- [ ] 1.3 Vérifier par capture, en clair et en sombre, la liste en préparation et en magasin avec des articles à vérifier, sur une largeur de téléphone
+- [x] 1.1 Écrire les tests e2e « Articles à vérifier en tête » (titre « À vérifier avant de partir », au-dessus des articles à prendre) et « Doutes après les articles à prendre en magasin » (titre « Dans le doute », entre les articles à prendre et le panier), et constater que le second échoue
+- [x] 1.2 Placer et intituler la section selon le moment des courses dans `ShoppingListView`, sans dupliquer son balisage, et vérifier que les tests de 1.1 passent, les tests existants des articles à vérifier restant verts
+- [x] 1.3 Vérifier par capture, en clair et en sombre, la liste en préparation et en magasin avec des articles à vérifier, sur une largeur de téléphone
 
 ## 2. Vérification d'intégration
 

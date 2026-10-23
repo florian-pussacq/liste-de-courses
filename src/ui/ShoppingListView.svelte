@@ -102,6 +102,19 @@
     >{last ? '' : ' '}{/each}
 {/snippet}
 
+{#snippet toCheckSection(title: string)}
+  {#if toCheck.length > 0}
+    <section class="to-check" aria-labelledby="to-check-title">
+      <h2 id="to-check-title">{title} ({toCheck.length})</h2>
+      <ul aria-label="À vérifier">
+        {#each toCheck as item (item.id)}
+          <ItemToCheckRow {item} onhave={alreadyHave} onneed={needed} {onactions} />
+        {/each}
+      </ul>
+    </section>
+  {/if}
+{/snippet}
+
 <header>
   <div class="title">
     {#if list.items.length === 0}
@@ -166,16 +179,7 @@
     </p>
   {/if}
 
-  {#if toCheck.length > 0}
-    <section class="to-check" aria-labelledby="to-check-title">
-      <h2 id="to-check-title">À vérifier avant de partir ({toCheck.length})</h2>
-      <ul aria-label="À vérifier">
-        {#each toCheck as item (item.id)}
-          <ItemToCheckRow {item} onhave={alreadyHave} onneed={needed} {onactions} />
-        {/each}
-      </ul>
-    </section>
-  {/if}
+  {#if !inStore}{@render toCheckSection('À vérifier avant de partir')}{/if}
 
   {#if toBuy.length > 0}
     <ul aria-label="À prendre">
@@ -190,6 +194,9 @@
       {/each}
     </ul>
   {/if}
+
+  <!-- In store, the home can no longer be checked: the doubts follow the task of the moment. -->
+  {#if inStore}{@render toCheckSection('Dans le doute')}{/if}
 
   {#if basket.length > 0}
     <section class="basket">
@@ -367,6 +374,10 @@
 
   .to-check {
     margin-bottom: 20px;
+  }
+
+  ul + .to-check {
+    margin-top: 20px;
   }
 
   .to-check h2 {
