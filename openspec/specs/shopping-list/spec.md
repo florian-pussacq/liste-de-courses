@@ -278,3 +278,14 @@ Le système SHALL intituler la section des articles à vérifier « À vérifier
 #### Scenario: Doutes après les articles à prendre en magasin
 - **WHEN** la liste est en magasin et contient « riz » à prendre et « compote » à vérifier
 - **THEN** « compote » est affiché dans la section « Dans le doute », au-dessous de « riz » et avant le panier
+
+### Requirement: Information d'envoi passagère
+Le système SHALL retirer l'information affichée après un envoi de la liste (liste copiée dans le presse-papiers, ou envoi impossible) dès que la liste change.
+
+#### Scenario: Information dépassée
+- **WHEN** l'utilisateur est informé que la liste a été copiée, puis coche un article
+- **THEN** l'information n'est plus affichée
+
+#### Scenario: Information conservée
+- **WHEN** l'utilisateur est informé que la liste a été copiée, et que la liste ne change pas
+- **THEN** l'information reste affichée
