@@ -95,9 +95,11 @@
 
 {#snippet labels(title: string, listed: readonly Reported[])}
   <strong>{title}</strong> :
-  {#each listed as { label, quantity, change }, index (index)}<QuantityBadge {quantity} /><span
-      class="capitalized">{label}</span
-    >{change ? ` (${quantityChange(change)})` : ''}{index < listed.length - 1 ? ', ' : ''}{/each}
+  <!-- The comma stays in the block of its label: a line never starts with it. -->
+  {#each listed as { label, quantity, change }, index (index)}{@const last =
+      index === listed.length - 1}<QuantityBadge {quantity} /><span class="capitalized"
+      >{label}{change ? ` (${quantityChange(change)})` : ''}{last ? '' : ','}</span
+    >{last ? '' : ' '}{/each}
 {/snippet}
 
 <header>

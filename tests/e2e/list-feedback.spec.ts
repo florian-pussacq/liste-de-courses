@@ -42,6 +42,38 @@ test.describe('validation report', () => {
     await expect(report(page)).toBeHidden();
   });
 
+  test('keeps each comma on the line of the label before it', async ({ page }) => {
+    await validate(
+      page,
+      'pain, 3 citrons, lait, 2 kg pommes de terre, yaourts nature au lait entier de brebis, compote',
+    );
+
+    const commas = await report(page).evaluate((element) => {
+      const characters: { node: Text; offset: number }[] = [];
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        for (let offset = 0; offset < (node.textContent ?? '').length; offset++) {
+          characters.push({ node: node as Text, offset });
+        }
+      }
+      const lineOf = ({ node, offset }: { node: Text; offset: number }) => {
+        const range = document.createRange();
+        range.setStart(node, offset);
+        range.setEnd(node, offset + 1);
+        return range.getBoundingClientRect().top;
+      };
+      const found = characters.flatMap((character, index) => {
+        const previous = characters[index - 1];
+        if (character.node.textContent?.[character.offset] !== ',' || !previous) return [];
+        return [lineOf(character) > lineOf(previous) + 1];
+      });
+      return { count: found.length, offTheirLabel: found.filter(Boolean).length };
+    });
+
+    expect(commas.count).toBe(5);
+    expect(commas.offTheirLabel).toBe(0);
+  });
+
   test('disappears once the list changes', async ({ page }) => {
     await validate(page, 'lait, pain');
     await expect(report(page)).toContainText('Ajoutés : lait, pain');
