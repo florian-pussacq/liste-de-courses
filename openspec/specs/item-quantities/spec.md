@@ -104,7 +104,7 @@ Le système SHALL afficher la quantité de chaque article à prendre sur sa lign
 - **THEN** la proposition « lait » s'affiche sans indication de quantité
 
 #### Scenario: Quantité affichée en magasin
-- **WHEN** la liste contient « pain » pris, « citrons » à prendre avec la quantité 3 et « lait » à prendre avec la quantité 1
+- **WHEN** la liste est en magasin et contient « citrons » à prendre avec la quantité 3 et « lait » à prendre avec la quantité 1
 - **THEN** la ligne de « citrons » affiche 3 et celle de « lait » n'indique aucune quantité
 
 ### Requirement: Ajustement de la quantité
@@ -127,11 +127,11 @@ Le système SHALL permettre d'augmenter ou de diminuer d'une unité la quantité
 - **THEN** sa ligne présente la quantité 1 et les commandes pour la modifier, et se coche toujours en touchant son libellé
 
 #### Scenario: Pas de commande sur la ligne en magasin
-- **WHEN** la liste contient « pain » pris et « citrons » à prendre avec la quantité 3
+- **WHEN** la liste est en magasin et contient « citrons » à prendre avec la quantité 3
 - **THEN** la ligne de « citrons » ne présente pas les commandes pour modifier sa quantité
 
 #### Scenario: Ajustement depuis les actions en magasin
-- **WHEN** la liste contient « pain » pris et « citrons » à prendre avec la quantité 3, et que l'utilisateur l'augmente depuis ses actions
+- **WHEN** la liste est en magasin et contient « citrons » à prendre avec la quantité 3, et que l'utilisateur l'augmente depuis ses actions
 - **THEN** « citrons » a la quantité 4
 
 #### Scenario: Quantité d'une proposition
