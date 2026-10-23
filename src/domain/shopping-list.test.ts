@@ -225,34 +225,70 @@ describe('checking items while shopping', () => {
     const unchecked = toggleItem(checked, id, 6);
     expect(find(unchecked, 'beurre')).toMatchObject({ checked: false, updatedAt: 6 });
   });
+
+  it('remembers when an item was taken, until it is unchecked', () => {
+    const list = listOf('beurre');
+    const id = find(list, 'beurre').id;
+
+    const checked = toggleItem(list, id, 4);
+    expect(find(checked, 'beurre').checkedAt).toBe(4);
+
+    expect(find(toggleItem(checked, id, 6), 'beurre')).not.toHaveProperty('checkedAt');
+  });
 });
 
 describe('moment of the shopping', () => {
+  const minutes = (count: number) => count * 60_000;
+  const taken = (list: ShoppingList, label: string, at: number) =>
+    toggleItem(list, find(list, label).id, at);
+
   it('is preparing while no item is taken', () => {
-    expect(isInStore(listOf('pain', 'lait'))).toBe(false);
+    expect(isInStore(listOf('pain', 'lait'), 0)).toBe(false);
   });
 
   it('is in store once an item is taken', () => {
-    const list = listOf('pain', 'lait');
-
-    expect(isInStore(toggleItem(list, find(list, 'pain').id, 2))).toBe(true);
+    expect(isInStore(taken(listOf('pain', 'lait'), 'pain', 0), minutes(1))).toBe(true);
   });
 
   it('does not count an item to check', () => {
-    expect(isInStore(addedToCheck(listOf('pain'), 'compote'))).toBe(false);
+    expect(isInStore(addedToCheck(listOf('pain'), 'compote'), 0)).toBe(false);
   });
 
   it('is preparing again once the last taken item is unchecked', () => {
-    const list = listOf('pain');
-    const id = find(list, 'pain').id;
+    const shopping = taken(listOf('pain'), 'pain', 0);
 
-    expect(isInStore(toggleItem(toggleItem(list, id, 2), id, 3))).toBe(false);
+    expect(isInStore(taken(shopping, 'pain', minutes(5)), minutes(5))).toBe(false);
   });
 
   it('is preparing again once taken items are cleared', () => {
-    const list = listOf('pain', 'sel');
+    expect(isInStore(clearChecked(taken(listOf('pain', 'sel'), 'pain', 0)), minutes(5))).toBe(
+      false,
+    );
+  });
 
-    expect(isInStore(clearChecked(toggleItem(list, find(list, 'pain').id, 2)))).toBe(false);
+  it('is preparing when the basket only holds items of a previous shopping', () => {
+    expect(isInStore(taken(listOf('pain', 'lait'), 'pain', 0), minutes(120))).toBe(false);
+  });
+
+  it('counts the last taken item, not the first', () => {
+    const shopping = taken(taken(listOf('pain', 'sel'), 'pain', 0), 'sel', minutes(110));
+
+    expect(isInStore(shopping, minutes(120))).toBe(true);
+  });
+
+  it('ends the shopping an hour after the last taken item', () => {
+    const shopping = taken(listOf('pain'), 'pain', 0);
+
+    expect(isInStore(shopping, minutes(59))).toBe(true);
+    expect(isInStore(shopping, minutes(60))).toBe(false);
+  });
+
+  it('reads an item taken before the time was recorded as taken long ago', () => {
+    const legacy: ShoppingList = {
+      items: listOf('pain').items.map((item) => ({ ...item, checked: true })),
+    };
+
+    expect(isInStore(legacy, 0)).toBe(false);
   });
 });
 

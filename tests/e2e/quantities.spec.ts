@@ -100,6 +100,36 @@ test.describe('in store, once an item is taken', () => {
   });
 });
 
+test.describe('once the last item was taken more than an hour ago', () => {
+  test('stays in store within the hour, then ends the shopping by itself', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('./');
+    await addItems(page, 'pain', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+
+    await page.clock.fastForward('30:00');
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toHaveCount(0);
+
+    await page.clock.fastForward('31:00');
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('1');
+  });
+
+  test('is preparing again, with the controls and the paste label back', async ({ page }) => {
+    await page.clock.install();
+    await page.goto('./');
+    await addItems(page, 'pain', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toHaveCount(0);
+
+    await page.clock.fastForward('02:00:00');
+
+    await expect(page.getByRole('group', { name: 'Quantité de lait' })).toContainText('1');
+    await expect(page.getByRole('button', { name: 'Coller une liste' })).toHaveText(
+      'Coller une liste',
+    );
+  });
+});
+
 test('raises the quantity of a proposal from its actions', async ({ page }) => {
   await openInboxByHand(page);
   await pasteByHand(page, '3 citrons');

@@ -19,7 +19,7 @@ beforeAll(() => {
 function renderWithUpdates() {
   let announce: (apply: () => Promise<void>) => void = () => {};
   render(App, {
-    app: {} as Shopping,
+    app: { now: () => 0 } as Shopping,
     initialList: emptyShoppingList(),
     initialInbox: emptyInbox(),
     onupdateready: (listener) => (announce = listener),

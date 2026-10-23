@@ -13,6 +13,8 @@ export interface Item {
   readonly quantity?: Quantity;
   readonly addedAt: number;
   readonly updatedAt: number;
+  // When the item was taken; absent for items taken before it was recorded, read as long ago.
+  readonly checkedAt?: number;
 }
 
 // Items are kept in the order they were added to the list.
@@ -66,7 +68,7 @@ function addEntry(
   if (existing.checked || existing.toCheck) {
     return success(
       updateItem(list, existing.id, (item) =>
-        withQuantity({ ...item, checked: false, toCheck: false, updatedAt: now }, entry.quantity),
+        withQuantity({ ...unchecked(item), toCheck: false, updatedAt: now }, entry.quantity),
       ),
     );
   }
@@ -151,11 +153,14 @@ export function removeItem(list: ShoppingList, id: ItemId): ShoppingList {
 }
 
 export function toggleItem(list: ShoppingList, id: ItemId, now: number): ShoppingList {
-  return {
-    items: list.items.map((item) =>
-      item.id === id ? { ...item, checked: !item.checked, updatedAt: now } : item,
-    ),
-  };
+  return updateItem(list, id, (item) => ({
+    ...(item.checked ? unchecked(item) : { ...item, checked: true, checkedAt: now }),
+    updatedAt: now,
+  }));
+}
+
+function unchecked({ checkedAt: _forgotten, ...item }: Item): Item {
+  return { ...item, checked: false };
 }
 
 export function setToCheck(
@@ -189,7 +194,14 @@ export const itemsToCheck = (list: ShoppingList): readonly Item[] =>
 export const checkedItems = (list: ShoppingList): readonly Item[] =>
   list.items.filter((item) => item.checked);
 
-export const isInStore = (list: ShoppingList): boolean => list.items.some((item) => item.checked);
+// Long enough to change aisle or shop between two items, short enough to end once back home.
+const SHOPPING_PAUSE_MS = 60 * 60 * 1000;
+
+export const isInStore = (list: ShoppingList, now: number): boolean =>
+  list.items.some(
+    (item) =>
+      item.checked && item.checkedAt !== undefined && now - item.checkedAt < SHOPPING_PAUSE_MS,
+  );
 
 function findByLabel(list: ShoppingList, label: string): Item | undefined {
   const key = labelKey(label);

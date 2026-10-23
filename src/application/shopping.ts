@@ -92,6 +92,7 @@ export function shopping({
   }
 
   return {
+    now,
     shoppingList: (): Promise<ShoppingList> => shoppingLists.load(),
     inbox: (): Promise<Inbox> => inboxStore.load(),
 

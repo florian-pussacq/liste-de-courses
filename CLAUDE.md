@@ -79,6 +79,7 @@ Ce dépôt est public. Tout ce qui y entre (code, specs, commits, messages, noms
 | achat                 | `Purchase`        |
 | historique des achats | `PurchaseHistory` |
 | en magasin            | `inStore`         |
+| pris le               | `checkedAt`       |
 
 Le panier n'est pas un concept du domaine : c'est la présentation des articles cochés, et il n'apparaît que dans l'interface.
 

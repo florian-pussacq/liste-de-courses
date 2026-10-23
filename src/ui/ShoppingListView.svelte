@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import type { Shopping } from '../application/shopping';
   import {
     checkedItems,
@@ -63,8 +64,14 @@
   const toBuy = $derived(itemsToBuy(list));
   const toCheck = $derived(itemsToCheck(list));
   const basket = $derived(checkedItems(list));
+  // The shopping ends with time, without any change of the list: the moment is read every minute.
+  let now = $state(untrack(() => app.now()));
+  $effect(() => {
+    const clock = setInterval(() => (now = app.now()), 60_000);
+    return () => clearInterval(clock);
+  });
   // The quantity controls serve the preparation: in store, the thumb that checks lands on them.
-  const inStore = $derived(isInStore(list));
+  const inStore = $derived(isInStore(list, now));
   // Items to check are not counted until the doubt is settled.
   const total = $derived(toBuy.length + basket.length);
   const progress = $derived(total === 0 ? 0 : Math.round((basket.length / total) * 100));
