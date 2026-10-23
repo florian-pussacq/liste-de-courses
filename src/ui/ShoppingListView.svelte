@@ -241,6 +241,11 @@
       Vider la liste
     </button>
   {/if}
+
+  <!-- The list is edited while preparing it: in store, the reminder would only take room. -->
+  {#if list.items.length > 0 && !inStore}
+    <p class="reminder">Appui long sur un article pour le modifier ou le supprimer.</p>
+  {/if}
 </main>
 
 <nav aria-label="Ajouter des articles" bind:clientHeight={dockHeight}>
@@ -476,6 +481,12 @@
 
   .clear {
     margin: 24px 12px 0;
+  }
+
+  .reminder {
+    margin: 20px 12px 0;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
   }
 
   .undo button {

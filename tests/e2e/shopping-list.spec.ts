@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { addItems, inBasket, toBuy } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -19,6 +19,24 @@ test('adds items in order, ignores duplicates and refuses a blank label', async 
   await page.getByLabel('Nouvel article').fill('   ');
   await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText('Le libellé ne peut pas être vide.');
+});
+
+test.describe('reminder of the long press', () => {
+  const reminder = (page: Page) =>
+    page.getByText('Appui long sur un article pour le modifier ou le supprimer.');
+
+  test('follows the items while preparing', async ({ page }) => {
+    await addItems(page, 'pain');
+
+    await expect(reminder(page)).toBeVisible();
+  });
+
+  test('is gone in store', async ({ page }) => {
+    await addItems(page, 'pain', 'lait');
+    await toBuy(page).filter({ hasText: 'pain' }).click();
+
+    await expect(reminder(page)).toBeHidden();
+  });
 });
 
 test('shows the progress of the shopping', async ({ page }) => {
