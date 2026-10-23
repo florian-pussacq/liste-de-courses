@@ -140,7 +140,7 @@ describe('adding several items at once', () => {
       at(1, () => 'new-item'),
     );
 
-    expect(added).toEqual(['lait']);
+    expect(added).toEqual([{ label: 'lait' }]);
     expect(alreadyListed).toEqual([{ label: 'petits pois' }, { label: 'sel' }]);
   });
 
@@ -150,9 +150,19 @@ describe('adding several items at once', () => {
 
     const { list, added, alreadyListed } = addItems(taken, certain('lait', 'lait'), at(2));
 
-    expect(added).toEqual(['lait']);
+    expect(added).toEqual([{ label: 'lait' }]);
     expect(alreadyListed).toEqual([]);
     expect(find(list, 'lait').checked).toBe(false);
+  });
+
+  it('reports the quantity of an added item', () => {
+    const { added } = addItems(
+      emptyShoppingList(),
+      [{ label: 'citrons', toCheck: false, quantity: 3 }],
+      at(1),
+    );
+
+    expect(added).toEqual([{ label: 'citrons', quantity: 3 }]);
   });
 
   it('reports an item to check made certain as already listed', () => {

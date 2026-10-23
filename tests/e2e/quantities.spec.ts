@@ -159,6 +159,17 @@ test('tells in the report how the quantity of an item already listed changed', a
   );
 });
 
+test('tells in the report the quantity of an added item, only above 1', async ({ page }) => {
+  await page.goto('./');
+  await openInboxByHand(page);
+  await pasteByHand(page, '3 citrons, lait');
+  await page.getByRole('button', { name: 'Mettre dans la liste' }).click();
+
+  await expect(page.getByRole('status').filter({ hasText: 'Ajoutés' })).toHaveText(
+    /Ajoutés : 3\s*citrons, lait/,
+  );
+});
+
 test('shows no quantity of 1 in the inbox, only those above', async ({ page }) => {
   await openInboxByHand(page);
   await pasteByHand(page, 'lait, 3 citrons');

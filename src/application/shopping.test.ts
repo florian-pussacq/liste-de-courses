@@ -135,7 +135,7 @@ describe('capture', () => {
     await app.captureText('petit pois, lait');
 
     expect(await app.validateInbox()).toMatchObject({
-      added: ['lait'],
+      added: [{ label: 'lait' }],
       alreadyListed: [{ label: 'petits pois' }],
     });
   });

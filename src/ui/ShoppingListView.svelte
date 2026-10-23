@@ -14,6 +14,7 @@
   import type { Quantity } from '../domain/quantity';
   import ItemRow from './ItemRow.svelte';
   import ItemToCheckRow from './ItemToCheckRow.svelte';
+  import QuantityBadge from './QuantityBadge.svelte';
   import PlusIcon from './PlusIcon.svelte';
 
   interface Props {
@@ -81,17 +82,22 @@
     (list = await app.setItemQuantity(item.id, quantity));
   const alreadyHave = async (item: Item) => (list = await app.removeItem(item.id));
   const needed = async (item: Item) => (list = await app.setToCheck(item.id, false));
+  // A report line shows the quantity of an added item, or how that of an item already listed changed.
+  interface Reported {
+    readonly label: string;
+    readonly quantity?: Quantity;
+    readonly change?: ListedAgain['quantity'];
+  }
   const quantityChange = ({ before, after }: NonNullable<ListedAgain['quantity']>) =>
     `${before} → ${after}`;
   const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 </script>
 
-{#snippet labels(title: string, listed: readonly ListedAgain[])}
+{#snippet labels(title: string, listed: readonly Reported[])}
   <strong>{title}</strong> :
-  {#each listed as { label, quantity }, index (index)}<span class="capitalized">{label}</span
-    >{quantity ? ` (${quantityChange(quantity)})` : ''}{index < listed.length - 1
-      ? ', '
-      : ''}{/each}
+  {#each listed as { label, quantity, change }, index (index)}<QuantityBadge {quantity} /><span
+      class="capitalized">{label}</span
+    >{change ? ` (${quantityChange(change)})` : ''}{index < listed.length - 1 ? ', ' : ''}{/each}
 {/snippet}
 
 <header>
@@ -231,15 +237,15 @@
       <div>
         {#if report.added.length > 0}
           <p>
-            {@render labels(
-              report.added.length > 1 ? 'Ajoutés' : 'Ajouté',
-              report.added.map((label) => ({ label })),
-            )}
+            {@render labels(report.added.length > 1 ? 'Ajoutés' : 'Ajouté', report.added)}
           </p>
         {/if}
         {#if report.alreadyListed.length > 0}
           <p>
-            {@render labels('Déjà dans la liste', report.alreadyListed)}
+            {@render labels(
+              'Déjà dans la liste',
+              report.alreadyListed.map(({ label, quantity }) => ({ label, change: quantity })),
+            )}
           </p>
         {/if}
       </div>

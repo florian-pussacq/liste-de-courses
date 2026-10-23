@@ -85,10 +85,12 @@ export interface ListedAgain {
   readonly quantity?: { readonly before: Quantity; readonly after: Quantity };
 }
 
+export type AddedItem = Pick<Item, 'label' | 'quantity'>;
+
 export interface BatchAddition {
   readonly list: ShoppingList;
   // Each item reported once, as it stands after the whole batch, in the order of the batch.
-  readonly added: readonly string[];
+  readonly added: readonly AddedItem[];
   readonly alreadyListed: readonly ListedAgain[];
 }
 
@@ -109,16 +111,20 @@ export function addItems(
     const item = findByLabel(current, entry.label);
     if (item && !beforeBatch.has(item.id)) beforeBatch.set(item.id, before);
   }
-  const added: string[] = [];
+  const added: AddedItem[] = [];
   const alreadyListed: ListedAgain[] = [];
   for (const [id, before] of beforeBatch) {
     const item = current.items.find((candidate) => candidate.id === id);
     if (!item) continue;
     const putBack = before?.checked === true && !item.checked;
-    if (!before || putBack) added.push(item.label);
+    if (!before || putBack) added.push(addedItem(item));
     else alreadyListed.push(listedAgain(before, item));
   }
   return { list: current, added, alreadyListed };
+}
+
+function addedItem({ label, quantity }: Item): AddedItem {
+  return withQuantity<AddedItem>({ label }, quantity);
 }
 
 function listedAgain(before: Item, { label, quantity }: Item): ListedAgain {
