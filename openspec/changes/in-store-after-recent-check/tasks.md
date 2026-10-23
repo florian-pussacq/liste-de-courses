@@ -16,7 +16,7 @@
 
 ## 4. Vérification d'intégration
 
-- [ ] 4.1 Lancer `openspec validate --all --strict`, format, lint, typecheck, tests unitaires et e2e, puis la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
+- [x] 4.1 Lancer `openspec validate --all --strict`, format, lint, typecheck, tests unitaires et e2e, puis la CI complète sur `main`, et vérifier que tout est vert et que le déploiement a réussi
 
 ## Workflow follow-up
 
