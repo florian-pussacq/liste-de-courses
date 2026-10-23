@@ -51,7 +51,9 @@
   let basketOpen = $state(false);
   // The dock is fixed and grows with its banners: the list keeps room to scroll above it.
   let dockHeight = $state(180);
-  let sendNotice = $state('');
+  // A notice tells about the list as it was sent: any change of the list makes it outdated.
+  let sent: { readonly list: ShoppingList; readonly notice: string } | undefined = $state.raw();
+  const sendNotice = $derived(sent?.list === list ? sent.notice : '');
 
   const SEND_NOTICES: Record<string, string> = {
     copied: 'Liste copiée : colle-la dans ta messagerie.',
@@ -59,7 +61,8 @@
   };
 
   async function send() {
-    sendNotice = SEND_NOTICES[await app.sendList()] ?? '';
+    const notice = SEND_NOTICES[await app.sendList()];
+    sent = notice ? { list, notice } : undefined;
   }
 
   const toBuy = $derived(itemsToBuy(list));

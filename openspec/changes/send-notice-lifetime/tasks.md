@@ -2,8 +2,8 @@
 
 ## 1. Interface
 
-- [ ] 1.1 Écrire le test e2e « Information dépassée » (liste copiée, puis un article coché) et constater qu'il échoue, « Information conservée » étant couvert par le test existant de la copie
-- [ ] 1.2 Rattacher l'information d'envoi à la liste envoyée dans `ShoppingListView`, et vérifier que les tests d'envoi passent
+- [x] 1.1 Écrire le test e2e « Information dépassée » (liste copiée, puis un article coché) et constater qu'il échoue, « Information conservée » étant couvert par le test existant de la copie
+- [x] 1.2 Rattacher l'information d'envoi à la liste envoyée dans `ShoppingListView`, et vérifier que les tests d'envoi passent
 
 ## 2. Vérification d'intégration
 

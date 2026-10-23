@@ -62,6 +62,19 @@ test('copies the list when the phone offers no share menu', async ({ page, conte
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('Pain\nLait');
 });
 
+test('withdraws the copy notice once the list changes', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await stubShareMenu(page, 'absent');
+  await page.goto('./');
+  await addItems(page, 'pain', 'lait');
+  await sendButton(page).click();
+  await expect(page.getByRole('status')).toHaveText('Liste copiée : colle-la dans ta messagerie.');
+
+  await toBuy(page).filter({ hasText: 'pain' }).click();
+
+  await expect(page.getByText('Liste copiée : colle-la dans ta messagerie.')).toBeHidden();
+});
+
 test('says nothing when the share menu is closed without choosing', async ({ page }) => {
   await stubShareMenu(page, 'cancel');
   await page.goto('./');
