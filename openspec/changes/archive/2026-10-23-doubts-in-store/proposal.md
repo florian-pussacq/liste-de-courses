@@ -19,7 +19,7 @@ Aucune.
 
 ### Modified Capabilities
 
-- `shopping-list` : « Section des articles à vérifier » dépend du moment des courses (place et titre).
+- `shopping-list` : « Section des articles à vérifier » se limite à la section elle-même ; nouveau requirement « Place des articles à vérifier selon le moment des courses » (place et titre).
 
 ## Impact
 
